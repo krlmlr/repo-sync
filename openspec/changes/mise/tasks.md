@@ -1,3 +1,3 @@
-- [ ] Add `mise.toml` with `[tools]` pinning Python and `[tasks]` for `fetch-inventory` and `clone`
-- [ ] Document `gh` authentication as a prerequisite for the `clone` task in `mise.toml`
-- [ ] Update `ROADMAP.md` section 2.0 to reflect completion
+- [x] Add `mise.toml` with `[tools]` pinning Python and `[tasks]` for `fetch-inventory` and `clone`
+- [x] Document `gh` authentication as a prerequisite for the `clone` task in `mise.toml`
+- [x] Update `ROADMAP.md` section 2.0 to reflect completion
