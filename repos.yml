@@ -1,0 +1,119 @@
+repos:
+  - org: cynkra
+    repo: constructive
+  - org: cynkra
+    repo: cynkratemplate
+  - org: cynkra
+    repo: dd
+  - org: cynkra
+    repo: dm
+  - org: cynkra
+    repo: fledge
+  - org: cynkra
+    repo: indiedown
+  - org: cynkra
+    repo: lazytest
+  - org: cynkra
+    repo: munch
+  - org: duckdb
+    repo: duckdb-r
+  - org: igraph
+    repo: igraphdata
+  - org: igraph
+    repo: rigraph
+  - org: krlmlr
+    repo: bindr
+  - org: krlmlr
+    repo: bindrcpp
+  - org: krlmlr
+    repo: duckdbneo
+  - org: krlmlr
+    repo: kimisc
+  - org: krlmlr
+    repo: mockr
+  - org: krlmlr
+    repo: plogr
+  - org: krlmlr
+    repo: utf8
+  - org: krlmlr
+    repo: wrswoR
+  - org: mlfit
+    repo: mlfit
+  - org: moodymudskipper
+    repo: boomer
+  - org: moodymudskipper
+    repo: flow
+  - org: moodymudskipper
+    repo: nakedpipe
+  - org: moodymudskipper
+    repo: powerjoin
+  - org: moodymudskipper
+    repo: tricks
+  - org: moodymudskipper
+    repo: typed
+  - org: moodymudskipper
+    repo: unglue
+  - org: poissonconsulting
+    repo: chk
+  - org: poissonconsulting
+    repo: dttr2
+  - org: poissonconsulting
+    repo: fishbc
+  - org: poissonconsulting
+    repo: hmstimer
+  - org: poissonconsulting
+    repo: jmbr
+  - org: poissonconsulting
+    repo: newdata
+  - org: poissonconsulting
+    repo: readwritesqlite
+  - org: poissonconsulting
+    repo: ssdsims
+  - org: poissonconsulting
+    repo: term
+  - org: poissonconsulting
+    repo: timer
+  - org: poissonconsulting
+    repo: yesno
+  - org: poissonconsulting
+    repo: ypr
+  - org: r-dbi
+    repo: DBI
+  - org: r-dbi
+    repo: DBItest
+  - org: r-dbi
+    repo: RKazam
+  - org: r-dbi
+    repo: RMariaDB
+  - org: r-dbi
+    repo: RPostgres
+  - org: r-dbi
+    repo: RSQLite
+  - org: r-dbi
+    repo: adbi
+  - org: r-dbi
+    repo: dblog
+  - org: r-lib
+    repo: here
+  - org: r-lib
+    repo: pillar
+  - org: r-lib
+    repo: roxygen2md
+  - org: r-lib
+    repo: rprojroot
+  - org: r-prof
+    repo: procmaps
+  - org: r-prof
+    repo: profile
+  - org: r-prof
+    repo: winch
+  - org: renkun-ken
+    repo: formattable
+  - org: tidyverse
+    repo: blob
+  - org: tidyverse
+    repo: duckplyr
+  - org: tidyverse
+    repo: hms
+  - org: tidyverse
+    repo: tibble
