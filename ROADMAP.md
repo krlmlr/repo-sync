@@ -34,6 +34,16 @@ Open questions:
 
 A small toolkit that operates on the inventory from section 1.
 
+### 2.0 Development environment
+
+- [ ] Add `mise.toml` at the repository root, pinning the Python
+      version required by the scripts.
+- [ ] Define named `mise` tasks for each script entry point
+      (`fetch-inventory`, `clone`, `validate`) so contributors run
+      `mise run <task>` rather than invoking scripts directly.
+- [ ] Document required environment variables (`GITHUB_TOKEN`) in
+      `mise.toml` so `mise` surfaces missing config before a task runs.
+
 ### 2.1 Clone
 
 - [ ] Clone every listed repository into a local `<org>/<repo>/`

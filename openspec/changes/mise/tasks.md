@@ -1,0 +1,3 @@
+- [ ] Add `mise.toml` with `[tools]` pinning Python and `[tasks]` for `fetch-inventory` and `clone`
+- [ ] Declare `GITHUB_TOKEN` as required env for the `clone` task in `mise.toml`
+- [ ] Update `ROADMAP.md` section 2.0 to reflect completion
