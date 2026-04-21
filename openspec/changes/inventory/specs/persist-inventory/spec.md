@@ -1,5 +1,7 @@
 ## ADDED Requirements
 
+> **Note:** `repos.yml` is a one-time import. The script is run manually, the diff reviewed, and the result committed. There is no automated refresh; updates follow the same manual process.
+
 ### Requirement: Write inventory to repos.yml
 The system SHALL write the parsed `(org, repo)` tuple list to `repos.yml` at the repository root as a YAML document under the top-level key `repos`.
 
