@@ -13,7 +13,7 @@
 **Non-Goals:**
 - Automated scheduling / GitHub Actions refresh workflow (manual process is sufficient).
 - Filtering archived or private repos (no metadata from `git ls-remote`; deferred).
-- Cloning, reconciling, or pushing to listed repos (separate roadmap sections).
+- Reconciling or pushing to listed repos (separate roadmap sections).
 - Supporting inventory sources other than `krlmlr/actions-sync`.
 
 ## Decisions
@@ -49,6 +49,32 @@
 **Decision**: `repos.yml` as a YAML sequence under `repos:`, block style.
 
 **Rationale**: Extensible (future fields require no format change), human-readable, stable diffs.
+
+### Clone: shell script over Python
+
+**Decision**: Implement the clone script in shell (bash), wrapping `git clone` / `git fetch`.
+
+**Rationale**: The clone step has no parsing or data-structure complexity — it's a loop over `repos.yml` entries calling `git`. Shell with `yq` or Python's `yaml` for reading the file is simpler than building a Python module. Can be replaced later if orchestration needs it.
+
+**Alternative considered**: Python script. Adds overhead for a task that is essentially a `git` wrapper loop.
+
+### Clone layout: `<org>/<repo>/` mirroring GitHub namespacing
+
+**Decision**: Clone into `mirrors/<org>/<repo>/` under the repository root.
+
+**Rationale**: Mirrors GitHub's namespace, prevents name collisions across orgs, and makes paths predictable for downstream tooling.
+
+### Incremental updates: `git fetch --prune` + fast-forward reset
+
+**Decision**: If the directory already exists, run `git fetch --prune` and reset the default branch to `origin/HEAD`.
+
+**Rationale**: Cheaper than re-cloning; keeps local state current without merge complexity.
+
+### Auth: `GITHUB_TOKEN` via credential helper
+
+**Decision**: Pass the token as `https://<token>@github.com/...` in the clone URL, or configure a credential helper in the workflow environment.
+
+**Rationale**: Works without installing additional tooling; standard pattern in GitHub Actions.
 
 ## Risks / Trade-offs
 
