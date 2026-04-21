@@ -9,7 +9,7 @@ The inventory change (`openspec/changes/inventory`) introduces `scripts/fetch_in
 **Goals:**
 - Pin the Python version so all contributors and CI use the same interpreter.
 - Define tasks that map 1:1 to the scripts from the inventory change.
-- Declare `GITHUB_TOKEN` as a required env var for the `clone` task.
+- Document that `gh` must be authenticated as a prerequisite for the `clone` task.
 
 **Non-Goals:**
 - Managing Node, Ruby, or other runtimes (not needed yet).
@@ -32,11 +32,11 @@ The inventory change (`openspec/changes/inventory`) introduces `scripts/fetch_in
 
 **Rationale**: All current scripts are Python or shell. Shell requires no pinning. Python version must match the project's `pyproject.toml` constraint.
 
-### Env vars: `mise.toml [env]` with `GITHUB_TOKEN` as required
+### Env prereqs: document `gh` auth in `mise.toml`
 
-**Decision**: Declare `GITHUB_TOKEN` with an empty default and a description; let `mise` error if absent when the `clone` task runs.
+**Decision**: Add a comment or `[env]` description in `mise.toml` noting that `gh` must be authenticated before running the `clone` task. No runtime check needed — `gh repo clone` fails with a clear message if unauthenticated.
 
-**Rationale**: Makes the requirement explicit at the tool level rather than buried in script error messages. Contributors see the missing variable before any git operation starts.
+**Rationale**: `gh` handles auth transparently via its own credential store; no token plumbing needed in the script or task runner. Documentation at the task level is sufficient.
 
 ## Risks / Trade-offs
 

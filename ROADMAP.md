@@ -39,7 +39,7 @@ A small toolkit that operates on the inventory from section 1.
 - [ ] Add `mise.toml` at the repository root, pinning the Python
       version required by the scripts.
 - [ ] Define named `mise` tasks for each script entry point
-      (`fetch-inventory`, `clone`, `validate`) so contributors run
+      (`fetch-inventory`, `clone`) so contributors run
       `mise run <task>` rather than invoking scripts directly.
 - [ ] Document required environment variables (`GITHUB_TOKEN`) in
       `mise.toml` so `mise` surfaces missing config before a task runs.

@@ -78,5 +78,5 @@
 
 ## Risks / Trade-offs
 
-- **`actions-sync` goes private** → `git ls-remote` without a token fails. Mitigation: `gh` credentials cover this case; alternatively pass `GITHUB_TOKEN` for the `ls-remote` call.
+- **`actions-sync` goes private** → `git ls-remote` without auth fails. Mitigation: `gh` credentials cover this case; use `gh api` or `gh repo clone` instead of bare `git ls-remote` if the repo goes private.
 - **Manual refresh lag** → Inventory can drift if `actions-sync` branches change and no one runs the script. Accepted trade-off; downstream tooling will fail on unknown repos, making staleness visible.

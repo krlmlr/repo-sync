@@ -1,12 +1,12 @@
 ## ADDED Requirements
 
-### Requirement: Required env vars declared in mise.toml
-`mise.toml` SHALL declare `GITHUB_TOKEN` as a required environment variable for the `clone` task so that `mise` surfaces missing config before any git operation runs.
+### Requirement: gh authentication documented as prerequisite
+`mise.toml` SHALL document that `gh` must be authenticated before running the `clone` task, so contributors know what to set up.
 
-#### Scenario: Token present
-- **WHEN** `GITHUB_TOKEN` is set in the shell environment
-- **THEN** `mise run clone` proceeds without prompting
+#### Scenario: gh authenticated
+- **WHEN** `gh` is authenticated (any method — token, device flow, etc.)
+- **THEN** `mise run clone` proceeds without additional configuration
 
-#### Scenario: Token absent
-- **WHEN** `GITHUB_TOKEN` is not set
-- **THEN** `mise run clone` exits non-zero with a message identifying the missing variable before invoking `gh` or `git`
+#### Scenario: gh not authenticated
+- **WHEN** `gh` is not authenticated
+- **THEN** `gh repo clone` fails with its own descriptive error; the task exits non-zero

@@ -5,19 +5,19 @@ Scripts and tool versions are currently invoked ad-hoc. Without a task runner, c
 ## What Changes
 
 - `mise.toml` at the repository root pinning the required Python version and defining named tasks for each script entry point.
-- Required environment variables (`GITHUB_TOKEN`) declared in `mise.toml` so `mise` surfaces missing config before a task runs.
+- Environment prerequisites (e.g. `gh` authentication) documented in `mise.toml` so contributors know what must be in place before running a task.
 
 ## Capabilities
 
 ### New Capabilities
 
 - `task-runner`: Run any script via `mise run <task>` without knowing the underlying path or interpreter.
-- `env-setup`: Declare required env vars in `mise.toml`; `mise` fails fast with a clear message when they are absent.
+- `env-setup`: Document environment prerequisites (e.g. `gh` must be authenticated) in `mise.toml` so contributors know what to set up before running tasks.
 
 ### Modified Capabilities
 
 ## Impact
 
 - New `mise.toml` at the repository root.
-- `GITHUB_TOKEN` required for the `clone` task; documented in `mise.toml`.
+- `gh` must be authenticated; documented as a prerequisite in `mise.toml`.
 - No changes to existing scripts — `mise` wraps them.
