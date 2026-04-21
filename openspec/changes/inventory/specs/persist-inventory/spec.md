@@ -15,16 +15,20 @@ The system SHALL write the parsed `(org, repo)` tuple list to `repos.yml` at the
 - **WHEN** `repos.yml` already exists with stale content
 - **THEN** the system overwrites it atomically with the new inventory
 
-### Requirement: Inventory is sorted and stable
-The system SHALL write the `repos` list sorted ascending by `org` then by `repo` so that repeated runs on the same branch list produce identical file content.
+### Requirement: Inventory is sorted case-insensitively and stable
+The system SHALL write the `repos` list sorted ascending by `org` (case-insensitive) then by `repo` (case-insensitive) so that mixed-case names sort alphabetically and repeated runs produce identical output.
 
 #### Scenario: Deterministic output
 - **WHEN** the same set of branches is fetched in any order
 - **THEN** `repos.yml` is byte-for-byte identical across runs
 
-#### Scenario: Lexicographic sort
+#### Scenario: Case-insensitive lexicographic sort
 - **WHEN** branches `zorg/a`, `acme/b`, and `acme/a` are in the inventory
 - **THEN** `repos.yml` lists them as `acme/a`, `acme/b`, `zorg/a`
+
+#### Scenario: Mixed-case repo names sort alphabetically
+- **WHEN** repos `DBI`, `adbi`, and `RSQLite` exist under the same org
+- **THEN** they appear as `adbi`, `DBI`, `RSQLite` (case-insensitive alpha order)
 
 ### Requirement: repos.yml format is human-readable YAML
 The system SHALL produce valid YAML that a human can read and edit. Each entry SHALL use block-style mapping with `org:` and `repo:` keys on separate lines.

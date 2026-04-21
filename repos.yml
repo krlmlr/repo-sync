@@ -78,9 +78,13 @@ repos:
   - org: poissonconsulting
     repo: ypr
   - org: r-dbi
+    repo: adbi
+  - org: r-dbi
     repo: DBI
   - org: r-dbi
     repo: DBItest
+  - org: r-dbi
+    repo: dblog
   - org: r-dbi
     repo: RKazam
   - org: r-dbi
@@ -89,10 +93,6 @@ repos:
     repo: RPostgres
   - org: r-dbi
     repo: RSQLite
-  - org: r-dbi
-    repo: adbi
-  - org: r-dbi
-    repo: dblog
   - org: r-lib
     repo: here
   - org: r-lib
