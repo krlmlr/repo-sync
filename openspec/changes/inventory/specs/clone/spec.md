@@ -1,15 +1,15 @@
 ## ADDED Requirements
 
 ### Requirement: Clone repos from inventory
-The system SHALL read `repos.yml` and clone every listed repository into a local `mirrors/<org>/<repo>/` directory, using a `GITHUB_TOKEN` for authentication.
+The system SHALL read `repos.yml` and clone every listed repository into a local `mirrors/<org>/<repo>/` directory using `gh repo clone`.
 
 #### Scenario: Fresh clone
 - **WHEN** `mirrors/<org>/<repo>/` does not exist
-- **THEN** the script clones the repository into that path
+- **THEN** the script runs `gh repo clone <org>/<repo> mirrors/<org>/<repo>`
 
-#### Scenario: Auth via token
-- **WHEN** `GITHUB_TOKEN` is set in the environment
-- **THEN** the script authenticates with it; cloning a private repo succeeds
+#### Scenario: Auth handled by gh
+- **WHEN** `gh` is authenticated (any method)
+- **THEN** the script clones without any additional token configuration; private repos succeed
 
 ### Requirement: Incremental update
 The system SHALL skip re-cloning if a directory already exists and instead fetch and fast-forward to match the remote default branch.

@@ -70,13 +70,13 @@
 
 **Rationale**: Cheaper than re-cloning; keeps local state current without merge complexity.
 
-### Auth: `GITHUB_TOKEN` via credential helper
+### Auth: `gh repo clone` instead of raw `git clone`
 
-**Decision**: Pass the token as `https://<token>@github.com/...` in the clone URL, or configure a credential helper in the workflow environment.
+**Decision**: Use `gh repo clone <org>/<repo> mirrors/<org>/<repo>` for fresh clones; use `gh repo sync` or `git fetch` inside the existing clone for updates.
 
-**Rationale**: Works without installing additional tooling; standard pattern in GitHub Actions.
+**Rationale**: `gh` handles auth transparently via its stored credentials — no `GITHUB_TOKEN` plumbing needed in the script. Works for both public and private repos without token management.
 
 ## Risks / Trade-offs
 
-- **`actions-sync` goes private** → `git ls-remote` without a token fails. Mitigation: pass `GITHUB_TOKEN` as an env var; script uses it when set.
+- **`actions-sync` goes private** → `git ls-remote` without a token fails. Mitigation: `gh` credentials cover this case; alternatively pass `GITHUB_TOKEN` for the `ls-remote` call.
 - **Manual refresh lag** → Inventory can drift if `actions-sync` branches change and no one runs the script. Accepted trade-off; downstream tooling will fail on unknown repos, making staleness visible.

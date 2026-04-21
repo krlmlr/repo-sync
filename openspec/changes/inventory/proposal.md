@@ -22,4 +22,4 @@ The set of foreign repositories this tool must manage is encoded in the branch n
 
 - `repos.yml` at the repository root — already committed; consumed by all downstream tooling.
 - New `scripts/` with clone and validate scripts.
-- Dependency on `git` CLI and a `GITHUB_TOKEN` for authenticated cloning.
+- Dependency on `git` CLI (for `git ls-remote`) and `gh` CLI (for authenticated cloning).

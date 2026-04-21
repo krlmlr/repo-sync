@@ -1,4 +1,4 @@
 - [x] Commit `repos.yml` with full inventory from `krlmlr/actions-sync` branches
 - [ ] Script to validate all repos in `repos.yml` are accessible on GitHub
-- [ ] `scripts/clone.sh`: read `repos.yml`, clone into `mirrors/<org>/<repo>/`, fetch+reset on subsequent runs, isolate failures
+- [ ] `scripts/clone.sh`: read `repos.yml`, `gh repo clone` into `mirrors/<org>/<repo>/`, fetch+reset on subsequent runs, isolate failures
 - [ ] Update `ROADMAP.md` sections 1 and 2.1 to reflect completion
