@@ -33,6 +33,7 @@ while IFS= read -r slug; do
         if ! gh repo clone "$slug" "$dest"; then
             echo "FAIL: clone $slug" >&2
             failures+=("$slug")
+            continue
         fi
     fi
 done <<< "$slugs"
