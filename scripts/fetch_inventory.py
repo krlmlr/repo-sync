@@ -44,7 +44,10 @@ def parse_repos(branches: list[str]) -> list[dict]:
 def main() -> None:
     branches = fetch_branches(REMOTE)
     repos = parse_repos(branches)
-    REPOS_YML.write_text(yaml.dump({"repos": repos}, default_flow_style=False, allow_unicode=True))
+    content = yaml.dump({"repos": repos}, default_flow_style=False, allow_unicode=True)
+    tmp = REPOS_YML.with_suffix(".yml.tmp")
+    tmp.write_text(content)
+    tmp.replace(REPOS_YML)
     print(f"wrote {len(repos)} repos to {REPOS_YML}")
 
 

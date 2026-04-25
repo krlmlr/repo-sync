@@ -5,13 +5,16 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPOS_YML="$REPO_ROOT/repos.yml"
 MIRRORS_DIR="$REPO_ROOT/mirrors"
 
-slugs=$(python3 -c "
+if ! slugs=$(python3 -c "
 import yaml, sys
 with open(sys.argv[1]) as f:
     data = yaml.safe_load(f)
 for e in data['repos']:
     print(e['org'] + '/' + e['repo'])
-" "$REPOS_YML")
+" "$REPOS_YML"); then
+    echo "FAIL: unable to load repository inventory from $REPOS_YML" >&2
+    exit 1
+fi
 
 failures=()
 
@@ -26,7 +29,11 @@ while IFS= read -r slug; do
             failures+=("$slug")
             continue
         fi
-        git -C "$dest" reset --hard origin/HEAD
+        if ! git -C "$dest" reset --hard origin/HEAD; then
+            echo "FAIL: reset $slug" >&2
+            failures+=("$slug")
+            continue
+        fi
     else
         echo "==> clone $slug"
         mkdir -p "$MIRRORS_DIR/$org"
