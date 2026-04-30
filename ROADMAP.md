@@ -15,33 +15,32 @@ Each branch in that repository encodes one `<org>/<repo>` pair.
 
 Tasks:
 
-- [ ] Fetch the branch list from `krlmlr/actions-sync` (e.g. via
-      `git ls-remote --heads` or the GitHub API).
-- [ ] Parse each branch name into an `<org>/<repo>` tuple.
-- [ ] Persist the resulting inventory in a machine-readable form
-      (e.g. `repos.yml` or `repos.txt`) that downstream tooling can
-      consume.
+- [x] Fetch the branch list from `krlmlr/actions-sync` via
+      `git ls-remote --heads`.
+- [x] Parse each branch name into an `<org>/<repo>` tuple.
+- [x] Persist the resulting inventory as `repos.yml` (59 repos across
+      15 orgs). Refreshes are manual: run `scripts/fetch_inventory.py`,
+      review the diff, commit.
 - [ ] Refresh the inventory on a schedule (cron / GitHub Actions) so
       new branches in `actions-sync` flow through automatically.
-
-Open questions:
-
-- Branch-name encoding: `<org>/<repo>` vs. `<org>-<repo>` vs. some
-  other convention — confirm by inspecting `actions-sync` HEADs.
-- Should archived or disabled repos be filtered out up front?
 
 ## 2. Tooling
 
 A small toolkit that operates on the inventory from section 1.
 
+### 2.0 Development environment
+
+- [x] `mise.toml` at the repository root, pinning Python 3.11.
+- [x] Named `mise` tasks: `fetch-inventory`, `clone`.
+- [x] `gh` authentication documented as prerequisite for the `clone` task.
+
 ### 2.1 Clone
 
-- [ ] Clone every listed repository into a local `<org>/<repo>/`
-      directory layout (mirroring GitHub's namespacing).
-- [ ] Support incremental updates: if a clone already exists, fetch
-      and fast-forward rather than re-cloning.
-- [ ] Cache credentials / use a GitHub App token so the tool scales
-      past the anonymous rate limit.
+- [x] Clone every listed repository into a local `mirrors/<org>/<repo>/`
+      directory layout via `gh repo clone`.
+- [x] Support incremental updates: if a clone already exists, fetch
+      and fast-forward rather than re-cloning (`scripts/clone.sh`).
+- [x] Auth handled by `gh` — no token management needed.
 
 ### 2.2 Reconcile
 

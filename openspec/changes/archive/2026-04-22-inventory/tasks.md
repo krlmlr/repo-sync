@@ -1,0 +1,3 @@
+- [x] Commit `repos.yml` with full inventory from `krlmlr/actions-sync` branches
+- [x] `scripts/clone.sh`: read `repos.yml`, `gh repo clone` into `mirrors/<org>/<repo>/`, fetch+reset on subsequent runs, isolate failures
+- [x] Update `ROADMAP.md` sections 1 and 2.1 to reflect completion

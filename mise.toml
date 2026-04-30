@@ -1,0 +1,16 @@
+[tools]
+python = "3.11"
+
+[tasks.install]
+description = "Install Python dependencies"
+run = "pip install -r requirements.txt"
+
+[tasks.fetch-inventory]
+description = "Fetch branch list from krlmlr/actions-sync and write repos.yml"
+depends = ["install"]
+run = "python3 scripts/fetch_inventory.py"
+
+# Prerequisite: gh must be authenticated (`gh auth login`) before running clone.
+[tasks.clone]
+description = "Clone or update every repo in repos.yml into mirrors/<org>/<repo>/"
+run = "bash scripts/clone.sh"
