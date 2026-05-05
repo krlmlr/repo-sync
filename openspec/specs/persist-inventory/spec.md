@@ -1,5 +1,9 @@
-> **Note:** `repos.yml` is a one-time import. The script is run manually, the diff reviewed, and the result committed. There is no automated refresh; updates follow the same manual process.
+## Purpose
 
+Persist the foreign-repo inventory parsed from `krlmlr/actions-sync` branch names as a stable, machine-readable `repos.yml` so all downstream tooling has a single source of truth.
+
+> **Note:** `repos.yml` is a one-time import. The script is run manually, the diff reviewed, and the result committed. There is no automated refresh; updates follow the same manual process.
+## Requirements
 ### Requirement: Write inventory to repos.yml
 The system SHALL write the parsed `(org, repo)` tuple list to `repos.yml` at the repository root as a YAML document under the top-level key `repos`.
 
@@ -40,3 +44,26 @@ The system SHALL produce valid YAML that a human can read and edit. Each entry S
 #### Scenario: Block style enforced
 - **WHEN** `repos.yml` is written
 - **THEN** entries are not collapsed to flow style (e.g. `{org: x, repo: y}`)
+
+### Requirement: Preserve `template: true` flag across refreshes
+The system SHALL preserve the `template: true` flag on the matching `(org, repo)` entry when refreshing `repos.yml` from upstream branches. The flag is human-curated metadata not derivable from `actions-sync`.
+
+#### Scenario: Flag retained when repo still in inventory
+- **WHEN** `repos.yml` exists with `template: true` on `<org>/<repo>` and a refresh sees the same `<org>/<repo>` in the new branch list
+- **THEN** the rewritten `repos.yml` carries `template: true` on the same entry
+
+#### Scenario: Flagged repo no longer in inventory
+- **WHEN** the previously-flagged `<org>/<repo>` is absent from the new branch list
+- **THEN** the writer exits non-zero without overwriting `repos.yml`, so the operator can choose a new template explicitly
+
+#### Scenario: No prior flag
+- **WHEN** no existing `repos.yml` carries `template: true` (e.g. first run)
+- **THEN** the writer produces the inventory unchanged in shape; no entry is auto-flagged
+
+### Requirement: At most one template flag
+The system SHALL write `repos.yml` with at most one entry carrying `template: true`.
+
+#### Scenario: Multiple flags rejected
+- **WHEN** the existing `repos.yml` is malformed and carries `template: true` on more than one entry
+- **THEN** the writer exits non-zero and refuses to write
+
