@@ -21,8 +21,6 @@ Tasks:
 - [x] Persist the resulting inventory as `repos.yml` (59 repos across
       15 orgs). Refreshes are manual: run `scripts/fetch_inventory.py`,
       review the diff, commit.
-- [ ] Refresh the inventory on a schedule (cron / GitHub Actions) so
-      new branches in `actions-sync` flow through automatically.
 
 ## 2. Tooling
 
@@ -44,6 +42,8 @@ A small toolkit that operates on the inventory from section 1.
 
 ### 2.2 Reconcile
 
+- [ ] One repository is picked as a template and defined as such in `repos.yml`.
+      This repo is added as a `template` remote in all the others.
 - [ ] For each foreign repo, diff the working tree against a
       canonical template / set of patches maintained in this repo.
 - [ ] Classify divergences: clean (can auto-apply), conflicting
