@@ -3,6 +3,7 @@ repos:
     repo: constructive
   - org: cynkra
     repo: cynkratemplate
+    template: true
   - org: cynkra
     repo: dd
   - org: cynkra

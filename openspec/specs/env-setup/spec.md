@@ -1,3 +1,9 @@
+## Purpose
+
+Document the ambient environment a contributor must have ready (notably an authenticated `gh`) before running any tooling task.
+
+## Requirements
+
 ### Requirement: gh authentication documented as prerequisite
 `mise.toml` SHALL document that `gh` must be authenticated before running the `clone` task, so contributors know what to set up.
 
