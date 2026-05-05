@@ -42,7 +42,7 @@ A small toolkit that operates on the inventory from section 1.
 
 ### 2.2 Reconcile
 
-- [ ] One repository is picked as a template and defined as such in `repos.yml`.
+- [x] One repository is picked as a template and defined as such in `repos.yml`.
       This repo is added as a `template` remote in all the others.
 - [ ] For each foreign repo, diff the working tree against a
       canonical template / set of patches maintained in this repo.
