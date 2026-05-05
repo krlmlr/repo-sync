@@ -15,12 +15,12 @@ Inline Python code for YAML manipulation is harder to test, debug, and maintain 
 - `yaml-operations`: Standardized approach to reading/writing/modifying YAML files using `yq`
 
 ### Modified Capabilities
-- `env-setup`: May use `yq` for YAML configuration processing instead of inline Python
-- `task-runner`: May use `yq` for YAML task definition processing
+<!-- None — clone, persist-inventory, env-setup, task-runner keep the same requirements; only their implementations change. -->
 
 ## Impact
 
-- Affects any Python code currently parsing or modifying YAML files
-- Requires `yq` binary to be available (added to mise.toml)
-- Simplifies YAML manipulation logic and improves code clarity
-- Makes configuration file operations more portable across environments
+- `mise.toml`: adds `yq` under `[tools]`
+- `scripts/clone.sh`: replaces the inline `python3 -c` YAML-parsing block (lines 8-30) with `yq` invocations
+- `scripts/fetch_inventory.py`: moves YAML I/O boundaries to `yq`, keeps Python for in-memory transforms
+- `requirements.txt`: PyYAML may become removable after refactor
+- Documentation: a new "Design principles" section captures the yq preference for future contributors

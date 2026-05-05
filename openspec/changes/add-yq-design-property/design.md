@@ -1,10 +1,15 @@
 ## Context
 
-The project currently uses inline Python code in various places to parse and manipulate YAML files. This approach has several drawbacks:
-- Requires understanding both Python and YAML in the same context
-- Harder to test YAML operations independently
+The project currently uses inline Python code in two places to parse and manipulate `repos.yml`:
+
+1. **`scripts/clone.sh`** embeds a multi-line `python3 -c "..."` block that loads YAML, validates the `template: true` flag, and emits ordered slugs back to bash. This is pure YAML wrangling living inside a shell script.
+2. **`scripts/fetch_inventory.py`** uses `yaml.safe_load`/`yaml.dump` at its I/O boundaries to read existing template flags and write the new inventory.
+
+Inline Python for YAML has several drawbacks:
+- The `clone.sh` case forces shell readers to context-switch into Python for what is fundamentally a query against a YAML document
+- Harder to test YAML operations independently of the surrounding logic
 - Less transparent about what YAML transformations are happening
-- Requires maintaining YAML parsing libraries
+- Requires maintaining PyYAML as a runtime dependency
 
 ## Goals / Non-Goals
 
@@ -36,8 +41,8 @@ The project currently uses inline Python code in various places to parse and man
 - Pure Python solution: Loses the benefits of `yq`'s specialized tooling
 
 ### 3. Scope of Refactoring
-**Decision**: Focus on scripts and task runners that manipulate YAML. Leave library code that uses PyYAML for data processing.
-**Rationale**: Clear boundary between "YAML file operations" (yq) vs "YAML data transformation" (Python libraries). Avoids over-engineering.
+**Decision**: Refactor `scripts/clone.sh` (high value: pure YAML query inside shell) and the YAML I/O at the edges of `scripts/fetch_inventory.py` (read existing flags, write final inventory). Keep Python for the in-memory transforms (`parse_repos`, `apply_template_flags`) where the data participates in non-trivial program logic.
+**Rationale**: Clear boundary — YAML file operations (yq) vs. data transformation that happens to start/end as YAML (Python). Avoids contorting `yq` into doing work that's clearer in code.
 
 ## Risks / Trade-offs
 
@@ -45,6 +50,8 @@ The project currently uses inline Python code in various places to parse and man
 
 **[Performance]** → Trade-off: Subprocess calls to `yq` may be slightly slower than inline Python for simple operations. This is acceptable given the clarity gains.
 
-**[Refactoring Scope]** → Mitigation: Start with obvious candidates (scripts, configuration processors). Defer refactoring of complex Python logic that happens to touch YAML.
+**[Refactoring Scope]** → Mitigation: Start with obvious candidates (the `clone.sh` inline Python block, `fetch_inventory.py`'s YAML edges). Defer or skip refactoring of complex Python logic that happens to touch YAML.
+
+**[Output byte-equivalence]** → Risk: `persist-inventory`'s "Deterministic output" scenario requires byte-for-byte identical YAML across runs. `yq` and PyYAML may differ in quoting, key order, or trailing whitespace. Mitigation: Test before committing the refactor; if `yq` output differs, either pin `yq` formatting flags or update the spec scenario to allow the new canonical form.
 
 **[Learning Curve]** → Mitigation: `yq` syntax is learnable and well-documented. Developers will benefit from the clarity of explicit YAML operations.
