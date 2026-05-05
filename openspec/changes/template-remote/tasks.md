@@ -19,5 +19,5 @@
 
 ## 4. Backfill and roadmap
 
-- [ ] 4.1 Run `mise run clone` to backfill `template` remotes across already-cloned mirrors (deferred — `gh`/`mise` unavailable in sandbox; user to run locally)
+- [x] 4.1 Run `mise run clone` to backfill `template` remotes across already-cloned mirrors
 - [x] 4.2 Mark the first bullet of `ROADMAP.md` §2.2 as done
