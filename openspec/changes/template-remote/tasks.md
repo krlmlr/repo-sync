@@ -1,0 +1,22 @@
+## 1. Inventory schema
+
+- [ ] 1.1 Add `template: true` to the `cynkra/cynkratemplate` entry in `repos.yml`
+
+## 2. Inventory writer
+
+- [ ] 2.1 In `scripts/fetch_inventory.py`, read existing `repos.yml` (if present) and capture all `(org, repo)` tuples carrying `template: true`
+- [ ] 2.2 Re-apply the flag to matching entries in the freshly-built inventory before writing
+- [ ] 2.3 If a previously-flagged entry is missing from the new branch list, exit non-zero without overwriting `repos.yml`
+- [ ] 2.4 Reject existing `repos.yml` that carries `template: true` on more than one entry
+
+## 3. Clone script
+
+- [ ] 3.1 In `scripts/clone.sh`, parse `repos.yml` for the unique `template: true` entry; fail fast on zero or multiple matches before processing any mirror
+- [ ] 3.2 After a successful clone or fetch on a non-template mirror, add or update a `template` remote pointing at `https://github.com/<template-org>/<template-repo>.git` using `git remote add` / `git remote set-url`
+- [ ] 3.3 Skip the template-remote step on the template mirror itself
+- [ ] 3.4 Verify idempotency: a second consecutive run produces no change
+
+## 4. Backfill and roadmap
+
+- [ ] 4.1 Run `mise run clone` to backfill `template` remotes across already-cloned mirrors
+- [ ] 4.2 Mark the first bullet of `ROADMAP.md` §2.2 as done
