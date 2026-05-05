@@ -6,8 +6,8 @@ Reconciliation (roadmap §2.2) compares each foreign repo against a canonical te
 
 - Pick `cynkra/cynkratemplate` as the canonical template (name signals intent; already in inventory).
 - Extend `repos.yml` schema: the template repo's entry gains `template: true`. Exactly one entry must carry this flag.
-- `scripts/clone.sh` (after a successful clone or fetch) configures a `template` remote on every non-template mirror, pointing at the template repo's HTTPS URL. On the template mirror itself no `template` remote is added.
-- The `template` remote URL is normalised on every run so renames or URL drift get corrected idempotently.
+- `scripts/clone.sh` (after a successful clone or fetch) configures a `template` remote on every non-template mirror, pointing at the **local mirror path** of the template repo (`../../<template-org>/<template-repo>` relative to each mirror's git dir). On the template mirror itself no `template` remote is added.
+- The `template` remote URL is normalised on every run so a change of template entry gets corrected idempotently.
 - `scripts/fetch_inventory.py` preserves the `template: true` flag across refreshes (the flag is metadata maintained by humans, not derived from `actions-sync` branches).
 
 ## Capabilities

@@ -39,11 +39,15 @@ Roadmap §2.2 needs a single canonical template repo so reconcile can diff every
 
 **Rationale**: Reserved-looking, descriptive, unlikely to collide with upstream-defined remotes. `origin` stays as the foreign repo's own GitHub URL.
 
-### Remote URL: HTTPS via the template's GitHub slug
+### Remote URL: local relative path to the mirrored template
 
-**Decision**: `https://github.com/<template-org>/<template-repo>.git`.
+**Decision**: `../../<template-org>/<template-repo>` (relative to each mirror's working tree, i.e. `mirrors/<org>/<repo>/`). The template's own mirror lives at `mirrors/<template-org>/<template-repo>`, so the relative path resolves correctly from any sibling mirror.
 
-**Rationale**: Matches the auth model already used by `gh repo clone` (HTTPS + `gh` credential helper). Read-only access is sufficient — reconcile only fetches.
+**Rationale**: Reconcile diffs against the local mirror, not GitHub. A filesystem remote is faster, requires no network or auth, and stays consistent with whatever was last fetched into the template mirror by `clone.sh`. Storing the URL as a relative path keeps each mirror's git config portable across machines (the whole `mirrors/` tree can be moved without rewriting remotes).
+
+**Alternative considered**: HTTPS URL (`https://github.com/<template-org>/<template-repo>.git`). Rejected — would force reconcile to fetch over the network on every run and re-introduce the auth-handling concern that local mirroring already solves.
+
+**Ordering**: The template mirror must exist on disk for the relative path to resolve. `clone.sh` processes the template entry first (sorted lookup, then clone, before iterating non-template entries) so a fresh-from-empty run still produces a valid `template` remote.
 
 ### Remote management: configure on every clone run, idempotently
 
@@ -67,9 +71,9 @@ Roadmap §2.2 needs a single canonical template repo so reconcile can diff every
 
 ## Risks / Trade-offs
 
-- **Template repo renamed or transferred** → existing `template` remotes point to the old URL. Mitigation: `set-url` on every run normalises the URL, so a single re-run after updating `repos.yml` fixes every mirror.
+- **Template entry changes in `repos.yml`** → existing `template` remotes point at the old local path. Mitigation: `set-url` on every run normalises the URL, so a single re-run after updating `repos.yml` fixes every mirror.
 - **Flag silently dropped on refresh** → if the inventory writer is updated incorrectly, the template designation could be lost. Mitigation: `fetch_inventory.py` fails when the previously-flagged repo is missing from the new branch list, and `clone.sh` fails when no entry is flagged.
-- **HTTPS auth required for private templates** → currently `cynkratemplate` is public. If a future template is private, `gh`'s credential helper handles it transparently; no script change needed.
+- **Template mirror missing on disk** → if the template entry was deleted from `mirrors/` manually, the relative path is dangling. Mitigation: `clone.sh` clones the template first; reconcile (downstream) is responsible for surfacing fetch errors against the `template` remote.
 
 ## Migration Plan
 

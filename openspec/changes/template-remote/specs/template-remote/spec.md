@@ -16,15 +16,15 @@ The system SHALL recognise exactly one entry in `repos.yml` carrying `template: 
 - **THEN** any consumer of the template exits non-zero with a clear error
 
 ### Requirement: Configure `template` remote on non-template mirrors
-The system SHALL ensure every non-template mirror has a git remote named `template` pointing at the HTTPS URL of the template repo.
+The system SHALL ensure every non-template mirror has a git remote named `template` pointing at the local mirror path of the template repo, expressed relative to the mirror's working tree as `../../<template-org>/<template-repo>`.
 
 #### Scenario: Fresh non-template mirror
 - **WHEN** a non-template mirror is freshly cloned and has no `template` remote
-- **THEN** the system runs `git remote add template https://github.com/<template-org>/<template-repo>.git` inside that mirror
+- **THEN** the system runs `git remote add template ../../<template-org>/<template-repo>` inside that mirror
 
 #### Scenario: Existing `template` remote with stale URL
 - **WHEN** a non-template mirror already has a `template` remote pointing at a different URL
-- **THEN** the system runs `git remote set-url template <current-url>` to normalise it
+- **THEN** the system runs `git remote set-url template ../../<template-org>/<template-repo>` to normalise it
 
 #### Scenario: Template repo itself
 - **WHEN** the mirror is the template repo

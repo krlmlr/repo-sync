@@ -12,9 +12,10 @@
 ## 3. Clone script
 
 - [ ] 3.1 In `scripts/clone.sh`, parse `repos.yml` for the unique `template: true` entry; fail fast on zero or multiple matches before processing any mirror
-- [ ] 3.2 After a successful clone or fetch on a non-template mirror, add or update a `template` remote pointing at `https://github.com/<template-org>/<template-repo>.git` using `git remote add` / `git remote set-url`
-- [ ] 3.3 Skip the template-remote step on the template mirror itself
-- [ ] 3.4 Verify idempotency: a second consecutive run produces no change
+- [ ] 3.2 Process the template entry first (clone or update), then iterate over the remaining entries
+- [ ] 3.3 After a successful clone or fetch on a non-template mirror, add or update a `template` remote pointing at the local relative path `../../<template-org>/<template-repo>` using `git remote add` / `git remote set-url`
+- [ ] 3.4 Skip the template-remote step on the template mirror itself
+- [ ] 3.5 Verify idempotency: a second consecutive run produces no change
 
 ## 4. Backfill and roadmap
 
