@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Fetch branch list from krlmlr/actions-sync and write repos.yml."""
 
+import json
 import subprocess
 import sys
 from pathlib import Path
-
-import yaml
 
 REMOTE = "https://github.com/krlmlr/actions-sync"
 REPO_ROOT = Path(__file__).parent.parent
@@ -44,12 +43,25 @@ def parse_repos(branches: list[str]) -> list[dict]:
 def load_template_flags(path: Path) -> set[tuple[str, str]]:
     if not path.exists():
         return set()
-    data = yaml.safe_load(path.read_text()) or {}
-    flagged = [
-        (e["org"], e["repo"])
-        for e in data.get("repos", [])
-        if e.get("template") is True
-    ]
+    result = subprocess.run(
+        ["yq", ".repos[] | select(.template == true) | [.org, .repo]"],
+        input=path.read_text(),
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(f"error: yq failed reading {path.name}:\n{result.stderr}", file=sys.stderr)
+        sys.exit(1)
+    flagged = []
+    for line in result.stdout.strip().split("\n"):
+        if not line:
+            continue
+        # Parse JSON array output from yq
+        try:
+            org, repo = json.loads(line)
+            flagged.append((org, repo))
+        except (json.JSONDecodeError, ValueError):
+            pass
     if len(flagged) > 1:
         print(
             f"error: existing {path.name} has {len(flagged)} entries with template: true; expected at most 1: {flagged}",
@@ -74,15 +86,32 @@ def apply_template_flags(repos: list[dict], flagged: set[tuple[str, str]]) -> No
             entry["template"] = True
 
 
+def write_repos_with_yq(path: Path, repos: list[dict]) -> None:
+    """Write repos to YAML using yq for consistent formatting."""
+    data = {"repos": repos}
+    json_input = json.dumps(data)
+    result = subprocess.run(
+        ["yq", "-y", "."],
+        input=json_input,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(f"error: yq failed:\n{result.stderr}", file=sys.stderr)
+        sys.exit(1)
+
+    # Write atomically
+    tmp = path.with_suffix(".yml.tmp")
+    tmp.write_text(result.stdout)
+    tmp.replace(path)
+
+
 def main() -> None:
     flagged = load_template_flags(REPOS_YML)
     branches = fetch_branches(REMOTE)
     repos = parse_repos(branches)
     apply_template_flags(repos, flagged)
-    content = yaml.dump({"repos": repos}, default_flow_style=False, allow_unicode=True)
-    tmp = REPOS_YML.with_suffix(".yml.tmp")
-    tmp.write_text(content)
-    tmp.replace(REPOS_YML)
+    write_repos_with_yq(REPOS_YML, repos)
     print(f"wrote {len(repos)} repos to {REPOS_YML}")
 
 

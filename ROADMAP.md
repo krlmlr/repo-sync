@@ -68,6 +68,36 @@ A small toolkit that operates on the inventory from section 1.
 - [ ] Run the whole pipeline from GitHub Actions on a schedule,
       surfacing failures per repo without aborting the batch.
 
+## Design Principles
+
+### YAML Operations
+
+**Prefer `yq` for YAML file operations over inline Python or PyYAML.**
+
+Use Python only when the YAML is loaded into a structure that participates in non-trivial program logic. For reading, modifying, or writing YAML files at script boundaries, delegate to `yq`.
+
+**Rationale:**
+- `yq` is a specialized tool that makes YAML operations explicit and testable independently.
+- Inline Python YAML parsing is harder to debug and less portable.
+- This follows the Unix philosophy of composable tools.
+
+**Example:**
+
+Instead of:
+```python
+import yaml
+with open('repos.yml') as f:
+    data = yaml.safe_load(f)
+    flagged = [e for e in data['repos'] if e.get('template') is True]
+```
+
+Use:
+```bash
+yq '.repos[] | select(.template == true) | [.org, .repo]' repos.yml
+```
+
+See `openspec/specs/yaml-operations/spec.md` for full requirements.
+
 ## Out of scope (for now)
 
 - Managing repository settings (branch protection, labels, etc.) —

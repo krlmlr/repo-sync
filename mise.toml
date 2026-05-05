@@ -1,5 +1,6 @@
 [tools]
 python = "3.11"
+yq = "4"
 
 [tasks.install]
 description = "Install Python dependencies"

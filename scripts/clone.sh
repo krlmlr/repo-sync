@@ -5,29 +5,33 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPOS_YML="$REPO_ROOT/repos.yml"
 MIRRORS_DIR="$REPO_ROOT/mirrors"
 
-if ! parsed=$(python3 -c "
-import yaml, sys
-with open(sys.argv[1]) as f:
-    data = yaml.safe_load(f)
-flagged = [(e['org'], e['repo']) for e in data['repos'] if e.get('template') is True]
-if len(flagged) == 0:
-    print('FAIL: no entry in repos.yml has template: true', file=sys.stderr)
-    sys.exit(2)
-if len(flagged) > 1:
-    print('FAIL: multiple entries in repos.yml have template: true: '
-          + ', '.join(f'{o}/{r}' for o, r in flagged), file=sys.stderr)
-    sys.exit(2)
-template_slug = f'{flagged[0][0]}/{flagged[0][1]}'
-print(template_slug)
-print(template_slug)  # first entry processed: the template
-for e in data['repos']:
-    slug = f\"{e['org']}/{e['repo']}\"
-    if slug != template_slug:
-        print(slug)
-" "$REPOS_YML"); then
+# Validate exactly one template entry
+template_count=$(yq '[.repos[] | select(.template == true)] | length' "$REPOS_YML")
+if [[ $template_count -eq 0 ]]; then
+    echo "FAIL: no entry in repos.yml has template: true" >&2
+    exit 2
+fi
+if [[ $template_count -gt 1 ]]; then
+    multiple=$(yq '.repos[] | select(.template == true) | .org + "/" + .repo' "$REPOS_YML" | paste -sd ',' -)
+    echo "FAIL: multiple entries in repos.yml have template: true: $multiple" >&2
+    exit 2
+fi
+
+# Extract template slug and emit ordered list (template first, then all repos)
+template_slug=$(yq '.repos[] | select(.template == true) | .org + "/" + .repo' "$REPOS_YML")
+if [[ -z "$template_slug" ]]; then
     echo "FAIL: unable to load repository inventory from $REPOS_YML" >&2
     exit 1
 fi
+
+parsed=$(
+    # Template first
+    printf '%s\n' "$template_slug"
+    # Template again (for consistency with original behavior)
+    printf '%s\n' "$template_slug"
+    # Then all repos except template
+    yq '.repos[] | select(.template != true) | .org + "/" + .repo' "$REPOS_YML"
+)
 
 template_slug=$(printf '%s\n' "$parsed" | head -n 1)
 ordered_slugs=$(printf '%s\n' "$parsed" | tail -n +2)
