@@ -54,30 +54,6 @@ repos:
     repo: typed
   - org: moodymudskipper
     repo: unglue
-  - org: poissonconsulting
-    repo: chk
-  - org: poissonconsulting
-    repo: dttr2
-  - org: poissonconsulting
-    repo: fishbc
-  - org: poissonconsulting
-    repo: hmstimer
-  - org: poissonconsulting
-    repo: jmbr
-  - org: poissonconsulting
-    repo: newdata
-  - org: poissonconsulting
-    repo: readwritesqlite
-  - org: poissonconsulting
-    repo: ssdsims
-  - org: poissonconsulting
-    repo: term
-  - org: poissonconsulting
-    repo: timer
-  - org: poissonconsulting
-    repo: yesno
-  - org: poissonconsulting
-    repo: ypr
   - org: r-dbi
     repo: adbi
   - org: r-dbi
