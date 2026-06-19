@@ -14,3 +14,8 @@ run = "python3 scripts/fetch_inventory.py"
 [tasks.clone]
 description = "Clone or update every repo in repos.yml into mirrors/<org>/<repo>/"
 run = "bash scripts/clone.sh"
+
+# Pass a non-default base with: mise run discover -- --base <dir>
+[tasks.discover]
+description = "Discover which repos.yml repos are checked out locally (flat siblings or mirrors)"
+run = "python3 scripts/discover_local.py"
