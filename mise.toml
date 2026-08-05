@@ -14,3 +14,10 @@ run = "python3 scripts/fetch_inventory.py"
 [tasks.clone]
 description = "Clone or update every repo in repos.yml into mirrors/<org>/<repo>/"
 run = "bash scripts/clone.sh"
+
+# The sweep that `s` cannot do: it finds repositories by their `.git` entry,
+# which the template's bare mirror does not have.
+[tasks.sync]
+description = "Fetch the bare template mirror, pull --rebase every mirror, fetch `template` everywhere"
+depends = ["install"]
+run = "bash scripts/sync.sh"
