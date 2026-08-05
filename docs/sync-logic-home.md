@@ -178,9 +178,11 @@ counter with `((i++))`, which reports the value from before the
 increment — so on the first repository, where the counter is still 0,
 it returned 1 and the script's `set -e` ended the run.
 `h` printed its header and stopped.
-Fixed in `krlmlr/scriptlets` (`fix(h): run in every repository, not
-none`), together with a `set -u` abort in the interactive path, and
-covered by a new check, since nothing there exercised either script.
+That one is fixed in `krlmlr/scriptlets` (#48), independently and while
+this was being written; a second abort behind it, in the interactive
+path, is fixed on top.
+Both went unnoticed because nothing there exercised either script —
+`tests/checks/75-h.sh` now does.
 
 ### What `s` covers
 
