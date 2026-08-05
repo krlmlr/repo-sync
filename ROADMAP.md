@@ -42,6 +42,14 @@ A small toolkit that operates on the inventory from section 1.
 
 ### 2.2 Reconcile
 
+Before this is built, two questions are open, and
+[`docs/sync-logic-home.md`](docs/sync-logic-home.md) weighs them:
+whether this machinery belongs in `cynkra/cynkratemplate` instead, and
+whether `s` from `krlmlr/scriptlets` — which runs a Git command in
+every repository below the current directory — is what drives it.
+It also records why the `template` remote cannot be merged from, only
+diffed and checked out per path.
+
 - [x] One repository is picked as a template and defined as such in `repos.yml`.
       This repo is added as a `template` remote in all the others.
 - [ ] For each foreign repo, diff the working tree against a
