@@ -29,7 +29,7 @@ A small toolkit that operates on the inventory from section 1.
 ### 2.0 Development environment
 
 - [x] `mise.toml` at the repository root, pinning Python 3.11.
-- [x] Named `mise` tasks: `fetch-inventory`, `clone`.
+- [x] Named `mise` tasks: `fetch-inventory`, `clone`, `sync`.
 - [x] `gh` authentication documented as prerequisite for the `clone` task.
 
 ### 2.1 Clone
@@ -43,7 +43,10 @@ A small toolkit that operates on the inventory from section 1.
 ### 2.2 Reconcile
 
 - [x] One repository is picked as a template and defined as such in `repos.yml`.
-      This repo is added as a `template` remote in all the others.
+      It is mirrored twice: as a checkout, to read and reconcile against, and
+      as a bare clone at `mirrors/<org>/<repo>.git`. The bare one is added as a
+      `template` remote in all the others, so that remote can be pushed to
+      (§2.3) and not only fetched from.
 - [ ] For each foreign repo, diff the working tree against a
       canonical template / set of patches maintained in this repo.
 - [ ] Classify divergences: clean (can auto-apply), conflicting
@@ -63,8 +66,12 @@ A small toolkit that operates on the inventory from section 1.
 
 ### 2.4 Orchestration
 
+- [x] `mise run sync` keeps the whole tree in step: fetch the template's
+      bare mirror, `git pull --rebase` every mirror, fetch `template`
+      everywhere. The bare mirror has no `.git` entry, so no sweep over
+      working trees (`s`, `h`) ever reaches it; this task is what does.
 - [ ] Wire clone → reconcile → push into a single entry point
-      (CLI or `Makefile` target).
+      (CLI or `mise` task — the toolkit is `mise`, not `make`).
 - [ ] Run the whole pipeline from GitHub Actions on a schedule,
       surfacing failures per repo without aborting the batch.
 
