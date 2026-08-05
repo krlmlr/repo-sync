@@ -30,15 +30,17 @@ A small toolkit that operates on the inventory from section 1.
 
 - [x] `mise.toml` at the repository root, pinning Python 3.11.
 - [x] Named `mise` tasks: `fetch-inventory`, `clone`, `sync`.
-- [x] `gh` authentication documented as prerequisite for the `clone` task.
+- [x] SSH access to GitHub documented as prerequisite for the `clone` task.
 
 ### 2.1 Clone
 
 - [x] Clone every listed repository into a local `mirrors/<org>/<repo>/`
-      directory layout via `gh repo clone`.
+      directory layout via `git clone` over SSH.
 - [x] Support incremental updates: if a clone already exists, fetch
       and fast-forward rather than re-cloning (`scripts/clone.sh`).
-- [x] Auth handled by `gh` — no token management needed.
+- [x] Auth handled by SSH — no token management needed, and no `gh`. The
+      GitHub API is not touched, so a run cannot be stopped by a spent rate
+      limit.
 
 ### 2.2 Reconcile
 

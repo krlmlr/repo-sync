@@ -20,6 +20,14 @@ clone_or_update() {
 
     if [[ -d "$dest/.git" ]]; then
         echo "==> update $slug"
+        # An `origin` left from an HTTPS clone is rewritten to the SSH URL --
+        # the same normalisation the `template` remote gets below.
+        # Which transport a mirror speaks should follow from the inventory,
+        # not from the day the mirror happened to be created.
+        if ! git -C "$dest" remote set-url origin "$(github_url "$slug")"; then
+            fail "$slug" "set-url origin $slug"
+            return 1
+        fi
         if ! git -C "$dest" fetch --prune; then
             fail "$slug" "fetch $slug"
             return 1
@@ -31,7 +39,7 @@ clone_or_update() {
     else
         echo "==> clone $slug"
         mkdir -p "$MIRRORS_DIR/$org"
-        if ! gh repo clone "$slug" "$dest"; then
+        if ! git clone "$(github_url "$slug")" "$dest"; then
             fail "$slug" "clone $slug"
             return 1
         fi
@@ -53,6 +61,10 @@ clone_or_update_bare() {
             return 1
         fi
         echo "==> update $slug.git (bare)"
+        if ! git -C "$dest" remote set-url origin "$(github_url "$slug")"; then
+            fail "$slug.git" "set-url origin $slug.git"
+            return 1
+        fi
         if ! git -C "$dest" fetch --prune; then
             fail "$slug.git" "fetch $slug.git"
             return 1
@@ -60,7 +72,7 @@ clone_or_update_bare() {
     else
         echo "==> clone $slug.git (bare)"
         mkdir -p "$MIRRORS_DIR/$org"
-        if ! gh repo clone "$slug" "$dest" -- --mirror; then
+        if ! git clone --mirror "$(github_url "$slug")" "$dest"; then
             fail "$slug.git" "clone $slug.git"
             return 1
         fi

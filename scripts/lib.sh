@@ -68,6 +68,21 @@ template_remote_url() {
     printf '%s\n' "../../$template_slug.git"
 }
 
+# The SSH clone URL for an inventory slug.
+#
+# Built from the inventory rather than resolved through the GitHub API.
+# `gh repo clone` spends a GraphQL request per repository to do that resolution,
+# out of a budget shared with every other `gh` command the same token has run,
+# and a clone of the whole inventory is exactly the thing that exhausts it.
+# `repos.yml` already knows what each repository is called.
+#
+# SSH rather than HTTPS: the key is in the agent and the account,
+# so there is no credential for the scripts to obtain, hold or hand over --
+# no helper to configure, and nothing token-shaped to leak into a remote URL.
+github_url() {
+    printf 'git@github.com:%s.git\n' "$1"
+}
+
 # Record a failure and carry on: one unreachable repo must not end the batch.
 fail() {
     local slug="$1"
