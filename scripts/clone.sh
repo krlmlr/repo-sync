@@ -20,10 +20,11 @@ clone_or_update() {
 
     if [[ -d "$dest/.git" ]]; then
         echo "==> update $slug"
-        if ! git -C "$dest" fetch --prune; then
+        if ! git_authenticated -C "$dest" fetch --prune; then
             fail "$slug" "fetch $slug"
             return 1
         fi
+        # Local: the objects are already here, and so is the ref being reset to.
         if ! git -C "$dest" reset --hard origin/HEAD; then
             fail "$slug" "reset $slug"
             return 1
@@ -31,7 +32,7 @@ clone_or_update() {
     else
         echo "==> clone $slug"
         mkdir -p "$MIRRORS_DIR/$org"
-        if ! gh repo clone "$slug" "$dest"; then
+        if ! git_authenticated clone "$(github_url "$slug")" "$dest"; then
             fail "$slug" "clone $slug"
             return 1
         fi
@@ -53,14 +54,14 @@ clone_or_update_bare() {
             return 1
         fi
         echo "==> update $slug.git (bare)"
-        if ! git -C "$dest" fetch --prune; then
+        if ! git_authenticated -C "$dest" fetch --prune; then
             fail "$slug.git" "fetch $slug.git"
             return 1
         fi
     else
         echo "==> clone $slug.git (bare)"
         mkdir -p "$MIRRORS_DIR/$org"
-        if ! gh repo clone "$slug" "$dest" -- --mirror; then
+        if ! git_authenticated clone --mirror "$(github_url "$slug")" "$dest"; then
             fail "$slug.git" "clone $slug.git"
             return 1
         fi

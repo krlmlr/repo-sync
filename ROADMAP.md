@@ -35,10 +35,12 @@ A small toolkit that operates on the inventory from section 1.
 ### 2.1 Clone
 
 - [x] Clone every listed repository into a local `mirrors/<org>/<repo>/`
-      directory layout via `gh repo clone`.
+      directory layout via `git clone` over HTTPS.
 - [x] Support incremental updates: if a clone already exists, fetch
       and fast-forward rather than re-cloning (`scripts/clone.sh`).
-- [x] Auth handled by `gh` — no token management needed.
+- [x] Auth handled by `gh` — no token management needed. `gh` supplies the
+      credential (`gh auth git-credential`) and nothing else; the GitHub API is
+      not touched, so a run cannot be stopped by a spent rate limit.
 
 ### 2.2 Reconcile
 

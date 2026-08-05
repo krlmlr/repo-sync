@@ -68,6 +68,39 @@ template_remote_url() {
     printf '%s\n' "../../$template_slug.git"
 }
 
+# The HTTPS clone URL for an inventory slug.
+# Built from the inventory rather than resolved through the GitHub API:
+# `gh repo clone` spends a GraphQL request per repository to do that resolution,
+# out of a budget shared with every other `gh` command the same token has run,
+# and a clone of the whole inventory is exactly the thing that exhausts it.
+# `repos.yml` already knows what each repository is called.
+github_url() {
+    printf 'https://github.com/%s.git\n' "$1"
+}
+
+# `git`, carrying the credential `gh` holds.
+# For the commands that talk to a GitHub remote, and no others:
+# the `template` remote is a relative path a few directories up,
+# and there is nobody at that end to authenticate to.
+#
+# The empty first value is not a slip.
+# `credential.helper` is multi-valued, and its helpers are consulted in turn
+# until one answers, so clearing the list first keeps a helper configured
+# elsewhere -- a stale `store` file, a keychain holding a revoked token --
+# from answering ahead of `gh` and sending git off with a dead credential.
+# This is what `gh` itself puts in front of the git commands it runs.
+#
+# `gh auth git-credential` reads gh's own store and prints the token:
+# a local read, not a request, and so not on the API rate limit.
+# It runs only when GitHub asks for authentication,
+# which for a public repository it never does.
+git_authenticated() {
+    git \
+        -c credential.helper= \
+        -c credential.helper='!gh auth git-credential' \
+        "$@"
+}
+
 # Record a failure and carry on: one unreachable repo must not end the batch.
 fail() {
     local slug="$1"
