@@ -10,10 +10,10 @@ description = "Fetch branch list from krlmlr/actions-sync and write repos.yml"
 depends = ["install"]
 run = "python3 scripts/fetch_inventory.py"
 
-# Prerequisite: gh must be authenticated (`gh auth login`) before running clone.
-# It is the credential source, not the cloning tool: the scripts clone with
-# `git` over HTTPS and reach for `gh auth git-credential` only when GitHub asks
-# for authentication. Nothing here spends GitHub API rate limit.
+# Prerequisite: SSH access to GitHub -- a key the account knows, reachable by
+# the agent, and github.com in `known_hosts` so the first connection has nothing
+# to ask about. The scripts clone with `git` over SSH and never call the GitHub
+# API, so there is no `gh` login to keep and no rate limit to spend.
 [tasks.clone]
 description = "Clone or update every repo in repos.yml into mirrors/<org>/<repo>/"
 run = "bash scripts/clone.sh"

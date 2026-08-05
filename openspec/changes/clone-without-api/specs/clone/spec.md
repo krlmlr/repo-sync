@@ -17,54 +17,63 @@ spent API rate limit SHALL NOT stand between the inventory and its mirrors.
 - **WHEN** a full `clone` run over the whole inventory completes
 - **THEN** the user's remaining API rate limit is what it was before the run
 
+### Requirement: Normalise `origin` to the SSH URL
+
+The system SHALL rewrite the `origin` remote of every existing mirror —
+checkout and bare mirror alike — to `git@github.com:<org>/<repo>.git` before
+fetching it, so the transport a mirror uses follows from the inventory rather
+than from when the mirror was created.
+
+#### Scenario: Mirror cloned over HTTPS
+
+- **WHEN** a mirror on disk has an `origin` URL of
+  `https://github.com/<org>/<repo>.git`
+- **THEN** the run rewrites it to `git@github.com:<org>/<repo>.git` and fetches
+  over SSH, with no re-clone
+
+#### Scenario: Already normalised
+
+- **WHEN** a mirror's `origin` already names the SSH URL
+- **THEN** the rewrite is a no-op and the run exits zero
+
+#### Scenario: Bare mirror normalised too
+
+- **WHEN** the template's bare mirror has an `origin` URL that is not the SSH
+  URL
+- **THEN** it is rewritten in the same way before the bare mirror is fetched
+
 ## MODIFIED Requirements
 
 ### Requirement: Clone repos from inventory
 
 The system SHALL read `repos.yml` and clone every listed repository into a local
 `mirrors/<org>/<repo>/` directory using `git clone` against
-`https://github.com/<org>/<repo>.git`, with `gh` supplying the credential. The
-repository name SHALL be taken from the inventory rather than resolved through
-the GitHub API.
+`git@github.com:<org>/<repo>.git`. The repository name SHALL be taken from the
+inventory rather than resolved through the GitHub API, and no credential SHALL
+be configured, stored or passed by the tooling: SSH authenticates with the
+operator's key.
 
 #### Scenario: Fresh clone
 
 - **WHEN** `mirrors/<org>/<repo>/` does not exist
-- **THEN** the script runs `git clone https://github.com/<org>/<repo>.git
-  mirrors/<org>/<repo>`, carrying `gh`'s credential helper
+- **THEN** the script runs `git clone git@github.com:<org>/<repo>.git
+  mirrors/<org>/<repo>`
 
-#### Scenario: Auth handled by gh
+#### Scenario: Auth handled by SSH
 
-- **WHEN** `gh` is authenticated (any method)
-- **THEN** the script clones without any additional token configuration; private
-  repos succeed
+- **WHEN** the operator's SSH key is known to their GitHub account and reachable
+  by the agent
+- **THEN** the script clones without any token configuration; private repos
+  succeed
 
-#### Scenario: Public repo needs no credential
+#### Scenario: No credential left behind
 
-- **WHEN** the repository is public
-- **THEN** GitHub serves the clone without asking for a credential, and `gh` is
-  never invoked
+- **WHEN** a mirror has been cloned
+- **THEN** its `origin` URL carries no credential, and the run has written no
+  credential into any git config
 
-### Requirement: Incremental update
+#### Scenario: No `upstream` remote
 
-The system SHALL skip re-cloning if a directory already exists and instead fetch
-and fast-forward to match the remote default branch. The fetch SHALL carry the
-same `gh` credential helper as the clone that created the mirror, so a mirror
-that could be cloned can also be updated.
-
-#### Scenario: Existing clone updated
-
-- **WHEN** `mirrors/<org>/<repo>/` already exists
-- **THEN** the script runs `git fetch --prune` and resets the default branch to
-  `origin/HEAD`
-
-#### Scenario: Idempotent run
-
-- **WHEN** the script is run twice with no upstream changes
-- **THEN** the second run makes no changes and exits zero
-
-#### Scenario: Private mirror updated without global git configuration
-
-- **WHEN** an existing mirror is of a private repository and the user's global
-  git config names no credential helper
-- **THEN** the fetch succeeds on `gh`'s credential, as the clone did
+- **WHEN** the repository is a fork of one the operator owns
+- **THEN** the mirror carries `origin`, and `template` if it is not the
+  template, and no other remote

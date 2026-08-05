@@ -32,7 +32,7 @@ if [[ -d "$bare_dir" ]]; then
     else
         bare_present=true
         echo "==> fetch $template_slug.git (bare)"
-        if ! git_authenticated -C "$bare_dir" fetch --prune; then
+        if ! git -C "$bare_dir" fetch --prune; then
             # The refs are stale rather than gone,
             # so the mirrors can still fetch from it below.
             fail "$template_slug.git" "fetch $template_slug.git"
@@ -47,7 +47,7 @@ pull_rebase() {
     local dest="$2"
 
     echo "==> pull --rebase $slug"
-    if ! git_authenticated -C "$dest" pull --rebase; then
+    if ! git -C "$dest" pull --rebase; then
         fail "$slug" "pull --rebase $slug"
         return 1
     fi
@@ -65,8 +65,6 @@ fetch_template() {
         return 1
     fi
 
-    # Plain `git`: the `template` URL is a relative path to the bare mirror,
-    # and a local remote has no credential to ask for.
     echo "==> fetch template $slug"
     if ! git -C "$dest" fetch --prune template; then
         fail "$slug" "fetch template $slug"

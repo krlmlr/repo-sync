@@ -16,17 +16,10 @@ and `clone`'s failure isolation — which exists so one unreachable repo
 does not end the batch — turns into 49 copies of the same message.
 
 Git's transport is a separate service with separate limits.
-`git clone` over HTTPS is not counted against the API rate limit,
-and the project already relies on this:
+Neither `git clone` over SSH nor over HTTPS is counted against the API rate
+limit, and the project already relies on this:
 `scripts/fetch_inventory.py` reads the whole inventory out of
 `git ls-remote --heads` rather than asking the API for a branch list.
-
-What `gh` is genuinely needed for is the credential.
-The mirrors include private repositories, and `gh` holds the token that reaches
-them — in its config file or the system keyring, depending on how the user
-authenticated. Handing that token to git is a local operation:
-`gh auth git-credential get` reads the stored credential and prints it
-in git's credential-helper protocol. No request, no quota.
 
 ## Goals / Non-Goals
 
@@ -34,29 +27,34 @@ in git's credential-helper protocol. No request, no quota.
 
 - A full `mise run clone` consumes no GitHub API quota,
   and so cannot fail wholesale because some unrelated command spent it.
-- Private repositories keep cloning and fetching with no token configuration
-  beyond the `gh auth login` the project already requires.
-- No token is written to disk, to a remote URL, or to a process argument list
-  that another user on the machine can read.
-- One rule, stated once, for how every GitHub-facing git command in this repo
-  authenticates — so `clone` and `sync` cannot drift apart.
+- Private repositories keep cloning and fetching.
+- No credential is written to disk, to a remote URL, or to a process argument
+  list that another user on the machine can read.
+- The mirror tree ends up with one transport throughout,
+  whenever each mirror in it was created.
 
 **Non-Goals:**
 
-- Dropping `gh`. It stays, as the credential source.
-- Supporting SSH remotes. See the decision below.
 - Retrying, backing off, or detecting rate limits.
   The change removes the requests rather than managing them.
+- Changing `sync`, which operates through remotes `clone` has already configured.
+- Changing `fetch_inventory.py`.
 
 ## Decisions
 
-### `git clone` over HTTPS, with the URL built from the slug
+### `git clone` over SSH, with the URL built from the slug
 
-`https://github.com/<org>/<repo>.git`, formed by string concatenation from the
+`git@github.com:<org>/<repo>.git`, formed by string concatenation from the
 `repos.yml` entry. The inventory is already the authority on what a repository
 is called — `fetch_inventory.py` writes it from the branch names in
 `krlmlr/actions-sync`, and `clone.sh` already derives the destination path
 from it. Asking the API to confirm a name we then ignore buys nothing.
+
+SSH carries the authentication in a key that is already in the agent and already
+on the account. That leaves the scripts with no credential to handle at all,
+which is a smaller thing to get right than handling one carefully:
+nothing to configure, nothing to expire mid-run, nothing token-shaped that could
+end up in a `.git/config` or a `ps` line.
 
 *Alternatives considered.*
 Keeping `gh repo clone` and adding backoff: it makes a full run take an hour
@@ -64,93 +62,74 @@ in the bad case and still fails if the budget is spent by something else.
 Keeping `gh repo clone` and batching the metadata into one GraphQL query:
 fewer requests, but still a nonzero cost for information nothing reads,
 and a good deal more machinery.
-SSH (`git@github.com:<org>/<repo>.git`): no API cost either, but it needs a key
-on the machine and in the account, which HTTPS-plus-`gh` does not.
+HTTPS with `gh` as a credential helper
+(`-c credential.helper='!gh auth git-credential'`, which is what `gh` puts in
+front of its own git commands): it also costs no quota, and it needs no key on
+the machine — but it keeps `gh` as a dependency for the sake of a credential
+that SSH does not need, and it leaves the tooling holding a token.
 
-### Authentication by per-invocation credential helper
+### `origin` is normalised on every run
 
-Every GitHub-facing git command runs as:
+`git remote set-url origin "$(github_url "$slug")"` runs before the fetch, on
+both the checkout and the bare mirror. Mirrors created before this change have
+an HTTPS `origin`; without the rewrite they would keep it indefinitely, and the
+tree's transport would be a record of when each mirror was cloned rather than a
+property of the tree.
 
-```
-git -c credential.helper= -c credential.helper='!gh auth git-credential' <args>
-```
+This is the same treatment `configure_template_remote` already gives the
+`template` remote, for the same reason, and the `clone` spec already calls that
+one "drift normalised". Extending it to `origin` costs one command and makes the
+change self-applying: an existing mirror tree needs no migration step.
 
-This is what `gh` itself puts in front of the git commands it runs
-(`AuthenticatedCommand` in its git client), and it is worth copying exactly,
-including the empty first value. `credential.helper` is a multi-valued config
-key: helpers are consulted in order until one answers. Setting it to the empty
-string clears the list, so a helper configured globally — a stale
-`store` file, an OS keychain holding a revoked token — cannot answer ahead of
-`gh` and send git off with a credential that no longer works.
+*Alternative considered.* Rewriting only on a fresh clone, and leaving existing
+mirrors on HTTPS. Cheaper, but "use SSH" would then be true only of repositories
+cloned after today, and a `mise run clone` would not be enough to make the tree
+consistent — which is the one thing that command is for.
 
-The helper fires only when GitHub asks for authentication, so public
-repositories clone anonymously and never invoke `gh` at all.
+### `sync` is untouched
 
-*Alternatives considered.*
-`gh auth setup-git` writes the same helper into the user's **global** git
-config: correct, but a mirroring script has no business editing config outside
-its own tree, and it would silently change how the user's unrelated
-repositories authenticate.
-`https://x-access-token:$(gh auth token)@github.com/...` puts the token in the
-remote URL, which git then writes into `.git/config` of every mirror —
-48 copies of a live credential on disk, and in the process table while the
-clone runs.
-`-c http.extraHeader="Authorization: ..."` has the same process-table exposure,
-and the header follows redirects to wherever GitHub points.
-
-### The helper goes on remote-facing commands only
-
-`git clone`, and the `git fetch --prune` / `git pull --rebase` that talk to
-`origin`. Not on `git remote add`, `git remote set-url`, `git reset --hard`,
-`git rev-parse`, and not on the `template` fetch — that remote is a relative
-path to a directory a few levels up, and there is no one there to authenticate to.
-
-This is a change for the fetches, which until now inherited whatever the user's
-global config happened to provide. In practice that was `gh auth setup-git`'s
-helper, if the user had ever run it: a mirror of a private repository could be
-cloned successfully by `gh` and then fail to update on the next run, for want of
-a credential the clone never needed to ask the user for. Routing both through
-the same helper closes that gap.
-
-### HTTPS unconditionally, ignoring `gh config get git_protocol`
-
-`gh repo clone` builds its URL from that preference, so a contributor who set it
-to `ssh` used to get SSH remotes. Reading the preference is free — it is a local
-config lookup — but honouring it would mean the authentication story differs per
-machine, and the credential helper, which is the whole mechanism here, applies to
-HTTPS only.
-
-Existing mirrors are not rewritten. A mirror cloned over SSH keeps its `origin`
-and keeps working; only repositories cloned from now on are affected.
+`git pull --rebase` and `git fetch template` use remotes that `clone` has already
+configured; they neither know nor care which transport those remotes name. Once
+`clone` has normalised `origin`, `sync` pulls over SSH without having been told
+anything.
 
 ## Risks / Trade-offs
 
-- **`gh` absent or unauthenticated, with private repos in the inventory.**
-  Git prompts for a username on a terminal, or fails outright when there is
-  none. → The same failure mode as today, and it stays per-repo: `clone`
-  records the failure and moves on. Public repositories are unaffected, since
-  no credential is ever requested for them. `env-setup` continues to state the
-  prerequisite.
+- **SSH access is now a hard prerequisite**, where an HTTPS clone of a public
+  repository needed nothing at all. A machine with no key on the account cannot
+  mirror even the public entries. → Accepted, and documented in `env-setup` and
+  `mise.toml`. This is a mirroring toolkit for repositories the operator has
+  write access to; §2.3 of the roadmap pushes back through these same remotes,
+  so the key is needed either way.
+
+- **The host key must be known.** A first SSH connection to an unknown host
+  prompts, and a non-interactive run with no answer available fails — 48 times,
+  which resembles the failure this change is fixing. → Documented as part of the
+  prerequisite: `github.com` in `known_hosts` before the first run. Deliberately
+  *not* worked around with `StrictHostKeyChecking=accept-new`, which would trade
+  a legible one-time setup step for a silently weaker trust decision on every
+  run.
+
+- **`origin` normalisation overwrites a deliberately-set URL.** Someone who
+  pointed a mirror at a fork or a local path will find it rewritten. → Accepted:
+  `mirrors/` is a generated tree, and `clone` already resets its working trees
+  hard onto `origin/HEAD` and rewrites `template` remotes. A mirror is not the
+  place to keep a local decision.
 
 - **A repository renamed upstream.** `gh repo clone` resolved the new name
-  through its query; `git clone` follows GitHub's HTTP redirect and clones the
-  right content, but leaves `origin` pointing at the old URL. → Acceptable: the
-  redirect keeps working, and `mise run fetch-inventory` is the mechanism for
-  learning the new name. This does mean a rename is no longer noticed at clone
-  time, which was never something the script reported anyway.
+  through its query; `git` over SSH gets a clear "repository moved" error rather
+  than a redirect. → It is reported as a per-repo failure, which is the honest
+  outcome: the inventory is stale, and `mise run fetch-inventory` is what fixes
+  it.
 
 - **Forks no longer get an `upstream` remote.** → Intended. A mirror carries
   `origin` and, if it is not the template, `template`. A third remote appearing
-  only for the repositories that happen to be forks of the authenticated user
-  is inconsistency, not a feature.
-
-- **`gh` must be on `PATH` under that name**, since the helper string names it.
-  → It already must be, for the current `gh repo clone` to work at all.
+  only for the repositories that happen to be forks of the authenticated user is
+  inconsistency, not a feature.
 
 ## Migration Plan
 
-None. The change is confined to how a clone is invoked; the mirror tree it
-produces is byte-identical in layout to what `gh repo clone` produced, so
-`mise run clone` against an existing tree takes the `fetch` path as usual and
-notices nothing. The repositories that failed against the exhausted rate limit
-clone on the next run, whatever the counter says.
+None to run by hand. The mirror tree's layout is unchanged, so `mise run clone`
+against an existing tree takes the `fetch` path as usual, rewriting each
+`origin` from HTTPS to SSH on the way past. The repositories that failed against
+the exhausted rate limit clone on the next run, whatever the counter says.
