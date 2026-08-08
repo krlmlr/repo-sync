@@ -36,7 +36,14 @@ clone_or_update() {
             fail "$slug" "set-url origin $slug"
             return 1
         fi
-        if ! git -C "$dest" fetch --prune; then
+        # `--prune-tags` as well as `--prune`: tags are the one ref namespace
+        # git does not partition by remote, so `--prune` never removes one and
+        # anything that ever landed in `refs/tags/` stays -- notably the
+        # template's tags, which a fetch of the `template` remote used to
+        # auto-follow into every mirror. This is the re-baselining tool, which
+        # resets the working tree onto origin/HEAD a line below; a tag the
+        # upstream does not have is local state, and goes the same way.
+        if ! git -C "$dest" fetch --prune --prune-tags; then
             fail "$slug" "fetch $slug"
             return 1
         fi
@@ -103,6 +110,24 @@ configure_template_remote() {
             fail "$slug" "add template $slug"
             return 1
         fi
+    fi
+
+    # Nothing from `refs/tags/` comes across this remote.
+    #
+    # A fetch auto-follows every tag pointing at an object it downloads, and a
+    # fetch of the template downloads the template's whole history. Branches
+    # survive that because they land in `refs/remotes/template/`, a namespace
+    # this remote has to itself; tags have no such namespace, so the template's
+    # would arrive indistinguishable from the mirror's own -- and stay, since
+    # `--prune` does not remove tags.
+    #
+    # On the remote rather than on a fetch, so every fetch of it inherits this:
+    # `sync`'s, one typed by hand, and whatever reconcile turns out to be.
+    # Written on every run, like the URL above, so a mirror configured before
+    # this existed is repaired without being re-cloned.
+    if ! git -C "$dest" config remote.template.tagOpt --no-tags; then
+        fail "$slug" "config tagOpt template $slug"
+        return 1
     fi
 }
 
