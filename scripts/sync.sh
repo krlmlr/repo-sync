@@ -54,7 +54,12 @@ fetch_template() {
     fi
 
     echo "==> fetch template $slug"
-    if ! git -C "$dest" fetch --prune template; then
+    # `--no-tags` here as well as on the remote itself, where `clone` writes it
+    # as `remote.template.tagOpt`. The configuration is the durable half of the
+    # guarantee, but `clone` is what writes it and `sync` is what runs every
+    # day: a mirror wired up before that would go on importing the template's
+    # tags, daily, until someone happened to run the other command.
+    if ! git -C "$dest" fetch --prune --no-tags template; then
         fail "$slug" "fetch template $slug"
         return 1
     fi

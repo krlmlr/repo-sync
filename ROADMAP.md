@@ -57,6 +57,10 @@ A small toolkit that operates on the inventory from section 1.
       as a bare clone at `mirrors/<org>/<repo>.git`. The bare one is added as a
       `template` remote in all the others, so that remote can be pushed to
       (§2.3) and not only fetched from.
+- [x] That remote carries branches and not tags. Tags are the one ref namespace
+      git does not partition by remote, so the template's would land among each
+      mirror's own, be indistinguishable from them, and eventually be pushed
+      back to the wrong repository (§2.3).
 - [ ] For each foreign repo, diff the working tree against a
       canonical template / set of patches maintained in this repo.
 - [ ] Classify divergences: clean (can auto-apply), conflicting
