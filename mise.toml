@@ -10,10 +10,18 @@ description = "Fetch branch list from krlmlr/actions-sync and write repos.yml"
 depends = ["install"]
 run = "python3 scripts/fetch_inventory.py"
 
-# Prerequisite: SSH access to GitHub -- a key the account knows, reachable by
-# the agent, and github.com in `known_hosts` so the first connection has nothing
-# to ask about. The scripts clone with `git` over SSH and never call the GitHub
-# API, so there is no `gh` login to keep and no rate limit to spend.
+# Prerequisites for both tasks below:
+#
+# SSH access to GitHub -- a key the account knows, reachable by the agent, and
+# github.com in `known_hosts` so the first connection has nothing to ask about.
+# The scripts clone with `git` over SSH and never call the GitHub API, so there
+# is no `gh` login to keep and no rate limit to spend.
+#
+# GNU parallel (`apt install parallel`, `brew install parallel`) -- and that one
+# specifically, since moreutils ships an unrelated program under the same name.
+# The repositories are mirrored several at a time; `REPO_SYNC_JOBS` says how
+# many, defaulting to 8, and `REPO_SYNC_JOBS=1` puts a run back in single file
+# when a failure needs reading.
 [tasks.clone]
 description = "Clone or update every repo in repos.yml into mirrors/<org>/<repo>/"
 run = "bash scripts/clone.sh"

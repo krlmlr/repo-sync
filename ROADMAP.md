@@ -31,6 +31,9 @@ A small toolkit that operates on the inventory from section 1.
 - [x] `mise.toml` at the repository root, pinning Python 3.11.
 - [x] Named `mise` tasks: `fetch-inventory`, `clone`, `sync`.
 - [x] SSH access to GitHub documented as prerequisite for the `clone` task.
+- [x] GNU parallel documented as prerequisite for `clone` and `sync`, which
+      mirror several repositories at a time. `REPO_SYNC_JOBS` chooses how many
+      (default 8); `REPO_SYNC_JOBS=1` reduces a run to one at a time.
 
 ### 2.1 Clone
 
@@ -41,6 +44,11 @@ A small toolkit that operates on the inventory from section 1.
 - [x] Auth handled by SSH — no token management needed, and no `gh`. The
       GitHub API is not touched, so a run cannot be stopped by a spent rate
       limit.
+- [x] Mirror several repositories at a time. Each clone is an independent
+      conversation with GitHub that spends its time waiting, so running them
+      one after another costs the sum of the waits for no reason. The
+      template's two mirrors are made first, as a barrier, so every
+      `template` remote written afterwards names a path that resolves.
 
 ### 2.2 Reconcile
 
@@ -72,6 +80,8 @@ A small toolkit that operates on the inventory from section 1.
       bare mirror, `git pull --rebase` every mirror, fetch `template`
       everywhere. The bare mirror has no `.git` entry, so no sweep over
       working trees (`s`, `h`) ever reaches it; this task is what does.
+      The bare fetch is a barrier and the mirrors follow it several at a
+      time, since each one reads only its own upstream and that mirror.
 - [ ] Wire clone → reconcile → push into a single entry point
       (CLI or `mise` task — the toolkit is `mise`, not `make`).
 - [ ] Run the whole pipeline from GitHub Actions on a schedule,

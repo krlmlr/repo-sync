@@ -6,12 +6,20 @@
 # The bare clone is what the `template` remotes point at,
 # because a repository with a branch checked out
 # is the wrong thing to have on the other end of a fetch or a push.
+#
+# The mirrors are made several at a time. Each is an independent conversation
+# with GitHub that spends its time waiting, so running them one after another
+# costs the sum of the waits for no reason: `parallel` re-invokes this script
+# once per mirror instead.
+#
+# The re-invocation is the whole child interface -- `clone.sh --checkout <slug>`
+# and `clone.sh --bare <slug>` -- so running one by hand does exactly what the
+# batch does to that one repository, which is what makes a failing repo
+# something you can reproduce on its own.
 set -uo pipefail
 
 # shellcheck source-path=SCRIPTDIR
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
-
-load_inventory
 
 clone_or_update() {
     local slug="$1"
@@ -98,21 +106,53 @@ configure_template_remote() {
     fi
 }
 
-while IFS= read -r slug; do
-    [[ -z "$slug" ]] && continue
+# One mirror, in a child process.
+#
+# `parallel` re-invokes the script rather than calling an exported shell
+# function: it runs its commands through `$SHELL`, which is the operator's
+# login shell and need not be bash, and an exported bash function does not
+# survive that. A path to a script with its own shebang survives anything.
+run_one() {
+    local mode="$1"
+    local slug="$2"
 
-    if [[ "$slug" == "$template_slug" ]]; then
-        # Both mirrors of the template, and both before anything points at them.
-        # They are independent clones of the same upstream,
-        # so one failing says nothing about the other: attempt both.
-        clone_or_update "$slug"
-        clone_or_update_bare "$slug"
-        continue
-    fi
+    case "$mode" in
+        --checkout)
+            clone_or_update "$slug" || return 1
+            configure_template_remote "$slug" || return 1
+            ;;
+        --bare)
+            clone_or_update_bare "$slug" || return 1
+            ;;
+        *)
+            echo "FAIL: unknown mode $mode" >&2
+            return 2
+            ;;
+    esac
+}
 
-    if clone_or_update "$slug"; then
-        configure_template_remote "$slug"
+if [[ $# -gt 0 ]]; then
+    if [[ $# -ne 2 ]]; then
+        echo "usage: clone.sh [--checkout|--bare <org/repo>]" >&2
+        exit 2
     fi
-done <<< "$ordered_slugs"
+    load_template_slug
+    run_one "$1" "$2"
+    exit
+fi
+
+require_parallel
+load_inventory
+
+# Both mirrors of the template, and both before anything points at them.
+# They are independent clones of the same upstream,
+# so one failing says nothing about the other: both are attempted,
+# and side by side, since neither waits on the other either.
+printf '%s\n' --checkout --bare | run_parallel "$SCRIPTS_DIR/clone.sh" {} "$template_slug"
+
+# Only once those are on disk does the rest of the inventory follow,
+# so that every `template` remote written below
+# names a path that already resolves.
+printf '%s\n' "$other_slugs" | run_parallel "$SCRIPTS_DIR/clone.sh" --checkout {}
 
 report_failures
