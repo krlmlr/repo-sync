@@ -1,7 +1,9 @@
 ## Purpose
 
 Mirror every repository listed in `repos.yml` into a predictable local directory layout (`mirrors/<org>/<repo>/`), keeping the local copy fast-forwardable to its GitHub default branch on subsequent runs.
+
 ## Requirements
+
 ### Requirement: Clone repos from inventory
 The system SHALL read `repos.yml` and clone every listed repository into a local `mirrors/<org>/<repo>/` directory using `gh repo clone`.
 
@@ -14,22 +16,56 @@ The system SHALL read `repos.yml` and clone every listed repository into a local
 - **THEN** the script clones without any additional token configuration; private repos succeed
 
 ### Requirement: Incremental update
-The system SHALL skip re-cloning if a directory already exists and instead fetch and fast-forward to match the remote default branch.
+
+The system SHALL skip re-cloning if a directory already exists and instead
+fetch and fast-forward to match the remote default branch, bringing the
+mirror's tags in line with the upstream's in the same step. `clone` is the
+re-baselining tool — it resets the working tree onto `origin/HEAD` — so a tag
+the upstream does not have is local state it discards like any other.
 
 #### Scenario: Existing clone updated
+
 - **WHEN** `mirrors/<org>/<repo>/` already exists
-- **THEN** the script runs `git fetch --prune` and resets the default branch to `origin/HEAD`
+- **THEN** the script runs `git fetch --prune --prune-tags` and resets the
+  default branch to `origin/HEAD`
+
+#### Scenario: Tags left behind by an earlier run
+
+- **WHEN** a mirror carries tags its upstream does not have, including any
+  imported from the template before the `template` remote stopped offering them
+- **THEN** the update removes them, leaving the mirror's tags equal to the
+  upstream's
 
 #### Scenario: Idempotent run
+
 - **WHEN** the script is run twice with no upstream changes
 - **THEN** the second run makes no changes and exits zero
 
 ### Requirement: Failures are isolated
-The system SHALL continue processing remaining repos if a single clone or fetch fails, and report all failures at the end with a non-zero exit code.
+
+The system SHALL continue processing remaining repos if a single clone or fetch
+fails, and report all failures at the end with a non-zero exit code. Failures
+SHALL be collected across every repository worked on, including those processed
+concurrently in separate processes, so the final report accounts for the whole
+run. The report SHALL list them in a stable order, independent of the order the
+repositories happened to finish in.
 
 #### Scenario: One repo unreachable
+
 - **WHEN** one repo returns a network or auth error
-- **THEN** the script logs the failure, continues with the rest, and exits non-zero after all repos are processed
+- **THEN** the script logs the failure, continues with the rest, and exits
+  non-zero after all repos are processed
+
+#### Scenario: Failure raised while other repositories are in flight
+
+- **WHEN** a repository fails while others are still being mirrored
+- **THEN** the others run to completion, and the failure is named in the report
+  at the end of the run
+
+#### Scenario: Report is stable
+
+- **WHEN** the same set of repositories fails on two runs
+- **THEN** both runs print the same report, in the same order
 
 ### Requirement: Configure `template` remote during clone
 The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update, pointing at the local relative path `../../<template-org>/<template-repo>.git` (resolving to the template's bare mirror under `mirrors/`).
@@ -47,11 +83,35 @@ The system SHALL configure a git remote named `template` on every non-template m
 - **THEN** the next `clone` run rewrites every non-template mirror's `template` remote URL to match the current template's bare mirror path
 
 ### Requirement: Process the template mirror first
-The system SHALL clone or update the entry flagged `template: true` — both its checkout and its bare mirror — before processing any non-template entry, so the local path used by `template` remotes always resolves on disk after a successful run.
+
+The system SHALL finish cloning or updating the entry flagged `template: true`
+— both its checkout and its bare mirror — before it begins processing any
+non-template entry, so the local path used by `template` remotes always
+resolves on disk after a successful run. This SHALL hold as a barrier rather
+than as an ordering within a single pass: no non-template entry SHALL be
+started while either of the template's mirrors is still being made.
+
+The template's two mirrors are independent clones of one upstream, so they MAY
+be made at the same time as each other, and a failure in one SHALL NOT prevent
+the other from being attempted.
 
 #### Scenario: Template processed first on fresh run
+
 - **WHEN** `clone.sh` runs against an empty `mirrors/` directory
-- **THEN** the template's checkout and its bare mirror are created before any non-template entry, so each subsequent `git remote add template ../../<template-org>/<template-repo>.git` resolves to an existing repository
+- **THEN** the template's checkout and its bare mirror are created before any
+  non-template entry, so each subsequent `git remote add template
+  ../../<template-org>/<template-repo>.git` resolves to an existing repository
+
+#### Scenario: No mirror overlaps the template's
+
+- **WHEN** the inventory is mirrored several repositories at a time
+- **THEN** no non-template mirror is begun until both of the template's mirrors
+  have finished, successfully or otherwise
+
+#### Scenario: Both mirrors of the template at once
+
+- **WHEN** the template's checkout and bare mirror are made
+- **THEN** they may be made concurrently, and each reports its own outcome
 
 ### Requirement: Fail when template designation is invalid
 The system SHALL exit non-zero before processing any mirror if `repos.yml` does not contain exactly one entry with `template: true`.
@@ -96,3 +156,94 @@ checkout beside it remains the copy to read and reconcile against.
   update
 - **THEN** the other is still attempted, and each failure is reported on its own
 
+### Requirement: Mirrors are processed several at a time
+
+The system SHALL work on more than one repository at once, since each mirror's
+clone or update is independent of every other's and spends most of its duration
+waiting on the network. The number worked on at once SHALL default to 8 and
+SHALL be settable with the `REPO_SYNC_JOBS` environment variable, where `1`
+reduces the run to one repository at a time.
+
+The output of each repository SHALL be kept together rather than interleaved
+with the other repositories', so a failure can be read without being
+reassembled from lines scattered across the run.
+
+#### Scenario: Inventory mirrored concurrently
+
+- **WHEN** `clone` runs over an inventory of more than one non-template entry
+- **THEN** several of them are cloned or updated at the same time, and the run
+  takes materially less wall clock than mirroring them one after another
+
+#### Scenario: Degree of concurrency chosen by the operator
+
+- **WHEN** `REPO_SYNC_JOBS` is set to a number
+- **THEN** that many repositories are worked on at once
+
+#### Scenario: Reduced to one at a time
+
+- **WHEN** `REPO_SYNC_JOBS=1`
+- **THEN** the run performs the same work on the same mirrors, one repository at
+  a time, and reaches the same result
+
+#### Scenario: One repository's output stays together
+
+- **WHEN** several repositories are being mirrored at once and one of them fails
+- **THEN** that repository's output is printed as one block, not split across
+  the output of the repositories running beside it
+
+#### Scenario: Repository worked on by itself
+
+- **WHEN** the operator names a single mirror to create or update
+- **THEN** exactly that mirror is processed, by the same steps the batch would
+  have applied to it, so a failure seen in a batch can be reproduced on its own
+
+### Requirement: GNU parallel is required and checked for
+
+The system SHALL verify before any mirror is touched that GNU parallel is
+available, and SHALL exit non-zero naming what to install if it is absent or if
+the `parallel` on `PATH` is a different program of the same name.
+
+#### Scenario: GNU parallel absent
+
+- **WHEN** no `parallel` is on `PATH`
+- **THEN** the run exits non-zero with a message naming the package to install,
+  before any mirror is cloned or updated
+
+#### Scenario: A different `parallel` on PATH
+
+- **WHEN** the `parallel` on `PATH` is not GNU parallel
+- **THEN** the run exits non-zero saying so, rather than letting every job in
+  the batch fail with the same usage error
+
+### Requirement: Point every non-template mirror at the shared hooks
+
+The system SHALL set `core.hooksPath` in every non-template mirror to this
+repository's tracked `hooks/` directory, expressed relative to the mirror's
+working tree as `../../../hooks`. Git runs hooks from the top of the working
+tree, so the relative path resolves wherever the mirror tree as a whole sits.
+
+The setting SHALL be written on every run, as the `template` remote's URL and
+its `tagOpt` are, so a mirror made before the hooks existed is repaired without
+being re-cloned.
+
+#### Scenario: Fresh non-template mirror
+
+- **WHEN** a non-template mirror is cloned
+- **THEN** `core.hooksPath` in that mirror names `../../../hooks`
+
+#### Scenario: Mirror configured before this rule
+
+- **WHEN** a mirror carries no `core.hooksPath`, or one pointing elsewhere
+- **THEN** the next run writes it, in the same pass that normalises the
+  `template` remote
+
+#### Scenario: Template repo itself
+
+- **WHEN** the mirror is the template repo
+- **THEN** nothing is configured: it has no `template` remote, and its own
+  commits refer to its own issues
+
+#### Scenario: Second run with no drift
+
+- **WHEN** the configuration already names `../../../hooks`
+- **THEN** writing it again changes nothing and the run exits zero
