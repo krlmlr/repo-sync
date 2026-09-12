@@ -37,54 +37,40 @@ So the sweep that keeps the mirrors current is exactly the tool that cannot keep
 
 Beside the checkout, not inside it and not in a directory of its own.
 The `.git` suffix is the conventional name for a bare repository,
-it cannot collide with an inventory entry
-(no `repo` field ends in `.git`),
-and it keeps the `template` remote URL a one-character edit
-of the relative path already specified:
+it cannot collide with an inventory entry (no `repo` field ends in `.git`),
+and it keeps the `template` remote URL a one-character edit of the relative path already specified:
 `../../<org>/<repo>` becomes `../../<org>/<repo>.git`.
 
-Git resolves a relative remote URL from the top of the working tree
-that carries the remote — verified, including from a subdirectory —
+Git resolves a relative remote URL from the top of the working tree that carries the remote — verified, including from a subdirectory —
 so the whole `mirrors/` tree stays movable, as before.
 
 *Alternative considered*: `mirrors/.bare/<org>/<repo>.git`.
-It keeps `mirrors/<org>/` free of anything but checkouts,
-which would suit a future `discover-local` scan,
-but it costs the relative-path symmetry
-and puts the mirror somewhere no one looks.
+It keeps `mirrors/<org>/` free of anything but checkouts, which would suit a future `discover-local` scan,
+but it costs the relative-path symmetry and puts the mirror somewhere no one looks.
 A discovery scan can skip a `.git` suffix as easily as a `.bare` directory.
 
 ### `--mirror`, not `--bare`
 
 A `--bare` clone has no fetch refspec configured,
-so `git fetch` in it updates nothing —
-it would need a refspec written by hand to be refreshable at all.
+so `git fetch` in it updates nothing — it would need a refspec written by hand to be refreshable at all.
 `--mirror` sets `+refs/*:refs/*` and `remote.origin.mirror`,
-so a plain `git fetch --prune` brings every ref in line with GitHub,
-which is precisely what the mirror is for.
+so a plain `git fetch --prune` brings every ref in line with GitHub, which is precisely what the mirror is for.
 
 ### Both mirrors of the template, both before anything points at them
 
-The clone script already processes the template first,
-so that the relative path resolves by the time it is written into a remote.
+The clone script already processes the template first, so that the relative path resolves by the time it is written into a remote.
 The bare clone joins it there.
 The two are independent clones of the same upstream,
-so a failure in one says nothing about the other:
-both are attempted, and each reports separately.
+so a failure in one says nothing about the other: both are attempted, and each reports separately.
 
-A directory at the bare path that is not a bare repository
-is a failure, not something to fetch into blindly.
+A directory at the bare path that is not a bare repository is a failure, not something to fetch into blindly.
 
 ### `sync` rebases where `clone` resets
 
-`clone` is the re-baselining tool: it resets each mirror hard onto `origin/HEAD`,
-discarding whatever was there.
-`sync` is the gentle one: `git pull --rebase`,
-which keeps commits that have not been pushed yet
+`clone` is the re-baselining tool: it resets each mirror hard onto `origin/HEAD`, discarding whatever was there.
+`sync` is the gentle one: `git pull --rebase`, which keeps commits that have not been pushed yet
 and stops on a conflict rather than dropping them.
-Having both is the point —
-the two names then mean different things,
-and neither has to guess which one the operator wanted.
+Having both is the point — the two names then mean different things, and neither has to guess which one the operator wanted.
 
 No `--autostash`.
 A mirror with a dirty working tree fails its pull, loudly, and the run says so;
