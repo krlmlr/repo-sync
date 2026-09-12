@@ -137,20 +137,17 @@ and a mirror is not where anyone's local tooling should live.
 
 ## Risks / Trade-offs
 
-- **A message is edited without anyone asking.** That is what `prepare-commit-msg`
-  is for, and the hook says on stderr what it changed, per reference.
+- **A message is edited without anyone asking.** That is what `prepare-commit-msg` is for,
+  and the hook says on stderr what it changed, per reference.
   `REPO_SYNC_TEMPLATE_REFS=block` turns every repair into a stop.
-- **`--no-verify` skips it**, as it skips every hook. This is a guard against
-  a mechanism, not against a determined operator.
-- **The qualified reference still annotates the template.** A cross-reference
-  lands on the template's own pull request, forty-seven times over, rather than
-  on forty-seven strangers'. That is provenance arriving where it belongs.
+- **`--no-verify` skips it**, as it skips every hook. This is a guard against a mechanism, not against a determined operator.
+- **The qualified reference still annotates the template.** A cross-reference lands on the template's own pull request,
+  forty-seven times over, rather than on forty-seven strangers'. That is provenance arriving where it belongs.
 - **A mirror's own hooks stop running.** See above.
 - **perl is needed.** It is on every machine that runs the rest of this toolkit,
   and a hook that cannot run refuses the commit rather than waving it through.
-- **Commits copied before this existed keep their references.** Nothing rewrites
-  history, deliberately: what is already in a mirror stays as it is, and the
-  guard covers the copies made from here on.
+- **Commits copied before this existed keep their references.** Nothing rewrites history, deliberately:
+  what is already in a mirror stays as it is, and the guard covers the copies made from here on.
 
 ## Migration Plan
 
@@ -163,5 +160,4 @@ with no hooks in it — the same as having none.
 
 ## Open Questions
 
-- Should `applypatch-msg` share the implementation, so `git am` is covered
-  too? Nothing applies the template that way today.
+- Should `applypatch-msg` share the implementation, so `git am` is covered too? Nothing applies the template that way today.

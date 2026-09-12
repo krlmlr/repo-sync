@@ -1,7 +1,8 @@
 ## ADDED Requirements
 
 ### Requirement: Preserve `template: true` flag across refreshes
-The system SHALL preserve the `template: true` flag on the matching `(org, repo)` entry when refreshing `repos.yml` from upstream branches. The flag is human-curated metadata not derivable from `actions-sync`.
+The system SHALL preserve the `template: true` flag on the matching `(org, repo)` entry when refreshing `repos.yml` from upstream branches.
+The flag is human-curated metadata not derivable from `actions-sync`.
 
 #### Scenario: Flag retained when repo still in inventory
 - **WHEN** `repos.yml` exists with `template: true` on `<org>/<repo>` and a refresh sees the same `<org>/<repo>` in the new branch list

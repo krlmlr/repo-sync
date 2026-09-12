@@ -20,7 +20,8 @@ When ready to implement, run /opsx:apply
 1. **If no input provided, ask what they want to build**
 
    Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+   > "What change do you want to work on?
+   Describe what you want to build or fix."
 
    From their description, derive a kebab-case name (e.g., "add user authentication" → `add-user-auth`).
 
@@ -82,7 +83,8 @@ When ready to implement, run /opsx:apply
 After completing all artifacts, summarize:
 - Change name and location
 - List of artifacts created with brief descriptions
-- What's ready: "All artifacts created! Ready for implementation."
+- What's ready: "All artifacts created!
+  Ready for implementation."
 - Prompt: "Run `/opsx:apply` to start implementing."
 
 **Artifact Creation Guidelines**

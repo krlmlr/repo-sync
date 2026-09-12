@@ -1,38 +1,29 @@
 ## Context
 
 `mirrors/` holds one checkout per inventory entry,
-and every non-template mirror has a `template` remote
-pointing at the template's mirror by relative path.
+and every non-template mirror has a `template` remote pointing at the template's mirror by relative path.
 The next roadmap steps read from that remote (§2.2, diff against the template)
 and eventually write through it (§2.3, publish curated changes).
 
 Two properties of the current wiring do not survive that.
 A non-bare repository refuses a push to the branch it has checked out,
-and a working tree is state that has nothing to do with the refs
-but is nevertheless what a fetch sees.
+and a working tree is state that has nothing to do with the refs but is nevertheless what a fetch sees.
 Both are solved by the same move: put a bare repository behind the remote.
 
-The mirrors are refreshed by hand today,
-by sweeping git across them with `s` from `scriptlets`.
-`s` is `h git`, and `h`'s discovery is `fd -HILg .git` —
-every path whose basename is `.git`.
+The mirrors are refreshed by hand today, by sweeping git across them with `s` from `scriptlets`.
+`s` is `h git`, and `h`'s discovery is `fd -HILg .git` — every path whose basename is `.git`.
 A linked worktree has one (a `.git` *file*), which is why worktrees are included.
 A bare repository has none.
-So the sweep that keeps the mirrors current
-is exactly the tool that cannot keep a bare mirror current.
+So the sweep that keeps the mirrors current is exactly the tool that cannot keep a bare mirror current.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- A `template` remote whose far end can be fetched from and pushed to,
-  with no working tree in the way.
+- A `template` remote whose far end can be fetched from and pushed to, with no working tree in the way.
 - Keep the template's checkout: it is the copy to read and reconcile against.
-- One command that leaves every mirror in step
-  with both its own upstream and the template,
-  covering the bare mirror that no sweep reaches.
-- Preserve the failure discipline the clone script already has:
-  one bad repo is reported, not fatal.
+- One command that leaves every mirror in step with both its own upstream and the template, covering the bare mirror that no sweep reaches.
+- Preserve the failure discipline the clone script already has: one bad repo is reported, not fatal.
 
 **Non-Goals:**
 

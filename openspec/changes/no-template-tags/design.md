@@ -114,18 +114,13 @@ Nothing reads them today. Left out.
 
 ## Risks / Trade-offs
 
-- **`clone` now deletes local-only tags.** It already discarded local commits
-  in the same function; a mirror is not where unpushed work should live,
-  and `sync` remains the tool that respects it.
-- **A mirror not re-cloned keeps its imported tags.** `sync` stops adding to
-  them but removes none. The repair is `mise run clone`, as it was for the
-  `template` URL rewrite.
-- **A tag name shared by template and upstream.** If the upstream has its own
-  `v0.1.0`, the imported one has already overwritten nothing —
-  auto-follow does not clobber an existing tag —
-  and `--prune-tags` keeps the upstream's. Nothing to reconcile.
-- **`--prune-tags` needs git ≥ 2.17.** Long since the floor for everything else
-  the scripts use.
+- **`clone` now deletes local-only tags.** It already discarded local commits in the same function;
+  a mirror is not where unpushed work should live, and `sync` remains the tool that respects it.
+- **A mirror not re-cloned keeps its imported tags.** `sync` stops adding to them but removes none.
+  The repair is `mise run clone`, as it was for the `template` URL rewrite.
+- **A tag name shared by template and upstream.** If the upstream has its own `v0.1.0`, the imported one has already overwritten nothing —
+  auto-follow does not clobber an existing tag — and `--prune-tags` keeps the upstream's. Nothing to reconcile.
+- **`--prune-tags` needs git ≥ 2.17.** Long since the floor for everything else the scripts use.
 
 ## Migration Plan
 
