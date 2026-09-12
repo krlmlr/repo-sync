@@ -21,7 +21,8 @@ It SHALL NOT live under `mirrors/`.
 The `clone` capability resets every mirror onto `origin/HEAD` and prunes its tags,
 which would discard a cherry-pick in progress.
 
-The workspace SHALL be excluded from version control, as `mirrors/` is.
+The workspace SHALL be excluded from version control,
+as `mirrors/` is.
 
 #### Scenario: Fresh workspace
 
@@ -49,11 +50,14 @@ The workspace SHALL be excluded from version control, as `mirrors/` is.
 The system SHALL configure one remote in the workspace for every entry in `repos.yml` other than the template,
 named `<org>/<repo>` and pointing at that entry's mirror checkout by the relative path `../mirrors/<org>/<repo>`.
 
-The slug rather than the repository name alone, because repository names are not unique across orgs
+The slug rather than the repository name alone,
+because repository names are not unique across orgs
 and a remote named for one would silently resolve to the wrong upstream.
-Branches therefore arrive under `refs/remotes/<org>/<repo>/*`, which stays distinct for two entries sharing a name.
+Branches therefore arrive under `refs/remotes/<org>/<repo>/*`,
+which stays distinct for two entries sharing a name.
 
-The path SHALL be relative, so the tree can be moved or cloned elsewhere without rewriting every remote.
+The path SHALL be relative,
+so the tree can be moved or cloned elsewhere without rewriting every remote.
 
 #### Scenario: Remote configured for an entry
 
@@ -68,12 +72,14 @@ The path SHALL be relative, so the tree can be moved or cloned elsewhere without
 #### Scenario: Names colliding across orgs stay distinct
 
 - **WHEN** two inventory entries share a repository name under different orgs
-- **THEN** each has its own remote and its own `refs/remotes/<org>/<repo>/*` namespace, and neither resolves to the other's mirror
+- **THEN** each has its own remote and its own `refs/remotes/<org>/<repo>/*` namespace,
+  and neither resolves to the other's mirror
 
 #### Scenario: Template entry has no remote
 
 - **WHEN** the inventory entry is the one flagged `template: true`
-- **THEN** no remote is configured for it, since the workspace is a clone of that repository and reaches it through `origin`
+- **THEN** no remote is configured for it,
+  since the workspace is a clone of that repository and reaches it through `origin`
 
 ### Requirement: The workspace imports no tags from the mirrors
 
@@ -85,13 +91,15 @@ and the suppression SHALL be configured on the remote.
 Every such remote lives in this one repository,
 so the configuration is written, verified and repaired in one place rather than replicated across the inventory.
 
-The setting SHALL be written on every run, as the URL is,
+The setting SHALL be written on every run,
+as the URL is,
 so a remote configured before this requirement existed is repaired without the workspace being re-created.
 
 #### Scenario: Mirror with tags fetched
 
 - **WHEN** a remote is fetched whose mirror carries tags from its own GitHub upstream
-- **THEN** the workspace's `refs/tags/*` is unchanged, and the mirror's branches are updated under `refs/remotes/<org>/<repo>/*`
+- **THEN** the workspace's `refs/tags/*` is unchanged,
+  and the mirror's branches are updated under `refs/remotes/<org>/<repo>/*`
 
 #### Scenario: Every remote fetched at once
 
