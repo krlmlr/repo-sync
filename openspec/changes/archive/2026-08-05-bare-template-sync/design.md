@@ -83,31 +83,25 @@ silently stashing and unstashing hides the one thing worth knowing.
 3. Fetch `template` in each non-template mirror.
 
 Step 1 before step 3 is what makes the run worth anything:
-fetching `template` from a bare mirror that was last refreshed at clone time
-propagates stale refs with every appearance of being up to date.
+fetching `template` from a bare mirror that was last refreshed at clone time propagates stale refs
+with every appearance of being up to date.
 Step 2 is independent of the others,
-so a mirror whose rebase stopped on a conflict
-still gets the template refs it will be reconciled against.
+so a mirror whose rebase stopped on a conflict still gets the template refs it will be reconciled against.
 
 ### What counts as a failure
 
-- A missing mirror directory is **skipped**, not failed:
-  cloning is `clone`'s job, and `sync` works on what exists.
-- A mirror that exists but has no `template` remote is a **failure**,
-  naming `mise run clone` as the repair.
+- A missing mirror directory is **skipped**, not failed: cloning is `clone`'s job, and `sync` works on what exists.
+- A mirror that exists but has no `template` remote is a **failure**, naming `mise run clone` as the repair.
   Something that exists must be wired correctly.
 - A missing or non-bare template mirror is a **failure**,
-  and the `template` fetches are then skipped rather than
-  each failing separately against a path that does not resolve.
-- Failures are collected and reported at the end with a non-zero exit,
-  as in `clone`.
+  and the `template` fetches are then skipped rather than each failing separately against a path that does not resolve.
+- Failures are collected and reported at the end with a non-zero exit, as in `clone`.
 
 ### `scripts/lib.sh`
 
 The template-designation rule — exactly one `template: true`, or a hard error —
 is a specified behaviour that both tools must implement identically.
-Extracting it (with the paths, the failure list and the report)
-into a sourced, non-executable `lib.sh`
+Extracting it (with the paths, the failure list and the report) into a sourced, non-executable `lib.sh`
 means the rule has one implementation rather than two copies that can drift.
 
 ## Risks / Trade-offs

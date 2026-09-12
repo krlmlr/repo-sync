@@ -16,16 +16,15 @@ Measured over eight repositories of the inventory:
 - `sync` over that tree with nothing to fetch: 5.9s serial, 1.9s.
 
 Six times that inventory is the real one,
-and the difference is the difference between a command you run while you wait
-and one you start and walk away from.
+and the difference is the difference between a command you run while you wait and one you start and walk away from.
 
 Nothing about the work asks for the ordering.
 Each mirror talks to its own upstream and reads the template's bare mirror;
 no mirror reads, writes or waits for another.
-The two orderings that do matter — the template's mirrors before the mirrors
-that point at them, and the bare mirror's fetch before the fetches that read it
-— are barriers between batches, not a reason to walk the whole inventory in
-single file.
+The two orderings that do matter —
+the template's mirrors before the mirrors that point at them,
+and the bare mirror's fetch before the fetches that read it —
+are barriers between batches, not a reason to walk the whole inventory in single file.
 
 ## What Changes
 
@@ -35,28 +34,23 @@ single file.
   `REPO_SYNC_JOBS=1` puts the run back in single file,
   which is what to reach for when reading a confusing failure.
 - **GNU parallel, specifically.**
-  Its output is grouped: each job's stdout and stderr are held
-  and printed together when the job finishes,
+  Its output is grouped: each job's stdout and stderr are held and printed together when the job finishes,
   so a repository's lines arrive as one block.
-  `xargs -P` would shuffle eight repositories' lines into each other
-  and leave every failure to be reassembled by eye.
+  `xargs -P` would shuffle eight repositories' lines into each other and leave every failure to be reassembled by eye.
 - **Each script re-invokes itself once per repository.**
-  `clone.sh --checkout <slug>`, `clone.sh --bare <slug>` and `sync.sh <slug>`
-  are the child entry points, and they are also usable by hand:
-  a repository that failed in a batch of eight
-  can be reproduced on its own, in isolation, with one command.
+  `clone.sh --checkout <slug>`, `clone.sh --bare <slug>` and `sync.sh <slug>` are the child entry points,
+  and they are also usable by hand:
+  a repository that failed in a batch of eight can be reproduced on its own, in isolation, with one command.
 - **The orderings become explicit barriers.**
-  `clone` finishes both of the template's mirrors before starting anything
-  that points at them; `sync` finishes the bare mirror's fetch
-  before any mirror fetches from it.
+  `clone` finishes both of the template's mirrors before starting anything that points at them;
+  `sync` finishes the bare mirror's fetch before any mirror fetches from it.
   Neither now rests on a walk happening to reach the template first.
 - **Failures are collected in a file rather than in a shell array.**
   The work happens in child processes,
   and an array a child appends to dies with it —
-  the parent would report an empty list on a run where half the inventory
-  failed. The report is sorted, so two identical runs produce identical output.
-- **GNU parallel becomes a prerequisite**, checked for at startup
-  and named in `mise.toml` beside the SSH one.
+  the parent would report an empty list on a run where half the inventory failed.
+  The report is sorted, so two identical runs produce identical output.
+- **GNU parallel becomes a prerequisite**, checked for at startup and named in `mise.toml` beside the SSH one.
 
 ## Capabilities
 

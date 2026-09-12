@@ -148,7 +148,8 @@ This is functionally equivalent to not running `init-firewall.sh` at all.
 
 **Security cost:**
 
-- Free exfiltration channel. Any string the agent has read can be POSTed to any host.
+- Free exfiltration channel.
+  Any string the agent has read can be POSTed to any host.
   There is no longer a network-layer control; trust shifts entirely to the model provider's safety properties
   and to the credential boundary.
 - This stage should only be enabled in environments where the workspace contents are not sensitive (public OSS code)
@@ -156,7 +157,8 @@ This is functionally equivalent to not running `init-firewall.sh` at all.
 
 **Required mitigations:**
 
-- Treat this as a per-task opt-in, not a default. The default branch of `.devcontainer/devcontainer.json` should remain at stage 0–1.
+- Treat this as a per-task opt-in, not a default.
+  The default branch of `.devcontainer/devcontainer.json` should remain at stage 0–1.
 - If general egress is needed, prefer routing through an HTTP proxy with logging (mitmproxy, squid with access log)
   so a post-hoc audit is possible.
 
