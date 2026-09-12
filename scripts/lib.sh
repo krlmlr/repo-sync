@@ -142,6 +142,43 @@ template_remote_url() {
     printf '%s\n' "../../$template_slug.git"
 }
 
+# Where a mirror's hooks live: one tracked directory in this repository,
+# shared by every mirror rather than copied into each one's `.git/hooks`.
+#
+# Relative, and for the same reason the `template` remote's URL is: git runs
+# hooks from the top of the working tree, so `../../../hooks` resolves from
+# `mirrors/<org>/<repo>/` wherever the tree as a whole happens to sit.
+#
+# One directory also means one implementation. A copy per mirror would be
+# forty-seven copies to update the day the hook changes, and no way to tell
+# which of them is current.
+hooks_path() {
+    printf '%s\n' "../../../hooks"
+}
+
+# Point a mirror at that directory.
+#
+# Written on every run, like the remote's URL and its `tagOpt`, so a mirror
+# made before the hooks existed is repaired rather than re-cloned. By both
+# `clone` and `sync`: `clone` is the tool that is reached for when a mirror
+# needs re-baselining, and `sync` is the one that runs every day -- and a
+# guard that is only installed by the command nobody ran today is not
+# installed.
+#
+# `core.hooksPath` takes over the mirror's hooks entirely: anything in its
+# `.git/hooks` stops being run. That is the cost of the single implementation,
+# and a small one here -- hooks are not cloned, so a fresh mirror has none,
+# and a mirror is not where anyone's local tooling should live.
+configure_hooks_path() {
+    local slug="$1"
+    [[ "$slug" == "$template_slug" ]] && return 0
+    local dest="$MIRRORS_DIR/$slug"
+    if ! git -C "$dest" config core.hooksPath "$(hooks_path)"; then
+        fail "$slug" "config hooksPath $slug"
+        return 1
+    fi
+}
+
 # The SSH clone URL for an inventory slug.
 #
 # Built from the inventory rather than resolved through the GitHub API.

@@ -145,6 +145,7 @@ run_one() {
         --checkout)
             clone_or_update "$slug" || return 1
             configure_template_remote "$slug" || return 1
+            configure_hooks_path "$slug" || return 1
             ;;
         --bare)
             clone_or_update_bare "$slug" || return 1

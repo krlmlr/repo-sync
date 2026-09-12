@@ -61,6 +61,14 @@ A small toolkit that operates on the inventory from section 1.
       git does not partition by remote, so the template's would land among each
       mirror's own, be indistinguishable from them, and eventually be pushed
       back to the wrong repository (§2.3).
+- [x] The mirrors carry a `prepare-commit-msg` hook, shared from `hooks/` and
+      installed by both `clone` and `sync`, that keeps the template's issue
+      numbers out of the commits copied from it. GitHub writes the number of
+      the pull request into the subject of every squash merge, and `#12` in a
+      foreign repository is a live reference to *that* repository's issue 12.
+      The hook qualifies it — `<org>/<repo>#12` — and refuses the copy outright
+      where a closing keyword would have a dependent repository close an issue
+      in the template.
 - [ ] For each foreign repo, diff the working tree against a
       canonical template / set of patches maintained in this repo.
 - [ ] Classify divergences: clean (can auto-apply), conflicting

@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+# Keep the template's issue numbers out of the mirrors.
+#
+# A squash merge on GitHub names the pull request it came from: the subject
+# of every commit the template collects ends in `(#12)`, and bodies pick up
+# `Fixes #7` from the pull request description. Those numbers mean something
+# in the template and nothing anywhere else. Cherry-picked into a mirror they
+# do not stay inert: `#12` in a commit pushed to a foreign repository is a
+# live reference to *that* repository's issue 12, and GitHub will post a
+# cross-reference on it -- forty-seven times, once per mirror, on forty-seven
+# unrelated issues.
+#
+# There is no fixing this at the source. The `(#12)` suffix is written by
+# GitHub when the merge button is pressed, and no repository setting turns it
+# off, so the template's history carries these references whatever anyone
+# does upstream. The moment to intervene is the one where the commit is
+# copied into a mirror, and that is this hook.
+#
+# `prepare-commit-msg` specifically, and not `commit-msg`: a cherry-pick does
+# not run `commit-msg` at all. It runs this one, both on the clean path and
+# on the `--continue` after a conflict, and it honours what the hook leaves
+# in the message file -- which is what makes repairing the reference possible
+# and not only refusing it.
+#
+# What it does:
+#
+#   - A reference that can be repaired mechanically is repaired: `#12` and
+#     `GH-12` become `<template-org>/<template-repo>#12`, which points at the
+#     issue the message meant, from any repository, and renders as a link to
+#     it rather than to a stranger.
+#   - A reference under a closing keyword -- `Fixes #7` -- is refused
+#     instead. Qualifying it would leave a dependent repository closing an
+#     issue in the template, once per mirror; whether that reference should
+#     survive the copy at all is a judgement, and the human makes it.
+#
+# Set `REPO_SYNC_TEMPLATE_REFS=block` to refuse both rather than repair
+# either. The default repairs, because GitHub's suffix is on *every* squashed
+# commit: a guard that stops every cherry-pick and asks for the message to be
+# retyped, in every mirror, is a toll rather than a guard.
+#
+# Nothing else is touched. The hook acts only on a commit that replays
+# another commit (`git cherry-pick`, `git revert`, a rebase) whose original
+# is reachable from `refs/remotes/template/*`. A commit written in a mirror
+# by hand keeps its `#5`: that one is the mirror's own issue, and correct.
+set -uo pipefail
+
+msg_file="${1-}"
+[[ -n "$msg_file" && -f "$msg_file" ]] || exit 0
+
+git_dir="$(git rev-parse --git-dir 2>/dev/null)" || exit 0
+
+# The commit being made is a copy of another one.
+#
+# Each of these files holds the commit being replayed, and exists only while
+# that replay is in progress. Absent them, the message was written for this
+# repository and this hook has no business in it.
+replayed=""
+for head in CHERRY_PICK_HEAD REVERT_HEAD REBASE_HEAD; do
+    if [[ -f "$git_dir/$head" ]]; then
+        replayed="$(cat "$git_dir/$head")"
+        break
+    fi
+done
+[[ -n "$replayed" ]] || exit 0
+
+# And the original is the template's.
+#
+# Asked of the refs rather than of the operator: `refs/remotes/template/*` is
+# the namespace that remote has to itself, so a commit reachable from it came
+# across it. A mirror replaying its own commits -- which is what every
+# `sync` does, rebasing onto its upstream -- answers no here and is left alone.
+# Captured rather than piped into `grep -q`: under `pipefail` a reader that
+# exits early would leave the pipeline reporting the writer's SIGPIPE, and a
+# guard that mistakes that for "not the template's" is no guard at all.
+from_template="$(git for-each-ref --contains "$replayed" --count=1 \
+    --format='%(refname)' refs/remotes/template/ 2>/dev/null)"
+[[ -n "$from_template" ]] || exit 0
+
+# Which repository the reference belongs to, read from the remote that
+# brought the commit in. The URL is a path to the template's bare mirror
+# (`../../<org>/<repo>.git`), so its last two components are the slug.
+template_url="$(git remote get-url template 2>/dev/null)" || template_url=""
+template_slug="$(printf '%s\n' "$template_url" |
+    sed -E 's#\.git/?$##; s#^.*[:/]([^/:]+/[^/:]+)$#\1#')"
+if ! [[ "$template_slug" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+    # A reference cannot be qualified against a repository we cannot name.
+    # Refusing is the only honest answer left; repairing would guess.
+    template_slug=""
+fi
+
+mode="${REPO_SYNC_TEMPLATE_REFS:-rewrite}"
+[[ -n "$template_slug" ]] || mode="block"
+
+# perl does the text surgery: a lookbehind, and a substitution that has to
+# know what precedes each match, are not things to write twice in `sed`.
+#
+# Missing, the commit is refused rather than let through. A guard that stays
+# quiet when it cannot run is one nobody notices has stopped working -- and
+# this one is between the template and forty-seven foreign issue trackers.
+if ! command -v perl >/dev/null 2>&1; then
+    echo "FAIL: perl is needed to check a commit copied from the template" >&2
+    echo "      -- install it, or check the message by hand and re-run with" >&2
+    echo "      \`git commit --no-verify\`" >&2
+    exit 1
+fi
+
+perl -e '
+my ($file, $slug, $mode) = @ARGV;
+
+open(my $in, "<", $file) or exit 0;
+my @lines = <$in>;
+close($in);
+
+# `#` opens a comment in a commit message, and git strips those lines before
+# the message is stored. What is written there is not a reference and is not
+# ours to touch; the same goes for everything past a scissors line.
+my $body_ends = scalar(@lines);
+for my $i (0 .. $#lines) {
+    if ($lines[$i] =~ /^\s*#\s*-+\s*>8\s*-+/) { $body_ends = $i; last; }
+}
+
+# A reference GitHub resolves: `#12` or `GH-12`, not already carrying an
+# owner and repository, not the tail of a URL fragment or an HTML entity.
+my $ref = qr/(?<![A-Za-z0-9_\/&-])(?:\#|GH-)([0-9]+)(?![A-Za-z0-9_-])/;
+# A keyword that makes the reference an instruction rather than a mention.
+my $closing = qr/\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\b[:\s]*\z/i;
+
+my (@refused, @repaired);
+for my $i (0 .. $body_ends - 1) {
+    next if $lines[$i] =~ /^\s*#/;
+    my $line = $lines[$i];
+    my $out = "";
+    my $pos = 0;
+    while ($line =~ /$ref/g) {
+        my ($from, $to, $number) = ($-[0], $+[0], $1);
+        my $match = substr($line, $from, $to - $from);
+        my $before = substr($line, $pos, $from - $pos);
+        my $instruction = ($out . $before) =~ $closing;
+        if ($instruction || $mode eq "block") {
+            push @refused, [$i + 1, $match];
+            $out .= $before . $match;
+        } else {
+            push @repaired, [$match, $slug . "#" . $number];
+            $out .= $before . $slug . "#" . $number;
+        }
+        $pos = $to;
+    }
+    $lines[$i] = $out . substr($line, $pos);
+}
+
+if (@refused) {
+    my $what = $mode eq "block"
+        ? "the template\x27s issue references"
+        : "an issue reference under a closing keyword";
+    print STDERR "FAIL: $what in a commit copied from the template:\n";
+    printf STDERR "  line %d: %s\n", $_->[0], $_->[1] for @refused;
+    print STDERR "In this repository that number is a stranger\x27s issue.\n";
+    if ($slug) {
+        print STDERR "Edit the message -- drop the reference, or write it as ",
+            $slug, "#<number> -- and commit again:\n";
+    } else {
+        print STDERR "Edit the message, dropping the reference, ",
+            "and commit again:\n";
+    }
+    print STDERR "  git commit -m \x27<message>\x27\n";
+    exit 1;
+}
+
+if (@repaired) {
+    printf STDERR "==> %s -> %s (copied from the template)\n",
+        $_->[0], $_->[1] for @repaired;
+    open(my $out, ">", $file) or do {
+        print STDERR "FAIL: unable to rewrite $file\n";
+        exit 1;
+    };
+    print $out @lines;
+    close($out) or exit 1;
+}
+exit 0;
+' -- "$msg_file" "$template_slug" "$mode"
