@@ -29,7 +29,8 @@ The bare mirror is what the `template` remotes point at; the checkout beside it 
 ## MODIFIED Requirements
 
 ### Requirement: Configure `template` remote during clone
-The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update, pointing at the local relative path `../../<template-org>/<template-repo>.git` (resolving to the template's bare mirror under `mirrors/`).
+The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update,
+pointing at the local relative path `../../<template-org>/<template-repo>.git` (resolving to the template's bare mirror under `mirrors/`).
 
 #### Scenario: Template URL added to non-template mirror
 - **WHEN** a non-template mirror is cloned or updated successfully
@@ -40,12 +41,16 @@ The system SHALL configure a git remote named `template` on every non-template m
 - **THEN** the script does not add a `template` remote on it
 
 #### Scenario: Drift normalised
-- **WHEN** the template entry in `repos.yml` changes between runs, or a mirror still carries a `template` URL pointing at the template's checkout
+- **WHEN** the template entry in `repos.yml` changes between runs,
+  or a mirror still carries a `template` URL pointing at the template's checkout
 - **THEN** the next `clone` run rewrites every non-template mirror's `template` remote URL to match the current template's bare mirror path
 
 ### Requirement: Process the template mirror first
-The system SHALL clone or update the entry flagged `template: true` — both its checkout and its bare mirror — before processing any non-template entry, so the local path used by `template` remotes always resolves on disk after a successful run.
+The system SHALL clone or update the entry flagged `template: true`
+— both its checkout and its bare mirror — before processing any non-template entry,
+so the local path used by `template` remotes always resolves on disk after a successful run.
 
 #### Scenario: Template processed first on fresh run
 - **WHEN** `clone.sh` runs against an empty `mirrors/` directory
-- **THEN** the template's checkout and its bare mirror are created before any non-template entry, so each subsequent `git remote add template ../../<template-org>/<template-repo>.git` resolves to an existing repository
+- **THEN** the template's checkout and its bare mirror are created before any non-template entry,
+  so each subsequent `git remote add template ../../<template-org>/<template-repo>.git` resolves to an existing repository
