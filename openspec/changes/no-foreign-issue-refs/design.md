@@ -33,7 +33,12 @@ Under a closing keyword the same mechanism closes the issue.
 
 - Changing anything in the template. It cannot be fixed there (see below).
 - Reference rewriting for commits already in a mirror's history.
-- Guarding the push (§2.3), which does not exist yet.
+  A copy made before this existed keeps what it was given;
+  rewriting it would mean rewriting history that has been pushed.
+- Guarding the push. The copy is the moment a reference changes meaning,
+  and it is the moment this change guards.
+  A second check at `pre-push` would have nothing left to repair —
+  only history to refuse, and refusing it helps nobody.
 
 ## Decisions
 
@@ -144,7 +149,8 @@ and a mirror is not where anyone's local tooling should live.
 - **perl is needed.** It is on every machine that runs the rest of this toolkit,
   and a hook that cannot run refuses the commit rather than waving it through.
 - **Commits copied before this existed keep their references.** Nothing rewrites
-  history. They surface at push time, which §2.3 has yet to build.
+  history, deliberately: what is already in a mirror stays as it is, and the
+  guard covers the copies made from here on.
 
 ## Migration Plan
 
@@ -157,11 +163,5 @@ with no hooks in it — the same as having none.
 
 ## Open Questions
 
-- Should the guard extend to the push (§2.3), where a message that got in
-  by another route — `git am`, `--no-verify`, a commit copied before this
-  existed — is last catchable before it reaches GitHub? A `pre-push` hook is
-  the natural home, and identifying template-derived commits by patch id is
-  the part that needs designing. The hook directory this change adds is where
-  it would go.
 - Should `applypatch-msg` share the implementation, so `git am` is covered
   too? Nothing applies the template that way today.
