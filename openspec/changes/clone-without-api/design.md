@@ -100,8 +100,8 @@ an existing mirror tree needs no migration step.
 
 *Alternative considered.*
 Rewriting only on a fresh clone,
-and leaving existing mirrors on HTTPS.
-Cheaper, but "use SSH" would then be true only of repositories cloned after today,
+and leaving existing mirrors on HTTPS. Cheaper,
+but "use SSH" would then be true only of repositories cloned after today,
 and a `mise run clone` would not be enough to make the tree consistent —
 which is the one thing that command is for.
 

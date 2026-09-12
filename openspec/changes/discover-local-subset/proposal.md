@@ -7,8 +7,8 @@ most notably an active session
 where a handful of repos sit as flat siblings
 (e.g. `/home/user/dm`, `/home/user/cynkratemplate`) with no `<org>/` directory.
 There is no way to discover that subset
-or to identify the template among it.
-Separately, repo-sync has `openspec/`, `.claude/`, `scripts/`, and `mise.toml` but no `AGENTS.md`,
+or to identify the template among it. Separately,
+repo-sync has `openspec/`, `.claude/`, `scripts/`, and `mise.toml` but no `AGENTS.md`,
 so an agent working in the repo has no orientation to its model and workflow.
 
 ## What Changes
