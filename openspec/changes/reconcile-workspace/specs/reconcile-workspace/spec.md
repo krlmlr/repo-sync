@@ -221,6 +221,114 @@ with no tooling of this project's own.
 - **WHEN** an operator pushes the resulting branch to `origin`
 - **THEN** it reaches the template's GitHub repository in one hop
 
+### Requirement: The workspace is pointed at the shared hooks
+
+The system SHALL set `core.hooksPath` in the workspace
+to this repository's tracked `hooks/` directory,
+expressed relative to the workspace's working tree as `../hooks`.
+Git runs a hook with the top of the working tree as the current directory,
+so the relative path resolves wherever the tree as a whole sits
+and whichever subdirectory the command was run from.
+
+The setting SHALL be written on every run, as the remotes are,
+so a workspace created before this requirement existed is repaired without being re-created.
+
+#### Scenario: Fresh workspace
+
+- **WHEN** the workspace is created
+- **THEN** its `core.hooksPath` names `../hooks`
+
+#### Scenario: Workspace configured before this rule
+
+- **WHEN** the workspace carries no `core.hooksPath`, or one pointing elsewhere
+- **THEN** the next run writes it, in the same pass that normalises the remotes
+
+#### Scenario: Hook runs from a subdirectory
+
+- **WHEN** a commit is made from a subdirectory of the workspace
+- **THEN** the shared hook still runs
+
+#### Scenario: Second run with no drift
+
+- **WHEN** the setting already names `../hooks`
+- **THEN** writing it again changes nothing and the run exits zero
+
+### Requirement: A commit copied from a mirror carries no reference resolving against the template
+
+The system SHALL ensure that a commit created in the workspace
+by replaying a commit reachable from a mirror's remote-tracking namespace
+carries no issue reference that resolves against the template.
+
+The workspace is a clone of the template,
+so `#42` in a commit collected by `cynkra/dm` addresses the template's issue 42 once copied here,
+and under a closing keyword closes it on push.
+This is the same hazard the outward direction already guards,
+with the repositories exchanged.
+
+A reference of the form `#<number>` or `GH-<number>` SHALL be rewritten
+to `<org>/<repo>#<number>` of **the mirror the commit was replayed from**,
+not of the template,
+except where a closing keyword immediately precedes it,
+in which case the commit SHALL be refused with a diagnostic naming the offending references.
+
+The commit SHALL likewise be refused, rather than rewritten, where the source cannot be named unambiguously:
+where the replayed commit is reachable from more than one mirror's namespace,
+or where that mirror's `<org>/<repo>` cannot be determined.
+
+When `REPO_SYNC_TEMPLATE_REFS` is set to `block`,
+every such reference SHALL be refused rather than rewritten.
+
+A commit reachable only from `origin` SHALL be left alone:
+`origin` is the template itself, and such a commit's references already resolve here.
+So SHALL a commit written in the workspace rather than replayed from a mirror.
+
+A reference already carrying an owner and repository, a URL,
+and text in a comment line or past a scissors line SHALL be left unchanged.
+
+#### Scenario: Squash-merge suffix from a mirror
+
+- **WHEN** a commit whose subject ends in `(#42)` is cherry-picked from the
+  mirror `cynkra/dm` into the workspace
+- **THEN** the workspace's commit reads `(cynkra/dm#42)`, and the rewrite is
+  reported on stderr
+
+#### Scenario: Reference under a closing keyword
+
+- **WHEN** the copied message contains `Fixes #7`
+- **THEN** the commit is refused, the message file is left unmodified, and the
+  replay state remains in place so the operator can commit again with a
+  corrected message
+
+#### Scenario: The template's own commit
+
+- **WHEN** a commit reachable only from `origin` is replayed in the workspace
+- **THEN** its message is unchanged, since `origin` is the template and its
+  references already resolve here
+
+#### Scenario: The workspace's own commit
+
+- **WHEN** a commit is written in the workspace rather than replayed from a
+  mirror, and refers to `#99`
+- **THEN** the message is unchanged
+
+#### Scenario: Provenance is ambiguous
+
+- **WHEN** the replayed commit is reachable from more than one mirror's
+  remote-tracking namespace
+- **THEN** the commit is refused with a diagnostic, rather than qualified
+  against a guess
+
+#### Scenario: A URL is not a reference
+
+- **WHEN** the copied message contains a URL ending in a fragment such as
+  `https://example.org/x#9`
+- **THEN** it is left unchanged
+
+#### Scenario: Block mode
+
+- **WHEN** `REPO_SYNC_TEMPLATE_REFS=block` is set
+- **THEN** a copied commit carrying `(#42)` is refused rather than rewritten
+
 ### Requirement: Failures are isolated
 
 The system SHALL continue configuring the remaining remotes when one fails,

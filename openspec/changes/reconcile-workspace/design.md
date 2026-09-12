@@ -128,6 +128,76 @@ Pointing `origin` at the template's bare mirror instead would make the push two 
 which is the same trade `tagless-template-bare` already settled the same way for the template's checkout.
 Adding the bare mirror as a second remote here would be harmless and buys nothing this change needs; it is not done.
 
+### The issue-reference guard has to run here too, and the rule generalises
+
+`no-foreign-issue-refs` guards the outward copy: a commit collected by the template ends in `(#12)`,
+which addresses a stranger's issue once cherry-picked into a mirror.
+This change creates the copy that runs the other way, and the hazard is the same one reflected.
+A commit collected by `cynkra/dm` ends in `(#42)` and may carry `Fixes #7`;
+the workspace is a clone of the template, so here those address the *template's* issues,
+and the closing keyword closes one on push.
+
+That hook does not already cover it, which was checked rather than assumed.
+Its provenance test is `git for-each-ref --contains <original> refs/remotes/template/`,
+and a commit coming from a mirror is reachable from `refs/remotes/<org>/<repo>/*` instead.
+Run unmodified in a workspace on the fixture,
+it let a commit through carrying both `(#42)` and `Fixes #7` untouched.
+
+The fix is not a second hook.
+The rule the existing one implements is a special case of a direction-neutral one:
+
+> qualify against the slug of the remote-tracking namespace the replayed commit came from,
+> for any remote other than `origin`.
+
+`origin` is excluded in both directions for the same reason:
+in a mirror it is that mirror's own upstream, in the workspace it is the template,
+and a commit reachable from it already refers to the repository it is in.
+Every other remote is a foreign repository whose numbers do not mean here what they meant there.
+With the rule stated that way, the mirrors' behaviour is unchanged --
+`template` is a non-`origin` remote, so it is selected exactly as before --
+and the workspace is covered by the same code.
+
+This is why the workspace's remotes are named `<org>/<repo>` and carry a relative URL ending in that slug.
+The naming was chosen to disambiguate repositories sharing a name;
+it also makes the source repository recoverable from the ref that contains the commit,
+which is what lets the qualification name the right repository without `repos.yml` or an environment variable.
+
+Verified on the fixture: a suffix-only commit from `cynkra/dm` became `(cynkra/dm#42)`
+with `GH-11` becoming `cynkra/dm#11` and a URL fragment left alone;
+a commit carrying `Fixes #7` was refused;
+and commits reachable only from `origin`, or written in the workspace, were untouched.
+
+### Ambiguous provenance is refused, not guessed
+
+A replayed commit reachable from more than one mirror's namespace cannot be qualified correctly --
+the two candidates name different repositories, and picking one would be a guess.
+The hook refuses, matching what `no-foreign-issue-refs` already does
+when the slug cannot be read at all.
+
+It should be rare: the mirrors are unrelated upstreams.
+It is reachable when one has already taken the other's commit,
+which is exactly when qualifying against the wrong one would be most misleading.
+
+### `core.hooksPath` is `../hooks` from the workspace
+
+The same mechanism the mirrors use, at a different depth:
+`mirrors/<org>/<repo>/` is three levels below the repository root and uses `../../../hooks`,
+`reconcile/` is one and uses `../hooks`.
+
+Git runs a hook with the top of the working tree as the current directory,
+so the relative path resolves wherever the tree sits.
+Checked on the fixture rather than inferred from the mirrors' case,
+including from a subdirectory of the workspace.
+
+Written on every run, like the remotes, and for the reason `no-foreign-issue-refs` gives:
+a guard installed only by a command nobody ran today is not installed.
+
+### Ordering against `no-foreign-issue-refs`
+
+`hooks/prepare-commit-msg` is added by that change, so it lands first and this one edits it.
+Until then the workspace has no guard to point at,
+which is a reason to sequence the two and not a reason to duplicate the hook here.
+
 ## Risks / Trade-offs
 
 - **The workspace's tag cleanliness rests on configuration, not on structure.**
@@ -141,6 +211,12 @@ Adding the bare mirror as a second remote here would be harmless and buys nothin
 
 - **Someone later adds a checkout or reset to the task.**
   → Stated as a requirement with scenarios covering a run during a cherry-pick, with uncommitted changes, and on a promotion branch.
+
+- **The generalised provenance rule widens what the shared hook acts on in a mirror:**
+  any non-`origin` remote, not only `template`.
+  → No mirror this project configures has another remote, and a foreign remote added by hand
+  carries the same hazard the rule exists for, so the wider rule is the more correct one.
+  It is called out because it is a behaviour change to a hook this change does not own.
 
 - **A stale remote left behind after an inventory entry is dropped**
   would offer commits from a repository no longer in scope.
