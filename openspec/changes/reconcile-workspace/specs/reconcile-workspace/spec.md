@@ -223,9 +223,11 @@ with no tooling of this project's own.
 The system SHALL set `core.hooksPath` in the workspace to this repository's tracked `hooks/` directory,
 expressed relative to the workspace's working tree as `../hooks`.
 Git runs a hook with the top of the working tree as the current directory,
-so the relative path resolves wherever the tree as a whole sits and whichever subdirectory the command was run from.
+so the relative path resolves wherever the tree as a whole sits
+and whichever subdirectory the command was run from.
 
-The setting SHALL be written on every run, as the remotes are,
+The setting SHALL be written on every run,
+as the remotes are,
 so a workspace created before this requirement existed is repaired without being re-created.
 
 #### Scenario: Fresh workspace
@@ -235,8 +237,10 @@ so a workspace created before this requirement existed is repaired without being
 
 #### Scenario: Workspace configured before this rule
 
-- **WHEN** the workspace carries no `core.hooksPath`, or one pointing elsewhere
-- **THEN** the next run writes it, in the same pass that normalises the remotes
+- **WHEN** the workspace carries no `core.hooksPath`,
+  or one pointing elsewhere
+- **THEN** the next run writes it,
+  in the same pass that normalises the remotes
 
 #### Scenario: Hook runs from a subdirectory
 
@@ -254,17 +258,21 @@ The system SHALL ensure that a commit created in the workspace by replaying a co
 carries no issue reference that resolves against the template.
 
 The workspace is a clone of the template,
-so `#42` in a commit collected by `cynkra/dm` addresses the template's issue 42 once copied here,
+so `#42` in a commit collected by `cynkra/dm` addresses the template's issue 42
+once copied here,
 and under a closing keyword closes it on push.
 This is the same hazard the outward direction already guards,
 with the repositories exchanged.
 
 A reference of the form `#<number>` or `GH-<number>` SHALL be rewritten to `<org>/<repo>#<number>`
-of **the mirror the commit was replayed from**, not of the template,
+of **the mirror the commit was replayed from**,
+not of the template,
 except where a closing keyword immediately precedes it,
 in which case the commit SHALL be refused with a diagnostic naming the offending references.
 
-The commit SHALL likewise be refused, rather than rewritten, where the source cannot be named unambiguously:
+The commit SHALL likewise be refused,
+rather than rewritten,
+where the source cannot be named unambiguously:
 where the replayed commit is reachable from more than one mirror's namespace,
 or where that mirror's `<org>/<repo>` cannot be determined.
 
@@ -272,37 +280,46 @@ When `REPO_SYNC_TEMPLATE_REFS` is set to `block`,
 every such reference SHALL be refused rather than rewritten.
 
 A commit reachable only from `origin` SHALL be left alone:
-`origin` is the template itself, and such a commit's references already resolve here.
+`origin` is the template itself,
+and such a commit's references already resolve here.
 So SHALL a commit written in the workspace rather than replayed from a mirror.
 
-A reference already carrying an owner and repository, a URL,
-and text in a comment line or past a scissors line SHALL be left unchanged.
+A reference already carrying an owner and repository,
+a URL,
+and text in a comment line or past a scissors line
+SHALL be left unchanged.
 
 #### Scenario: Squash-merge suffix from a mirror
 
 - **WHEN** a commit whose subject ends in `(#42)` is cherry-picked from the mirror `cynkra/dm` into the workspace
-- **THEN** the workspace's commit reads `(cynkra/dm#42)`, and the rewrite is reported on stderr
+- **THEN** the workspace's commit reads `(cynkra/dm#42)`,
+  and the rewrite is reported on stderr
 
 #### Scenario: Reference under a closing keyword
 
 - **WHEN** the copied message contains `Fixes #7`
-- **THEN** the commit is refused, the message file is left unmodified,
-  and the replay state remains in place so the operator can commit again with a corrected message
+- **THEN** the commit is refused,
+  the message file is left unmodified,
+  and the replay state remains in place
+  so the operator can commit again with a corrected message
 
 #### Scenario: The template's own commit
 
 - **WHEN** a commit reachable only from `origin` is replayed in the workspace
-- **THEN** its message is unchanged, since `origin` is the template and its references already resolve here
+- **THEN** its message is unchanged,
+  since `origin` is the template and its references already resolve here
 
 #### Scenario: The workspace's own commit
 
-- **WHEN** a commit is written in the workspace rather than replayed from a mirror, and refers to `#99`
+- **WHEN** a commit is written in the workspace rather than replayed from a mirror,
+  and refers to `#99`
 - **THEN** the message is unchanged
 
 #### Scenario: Provenance is ambiguous
 
 - **WHEN** the replayed commit is reachable from more than one mirror's remote-tracking namespace
-- **THEN** the commit is refused with a diagnostic, rather than qualified against a guess
+- **THEN** the commit is refused with a diagnostic,
+  rather than qualified against a guess
 
 #### Scenario: A URL is not a reference
 
@@ -316,20 +333,25 @@ and text in a comment line or past a scissors line SHALL be left unchanged.
 
 ### Requirement: Failures are isolated
 
-The system SHALL continue configuring the remaining remotes when one fails,
-report every failure at the end, and exit non-zero,
+The system SHALL continue configuring the remaining remotes
+when one fails,
+report every failure at the end,
+and exit non-zero,
 matching the `clone` and `sync` capabilities.
 
 #### Scenario: One mirror missing
 
 - **WHEN** an inventory entry has no mirror checkout on disk
-- **THEN** its remote is still configured, since the path is relative and may resolve later,
+- **THEN** its remote is still configured,
+  since the path is relative and may resolve later,
   and a fetch of it is what reports the absence
 
 #### Scenario: One remote fails to be configured
 
 - **WHEN** configuring one remote fails
-- **THEN** the run records the failure, configures the rest, and exits non-zero with a summary listing every failure
+- **THEN** the run records the failure,
+  configures the rest,
+  and exits non-zero with a summary listing every failure
 
 #### Scenario: Clean run
 
@@ -340,7 +362,8 @@ matching the `clone` and `sync` capabilities.
 
 The system SHALL exit non-zero before touching the workspace
 if `repos.yml` does not contain exactly one entry with `template: true`,
-matching the `clone` and `sync` capabilities so every tool rejects the same malformed inventory.
+matching the `clone` and `sync` capabilities
+so every tool rejects the same malformed inventory.
 
 #### Scenario: No template flagged
 
