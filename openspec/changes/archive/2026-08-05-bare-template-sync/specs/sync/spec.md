@@ -34,10 +34,9 @@ refreshing it is this capability's responsibility and no other's.
 
 ### Requirement: Rebase every mirror onto its upstream
 
-The system SHALL run `git pull --rebase` in every mirror checkout listed in
-`repos.yml` that exists on disk, keeping local commits that have not been
-pushed. Mirrors that are not cloned SHALL be skipped without failing the run,
-since cloning is the `clone` capability's responsibility.
+The system SHALL run `git pull --rebase` in every mirror checkout listed in `repos.yml` that exists on disk,
+keeping local commits that have not been pushed.
+Mirrors that are not cloned SHALL be skipped without failing the run, since cloning is the `clone` capability's responsibility.
 
 #### Scenario: Mirror fast-forwarded
 
@@ -46,22 +45,18 @@ since cloning is the `clone` capability's responsibility.
 
 #### Scenario: Local commits preserved
 
-- **WHEN** a mirror carries a local commit that is not on its upstream, and the
-  upstream has moved
-- **THEN** the local commit is rebased on top of the new upstream tip rather
-  than discarded
+- **WHEN** a mirror carries a local commit that is not on its upstream, and the upstream has moved
+- **THEN** the local commit is rebased on top of the new upstream tip rather than discarded
 
 #### Scenario: Mirror not cloned
 
 - **WHEN** an inventory entry has no directory under `mirrors/`
-- **THEN** the entry is reported as skipped and the run does not count it as a
-  failure
+- **THEN** the entry is reported as skipped and the run does not count it as a failure
 
 #### Scenario: Rebase stops on a conflict
 
 - **WHEN** a mirror's rebase stops on a conflict
-- **THEN** the failure is recorded, the mirror is left for a human to resolve,
-  and the run continues with the remaining mirrors
+- **THEN** the failure is recorded, the mirror is left for a human to resolve, and the run continues with the remaining mirrors
 
 ### Requirement: Fetch the `template` remote in every mirror
 

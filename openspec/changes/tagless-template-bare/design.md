@@ -136,8 +136,7 @@ Leaving the setting behind would be harmless, since it guards against tags that 
 It is removed anyway, because these specs already normalise drift of this kind
 and because leaving it contradicts the claim that the guarantee has one home.
 
-The removal is gated. `clone.sh` has a child entry point — `clone.sh --checkout <slug>` —
-that an operator can run by hand against a tree whose bare mirror has not been normalised.
+The removal is gated. `clone.sh` has a child entry point — `clone.sh --checkout <slug>` — that an operator can run by hand against a tree whose bare mirror has not been normalised.
 Unsetting `tagOpt` there would strip the only protection a mirror has.
 So the unset is conditional on the bare mirror on disk carrying no tags,
 checked by a small `lib.sh` predicate alongside the existing `template_bare_usable`
