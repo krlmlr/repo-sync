@@ -17,6 +17,10 @@ run = "python3 scripts/fetch_inventory.py"
 # The scripts clone with `git` over SSH and never call the GitHub API, so there
 # is no `gh` login to keep and no rate limit to spend.
 #
+# perl, for the `prepare-commit-msg` hook the mirrors are pointed at. It is on
+# every machine that has the rest of this, and the hook refuses a commit it
+# cannot check rather than waving it through, so its absence is loud.
+#
 # GNU parallel (`apt install parallel`, `brew install parallel`) -- and that one
 # specifically, since moreutils ships an unrelated program under the same name.
 # The repositories are mirrored several at a time; `REPO_SYNC_JOBS` says how

@@ -77,6 +77,12 @@ run_one() {
         return 0
     fi
 
+    # First, because it is local, instant, and about what the other two
+    # bring in: the hook that keeps the template's issue numbers out of this
+    # mirror's commits should be in place before any of the template's
+    # commits are.
+    configure_hooks_path "$slug" || status=1
+
     # Both steps run even when the first one fails:
     # a mirror whose rebase stopped on a conflict
     # still wants the template refs it is going to be reconciled against.
