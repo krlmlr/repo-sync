@@ -109,7 +109,8 @@ so a remote configured before this requirement existed is repaired without the w
 #### Scenario: Remote configured before this rule
 
 - **WHEN** a remote exists without the setting
-- **THEN** the next run writes it, in the same pass that normalises the URL
+- **THEN** the next run writes it,
+  in the same pass that normalises the URL
 
 ### Requirement: Remotes are wired without fetching unless asked
 
@@ -117,7 +118,8 @@ The system SHALL configure the remotes without fetching from them by default,
 and SHALL fetch from every configured remote when explicitly asked to.
 
 A promotion reads one repository at a time.
-Configuring a remote costs nothing, while fetching every entry eagerly copies history into a second place on disk
+Configuring a remote costs nothing,
+while fetching every entry eagerly copies history into a second place on disk
 before anyone has asked for it.
 
 #### Scenario: Default run
@@ -133,7 +135,8 @@ before anyone has asked for it.
 #### Scenario: Fetching one repository by hand
 
 - **WHEN** an operator fetches a single remote by name
-- **THEN** that mirror's branches become available under `refs/remotes/<org>/<repo>/*` and no other remote is contacted
+- **THEN** that mirror's branches become available under `refs/remotes/<org>/<repo>/*`
+  and no other remote is contacted
 
 ### Requirement: Remotes are reconciled with the inventory
 
@@ -153,7 +156,8 @@ so a repository dropped from the inventory leaves nothing behind for a later che
 #### Scenario: Entry removed from the inventory
 
 - **WHEN** an entry is removed from `repos.yml` and the workspace is configured again
-- **THEN** its remote is removed, together with its refs under `refs/remotes/<org>/<repo>/*`
+- **THEN** its remote is removed,
+  together with its refs under `refs/remotes/<org>/<repo>/*`
 
 #### Scenario: Drift normalised
 
@@ -168,7 +172,8 @@ so a repository dropped from the inventory leaves nothing behind for a later che
 ### Requirement: The workspace's working state is never modified
 
 The system SHALL NOT check out, reset, rebase, merge or otherwise modify the workspace's working tree, index or `HEAD`.
-It manages remotes and, when asked, fetches.
+It manages remotes and,
+when asked, fetches.
 
 This is what separates the workspace from a mirror.
 A promotion is human work that spans runs --
@@ -193,7 +198,9 @@ and a tool that re-baselines would destroy it.
 ### Requirement: A promotion can be browsed, picked and pushed
 
 The system SHALL leave the workspace in a state where a commit from any configured mirror can be found,
-applied to the template and sent to the template's upstream using ordinary git, with no tooling of this project's own.
+applied to the template
+and sent to the template's upstream using ordinary git,
+with no tooling of this project's own.
 
 #### Scenario: Commits browsed across repositories
 
@@ -203,7 +210,8 @@ applied to the template and sent to the template's upstream using ordinary git, 
 #### Scenario: Commit cherry-picked into the template
 
 - **WHEN** an operator cherry-picks a mirror's commit onto a branch started from the template's default branch
-- **THEN** the commit applies and the workspace's `refs/tags/*` is unchanged
+- **THEN** the commit applies
+  and the workspace's `refs/tags/*` is unchanged
 
 #### Scenario: Promotion pushed to the template's upstream
 
