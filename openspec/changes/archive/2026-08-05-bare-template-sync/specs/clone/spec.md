@@ -2,34 +2,28 @@
 
 ### Requirement: Mirror the template as a bare clone as well
 
-The system SHALL additionally clone the entry flagged `template: true` as a
-bare mirror at `mirrors/<template-org>/<template-repo>.git/`, using `git clone
---mirror` semantics so a later `git fetch --prune` brings every ref in line with
-the upstream. The bare mirror is what the `template` remotes point at; the
-checkout beside it remains the copy to read and reconcile against.
+The system SHALL additionally clone the entry flagged `template: true` as a bare mirror at `mirrors/<template-org>/<template-repo>.git/`,
+using `git clone --mirror` semantics so a later `git fetch --prune` brings every ref in line with the upstream.
+The bare mirror is what the `template` remotes point at; the checkout beside it remains the copy to read and reconcile against.
 
 #### Scenario: Fresh bare mirror
 
 - **WHEN** `mirrors/<template-org>/<template-repo>.git/` does not exist
-- **THEN** the script clones the template repo there as a bare mirror, through
-  the same `gh` authentication as every other clone
+- **THEN** the script clones the template repo there as a bare mirror, through the same `gh` authentication as every other clone
 
 #### Scenario: Existing bare mirror updated
 
-- **WHEN** `mirrors/<template-org>/<template-repo>.git/` already exists and is
-  a bare repository
+- **WHEN** `mirrors/<template-org>/<template-repo>.git/` already exists and is a bare repository
 - **THEN** the script runs `git fetch --prune` in it rather than re-cloning
 
 #### Scenario: Bare path occupied by a non-bare repository
 
-- **WHEN** a directory exists at the bare mirror's path but is not a bare
-  repository
+- **WHEN** a directory exists at the bare mirror's path but is not a bare repository
 - **THEN** the script records a failure and does not fetch into it
 
 #### Scenario: Both mirrors attempted independently
 
-- **WHEN** either the template's checkout or its bare mirror fails to clone or
-  update
+- **WHEN** either the template's checkout or its bare mirror fails to clone or update
 - **THEN** the other is still attempted, and each failure is reported on its own
 
 ## MODIFIED Requirements

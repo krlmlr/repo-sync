@@ -74,8 +74,7 @@ The system SHALL exit non-zero before processing any mirror if `repos.yml` does 
 
 ### Requirement: Mirror the template as a bare clone as well
 
-The system SHALL additionally clone the entry flagged `template: true` as a bare mirror
-at `mirrors/<template-org>/<template-repo>.git/`,
+The system SHALL additionally clone the entry flagged `template: true` as a bare mirror at `mirrors/<template-org>/<template-repo>.git/`,
 using `git clone --mirror` semantics so a later `git fetch --prune` brings every ref in line with the upstream.
 The bare mirror is what the `template` remotes point at; the checkout beside it remains the copy to read and reconcile against.
 

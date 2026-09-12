@@ -1,6 +1,8 @@
 ## Purpose
 
-Expose each script entry point as a named `mise` task so contributors can run `mise run <task>` without knowing the underlying interpreter or path, and so the project's Python version is pinned and reproducible.
+Expose each script entry point as a named `mise` task
+so contributors can run `mise run <task>` without knowing the underlying interpreter or path,
+and so the project's Python version is pinned and reproducible.
 ## Requirements
 ### Requirement: Named tasks for each script entry point
 `mise.toml` SHALL define a task for each script so contributors run `mise run <task>` without knowing the underlying path or interpreter.
@@ -15,7 +17,8 @@ Expose each script entry point as a named `mise` task so contributors can run `m
 
 #### Scenario: sync task
 - **WHEN** a contributor runs `mise run sync`
-- **THEN** `mise` executes `scripts/sync.sh`, which refreshes the template's bare mirror, rebases every mirror onto its upstream, and fetches the `template` remote everywhere
+- **THEN** `mise` executes `scripts/sync.sh`,
+  which refreshes the template's bare mirror, rebases every mirror onto its upstream, and fetches the `template` remote everywhere
 
 #### Scenario: Unknown task
 - **WHEN** a contributor runs `mise run nonexistent`

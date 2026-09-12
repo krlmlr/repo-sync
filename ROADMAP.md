@@ -1,8 +1,7 @@
 # Roadmap
 
-This repository's purpose is to maintain a local mirror of a set of
-"foreign" GitHub repositories, reconcile divergences against upstream,
-and push curated changes back to them.
+This repository's purpose is to maintain a local mirror of a set of "foreign" GitHub repositories,
+reconcile divergences against upstream, and push curated changes back to them.
 
 The roadmap is tracked at a high level here.
 Concrete changes are specified and implemented through OpenSpec (`openspec/changes/`).

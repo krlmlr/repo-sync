@@ -22,13 +22,16 @@
 
 - [ ] 3.1 Add `AGENTS.md` at the repo root describing the repo purpose (mirror inventory, reconcile vs template, push back)
 - [ ] 3.2 Document the inventory/template model (`repos.yml`, single `template: true`) and the mirror-vs-sibling layouts
-- [ ] 3.3 Document the `mise run` tasks (`fetch-inventory`, `clone`, the new discovery task) and the OpenSpec workflow (explore/propose/apply/archive, specs under `openspec/`)
+- [ ] 3.3 Document the `mise run` tasks (`fetch-inventory`, `clone`, the new discovery task)
+          and the OpenSpec workflow (explore/propose/apply/archive, specs under `openspec/`)
 - [ ] 3.4 Reference the discovery capability so the doc stays accurate to this change
 
 ## 4. Verification
 
-- [ ] 4.1 Verify flat-sibling discovery against the current session layout (`/home/user/*`) returns the expected subset with `cynkratemplate` flagged as template
+- [ ] 4.1 Verify flat-sibling discovery against the current session layout (`/home/user/*`)
+          returns the expected subset with `cynkratemplate` flagged as template
 - [ ] 4.2 Verify a basename match with a mismatched origin is skipped and reported
 - [ ] 4.3 Verify an extra sibling not in `repos.yml` is reported and discovery still exits zero
 - [ ] 4.4 Verify deterministic output across two consecutive runs
-- [ ] 4.5 Verify a missing/duplicate `template: true` flag produces the documented behavior (warn-and-continue vs. hard error respectively)
+- [ ] 4.5 Verify a missing/duplicate `template: true` flag produces the documented behavior
+          (warn-and-continue vs. hard error respectively)

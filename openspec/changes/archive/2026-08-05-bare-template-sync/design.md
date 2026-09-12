@@ -113,11 +113,9 @@ means the rule has one implementation rather than two copies that can drift.
   the checkout's `origin` and the bare mirror's `origin` are the same URL,
   so they converge on the same upstream.
 - **`git pull --rebase` can stop mid-rebase** in a mirror with local commits.
-  That is reported and left for a human;
-  the rest of the run continues, and the template fetch still happens.
+  That is reported and left for a human; the rest of the run continues, and the template fetch still happens.
 - **Existing clones** carry the old `template` URL until `mise run clone` runs.
-  The rewrite is the already-specified idempotent normalisation,
-  so the first run after this change fixes every mirror.
+  The rewrite is the already-specified idempotent normalisation, so the first run after this change fixes every mirror.
 
 ## Migration Plan
 
@@ -126,13 +124,12 @@ It creates the bare mirror and rewrites every `template` remote URL in place.
 Nothing needs deleting; the old URL is overwritten, not added to.
 `mise run sync` is then the day-to-day command.
 
-To roll back: point the remotes at the checkout again and delete
-`mirrors/<org>/<repo>.git`. No state lives only in the bare mirror.
+To roll back: point the remotes at the checkout again and delete `mirrors/<org>/<repo>.git`.
+No state lives only in the bare mirror.
 
 ## Open Questions
 
-- Should `sync` also cover the flat-sibling layout that `discover-local-subset`
-  proposes? It walks `mirrors/` today, as `clone` does.
-  Answering it belongs with that change, once discovery has a shape.
-- Should `clone` gain `depends = ["install"]` as `sync` and `fetch-inventory`
-  have? It reads `repos.yml` with PyYAML too. Left alone here as pre-existing.
+- Should `sync` also cover the flat-sibling layout that `discover-local-subset` proposes?
+  It walks `mirrors/` today, as `clone` does. Answering it belongs with that change, once discovery has a shape.
+- Should `clone` gain `depends = ["install"]` as `sync` and `fetch-inventory` have?
+  It reads `repos.yml` with PyYAML too. Left alone here as pre-existing.

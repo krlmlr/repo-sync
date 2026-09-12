@@ -5,8 +5,7 @@ See `proposal.md` — Why.
 The mechanics below were verified against git 2.55 on a local fixture
 (an upstream carrying one branch and two tags, a bare mirror, and a consumer fetching from it)
 rather than reasoned about from the documentation.
-Each decision records what the fixture showed,
-because several of them turn on behaviour that is easy to assume wrongly.
+Each decision records what the fixture showed, because several of them turn on behaviour that is easy to assume wrongly.
 
 Two constraints shape the approach.
 `scripts/lib.sh` already exists as the single home for what `clone` and `sync` both do,
@@ -35,10 +34,8 @@ so anything a child needs must either be inherited through the environment or re
 ### Build the bare with `git init --bare`, not `git clone --mirror`
 
 `git clone --mirror` sets `remote.origin.fetch = +refs/*:refs/*` and `remote.origin.mirror = true`.
-The first copies `refs/tags/*` and is the reason the bare mirror has tags to leak;
-the second is worse, and is covered below.
-There is no option to `clone --mirror` that excludes tags,
-so the bare mirror is built explicitly instead:
+The first copies `refs/tags/*` and is the reason the bare mirror has tags to leak; the second is worse, and is covered below.
+There is no option to `clone --mirror` that excludes tags, so the bare mirror is built explicitly instead:
 
 ```
 git init --bare <dest>
@@ -105,8 +102,9 @@ git -C <dest> config --unset-all remote.origin.mirror
 git -C <dest> for-each-ref --format='delete %(refname)' refs/tags/ | git -C <dest> update-ref --stdin
 ```
 
-`--replace-all` rather than plain `config`, because a repository that has accumulated more than one
-`remote.origin.fetch` value must end with exactly one, not with the old value still present.
+`--replace-all` rather than plain `config`,
+because a repository that has accumulated more than one `remote.origin.fetch` value must end with exactly one,
+not with the old value still present.
 `update-ref --stdin` rather than a loop over `git tag -d`,
 because it takes the whole deletion as one batch and accepts empty input without complaint,
 which is what makes the step idempotent on an already-normalised repository.
@@ -130,8 +128,7 @@ It lives in `lib.sh` and runs as the first thing both commands do, at the existi
 That makes "the invariant is re-established before any mirror fetches" true per command rather than per tree.
 
 *Alternative considered:* have `sync` verify and fail loudly instead of repairing.
-Rejected — it turns a routine migration into an error the operator must act on,
-for a repair that is four config writes and a ref deletion.
+Rejected — it turns a routine migration into an error the operator must act on, for a repair that is four config writes and a ref deletion.
 
 ### Remove `remote.template.tagOpt`, but only against a verifiably tagless bare mirror
 

@@ -64,8 +64,8 @@ Keep the default OUTPUT policy at DROP.
 **Why this is still safe-ish:**
 
 - `git push` over HTTPS goes to the same GitHub IPs as `git fetch`, so the firewall does not by itself prevent pushes.
-  The push restriction has to come from a *credential* boundary: do not mount or generate any credential that has push scope
-  on the foreign repos.
+  The push restriction has to come from a *credential* boundary:
+  do not mount or generate any credential that has push scope on the foreign repos.
 - Concretely: do not bind-mount `~/.config/gh/`, do not provide a `GITHUB_TOKEN` env var with `repo` scope,
   and do not run `gh auth login` inside the container.
   With no credential, `git push` fails with 403 even though the network reaches GitHub.
@@ -94,10 +94,10 @@ and small dev-only packages can be tried interactively.
 **Security cost — this is the biggest single jump in the roadmap:**
 
 - PyPI and npm are the canonical supply-chain attack surface.
-  A typo in a package name, or a transitive dep getting compromised, lands arbitrary code execution inside the container
-  with full read/write on `/workspace`.
-- The earlier stages' "no exfiltration channel" property weakens: a malicious package can phone home over the GitHub egress
-  opened in stage 1.
+  A typo in a package name, or a transitive dep getting compromised,
+  lands arbitrary code execution inside the container with full read/write on `/workspace`.
+- The earlier stages' "no exfiltration channel" property weakens:
+  a malicious package can phone home over the GitHub egress opened in stage 1.
 
 **Required mitigations before flipping this on:**
 
@@ -126,8 +126,8 @@ this stage opens the *credential* boundary, which is the real control.
 - A compromised agent can now write to all 59 foreign repos under the `repo-sync/*` namespace.
   Branch protection on `main` in each foreign repo is the last line of defense; without it, this stage is not safe.
 - Token leakage via PR description / commit message / log is now a real concern.
-  Add a pre-commit hook that scans staged diffs and reject commits matching `gh[ps]_[A-Za-z0-9]{36,}` or
-  `github_pat_[A-Za-z0-9_]{80,}`.
+  Add a pre-commit hook that scans staged diffs and reject commits matching `gh[ps]_[A-Za-z0-9]{36,}`
+  or `github_pat_[A-Za-z0-9_]{80,}`.
 
 **Required mitigations:**
 

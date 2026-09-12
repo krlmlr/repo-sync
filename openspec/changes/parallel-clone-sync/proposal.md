@@ -61,8 +61,7 @@ are barriers between batches, not a reason to walk the whole inventory in single
 ### Modified Capabilities
 
 - `clone`: the inventory is mirrored several repositories at a time,
-  and the template's two mirrors become a barrier
-  rather than the first steps of a walk.
+  and the template's two mirrors become a barrier rather than the first steps of a walk.
 - `sync`: the mirrors are rebased and fetched several at a time,
   behind the bare mirror's fetch.
 - `env-setup`: GNU parallel joins SSH access as a documented prerequisite.
@@ -83,15 +82,12 @@ are barriers between batches, not a reason to walk the whole inventory in single
 ## Out of Scope
 
 - Retry or backoff on a failed clone.
-  A repository that fails still fails; running eight at a time
-  changes when it is attempted, not what happens when it does not answer.
+  A repository that fails still fails; running eight at a time changes when it is attempted,
+  not what happens when it does not answer.
 - Per-repository timeouts. `parallel` can impose one (`--timeout`),
   but choosing a number that is generous enough for `duckdb-r`
-  and tight enough to be worth having is a separate question
-  from whether the work runs concurrently.
-- `scripts/fetch_inventory.py`, which is one `git ls-remote`
-  and has nothing to fan out.
+  and tight enough to be worth having is a separate question from whether the work runs concurrently.
+- `scripts/fetch_inventory.py`, which is one `git ls-remote` and has nothing to fan out.
 - How `s` and `h` discover repositories.
-- Parallelism inside a single git operation
-  (`git clone --jobs`, `fetch.parallel`), which is a different axis:
+- Parallelism inside a single git operation (`git clone --jobs`, `fetch.parallel`), which is a different axis:
   this change is about the repositories, not about the submodules in one.
