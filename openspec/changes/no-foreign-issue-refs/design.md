@@ -145,7 +145,8 @@ relative (`../../../hooks`) for the same reason the `template` remote's URL is:
 git runs hooks from the top of the working tree,
 so it resolves wherever the tree as a whole sits.
 
-It is written by `clone` *and* by `sync`, deliberately, as `--no-tags` is:
+It is written by `clone` *and* by `sync`, deliberately,
+as `--no-tags` is:
 `clone` is reached for when a mirror needs re-baselining,
 `sync` is what runs every day,
 and a guard installed only by the command nobody ran today is not installed.
