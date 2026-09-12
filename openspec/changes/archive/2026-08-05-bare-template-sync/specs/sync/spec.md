@@ -2,37 +2,35 @@
 
 ### Requirement: Refresh the template's bare mirror first
 
-The system SHALL fetch the template's bare mirror at
-`mirrors/<template-org>/<template-repo>.git` before any mirror fetches from it,
+The system SHALL fetch the template's bare mirror at `mirrors/<template-org>/<template-repo>.git` before any mirror fetches from it,
 so the template refs the mirrors receive are the ones the upstream has.
-The bare mirror carries no `.git` entry, and so is not reachable by a sweep
-that discovers repositories by their working tree; refreshing it is this
-capability's responsibility and no other's.
+The bare mirror carries no `.git` entry,
+and so is not reachable by a sweep that discovers repositories by their working tree;
+refreshing it is this capability's responsibility and no other's.
 
 #### Scenario: Bare mirror refreshed before the template fetches
 
 - **WHEN** sync runs against a populated `mirrors/` tree
-- **THEN** the bare mirror is fetched before any mirror fetches its `template`
-  remote, and every mirror ends the run with the template refs the upstream has
+- **THEN** the bare mirror is fetched before any mirror fetches its `template` remote,
+  and every mirror ends the run with the template refs the upstream has
 
 #### Scenario: Bare mirror missing
 
 - **WHEN** `mirrors/<template-org>/<template-repo>.git` does not exist
 - **THEN** the run records a failure naming `mise run clone` as the repair,
-  skips the per-mirror `template` fetches rather than failing each one against
-  a path that does not resolve, and still rebases the mirrors
+  skips the per-mirror `template` fetches rather than failing each one against a path that does not resolve,
+  and still rebases the mirrors
 
 #### Scenario: Bare path occupied by a non-bare repository
 
-- **WHEN** a directory exists at the bare mirror's path but is not a bare
-  repository
+- **WHEN** a directory exists at the bare mirror's path but is not a bare repository
 - **THEN** the run records a failure and does not fetch into it
 
 #### Scenario: Stale bare mirror still usable
 
 - **WHEN** the fetch of the bare mirror fails
-- **THEN** the run records the failure and continues to fetch `template` in the
-  mirrors, since the refs the bare mirror already holds remain readable
+- **THEN** the run records the failure and continues to fetch `template` in the mirrors,
+  since the refs the bare mirror already holds remain readable
 
 ### Requirement: Rebase every mirror onto its upstream
 
