@@ -4,9 +4,11 @@
 
 The system SHALL set `core.hooksPath` in every non-template mirror to this repository's tracked `hooks/` directory,
 expressed relative to the mirror's working tree as `../../../hooks`.
-Git runs hooks from the top of the working tree, so the relative path resolves wherever the mirror tree as a whole sits.
+Git runs hooks from the top of the working tree,
+so the relative path resolves wherever the mirror tree as a whole sits.
 
-The setting SHALL be written on every run, as the `template` remote's URL and its `tagOpt` are,
+The setting SHALL be written on every run,
+as the `template` remote's URL and its `tagOpt` are,
 so a mirror made before the hooks existed is repaired without being re-cloned.
 
 #### Scenario: Fresh non-template mirror
@@ -22,9 +24,12 @@ so a mirror made before the hooks existed is repaired without being re-cloned.
 #### Scenario: Template repo itself
 
 - **WHEN** the mirror is the template repo
-- **THEN** nothing is configured: it has no `template` remote, and its own commits refer to its own issues
+- **THEN** nothing is configured:
+  it has no `template` remote,
+  and its own commits refer to its own issues
 
 #### Scenario: Second run with no drift
 
 - **WHEN** the configuration already names `../../../hooks`
-- **THEN** writing it again changes nothing and the run exits zero
+- **THEN** writing it again changes nothing
+  and the run exits zero

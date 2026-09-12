@@ -8,13 +8,15 @@ is written into the local `refs/tags/*`.
 A fetch of the `template` remote downloads the template's whole history,
 so every tag in the template is auto-followed into the mirror.
 
-Branches survive this because they land in `refs/remotes/template/*`,
+Branches survive this
+because they land in `refs/remotes/template/*`,
 a namespace that remote has to itself.
 Tags have no such namespace.
 `refs/tags/*` is flat and shared with the mirror's own tags,
 so the template's arrive indistinguishable from them —
 and `--prune` does not remove tags,
-so once they land they stay.
+so once they land
+they stay.
 
 The damage is local for now.
 It stops being local at §2.3:
@@ -47,7 +49,8 @@ which is a great deal harder to walk back than a local ref.
 ### Modified Capabilities
 
 - `template-remote`: The `template` remote is configured to import no tags.
-- `clone`: An incremental update brings the mirror's tags in line with its upstream's, removing any the upstream does not have.
+- `clone`: An incremental update brings the mirror's tags in line with its upstream's,
+  removing any the upstream does not have.
 - `sync`: The `template` fetch imports no tags,
   whether or not the remote carries the setting.
 
@@ -58,7 +61,8 @@ which is a great deal harder to walk back than a local ref.
 - **`scripts/sync.sh`** — `--no-tags` on the `template` fetch.
 - **`ROADMAP.md`** — §2.2 records that the `template` remote carries branches and not tags.
 - **Existing mirrors**: one `mise run clone` configures every `template` remote
-  and drops the tags already imported. No manual migration.
+  and drops the tags already imported.
+  No manual migration.
 - No new dependencies, and no change to what is fetched otherwise:
   `refs/remotes/template/*` is updated exactly as before.
 
@@ -66,9 +70,11 @@ which is a great deal harder to walk back than a local ref.
 
 - Keeping the template's tags under a namespace of their own
   (`+refs/tags/*:refs/remotes/template/tags/*`).
-  Nothing reads them today; the reconcile step can ask for them
+  Nothing reads them today;
+  the reconcile step can ask for them
   when it has a use for them.
-- Tags on the mirrors' own upstreams. Those belong to the mirror
+- Tags on the mirrors' own upstreams.
+  Those belong to the mirror
   and are fetched, pruned and pushed as they always were.
 - Anything about pushing (§2.3).
   This closes the way the template's tags would get there;

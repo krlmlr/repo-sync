@@ -4,7 +4,8 @@
 
 `mise.toml` SHALL document that the operator needs SSH access to GitHub before running the `clone` task:
 a key their account knows, reachable by the agent,
-and `github.com` present in `known_hosts` so the first connection has nothing to ask about.
+and `github.com` present in `known_hosts`
+so the first connection has nothing to ask about.
 No API token and no `gh` login SHALL be required by any task.
 
 #### Scenario: SSH configured
@@ -16,7 +17,8 @@ No API token and no `gh` login SHALL be required by any task.
 
 - **WHEN** no key the account accepts is available
 - **THEN** `git` fails for that repository with its own descriptive error,
-  the failure is recorded, and the task exits non-zero once the rest of the inventory has been processed
+  the failure is recorded,
+  and the task exits non-zero once the rest of the inventory has been processed
 
 #### Scenario: Host key not yet known
 
@@ -33,6 +35,8 @@ Cloning and updating mirrors is `git` over SSH throughout,
 so an authenticated `gh` is no longer a prerequisite for anything —
 and documenting it as one would send contributors to set up a credential that nothing reads.
 
-**Migration**: Set up SSH access to GitHub instead, per the requirement above.
-Nothing needs to be undone: an existing `gh` login is simply unused,
+**Migration**: Set up SSH access to GitHub instead,
+per the requirement above.
+Nothing needs to be undone:
+an existing `gh` login is simply unused,
 and `mise run clone` rewrites each mirror's `origin` from HTTPS to SSH on its next pass.

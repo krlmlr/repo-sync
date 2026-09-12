@@ -21,7 +21,8 @@ It SHALL NOT live under `mirrors/`.
 The `clone` capability resets every mirror onto `origin/HEAD` and prunes its tags,
 which would discard a cherry-pick in progress.
 
-The workspace SHALL be excluded from version control, as `mirrors/` is.
+The workspace SHALL be excluded from version control,
+as `mirrors/` is.
 
 #### Scenario: Fresh workspace
 
@@ -49,11 +50,14 @@ The workspace SHALL be excluded from version control, as `mirrors/` is.
 The system SHALL configure one remote in the workspace for every entry in `repos.yml` other than the template,
 named `<org>/<repo>` and pointing at that entry's mirror checkout by the relative path `../mirrors/<org>/<repo>`.
 
-The slug rather than the repository name alone, because repository names are not unique across orgs
+The slug rather than the repository name alone,
+because repository names are not unique across orgs
 and a remote named for one would silently resolve to the wrong upstream.
-Branches therefore arrive under `refs/remotes/<org>/<repo>/*`, which stays distinct for two entries sharing a name.
+Branches therefore arrive under `refs/remotes/<org>/<repo>/*`,
+which stays distinct for two entries sharing a name.
 
-The path SHALL be relative, so the tree can be moved or cloned elsewhere without rewriting every remote.
+The path SHALL be relative,
+so the tree can be moved or cloned elsewhere without rewriting every remote.
 
 #### Scenario: Remote configured for an entry
 
@@ -68,12 +72,14 @@ The path SHALL be relative, so the tree can be moved or cloned elsewhere without
 #### Scenario: Names colliding across orgs stay distinct
 
 - **WHEN** two inventory entries share a repository name under different orgs
-- **THEN** each has its own remote and its own `refs/remotes/<org>/<repo>/*` namespace, and neither resolves to the other's mirror
+- **THEN** each has its own remote and its own `refs/remotes/<org>/<repo>/*` namespace,
+  and neither resolves to the other's mirror
 
 #### Scenario: Template entry has no remote
 
 - **WHEN** the inventory entry is the one flagged `template: true`
-- **THEN** no remote is configured for it, since the workspace is a clone of that repository and reaches it through `origin`
+- **THEN** no remote is configured for it,
+  since the workspace is a clone of that repository and reaches it through `origin`
 
 ### Requirement: The workspace imports no tags from the mirrors
 
@@ -85,13 +91,15 @@ and the suppression SHALL be configured on the remote.
 Every such remote lives in this one repository,
 so the configuration is written, verified and repaired in one place rather than replicated across the inventory.
 
-The setting SHALL be written on every run, as the URL is,
+The setting SHALL be written on every run,
+as the URL is,
 so a remote configured before this requirement existed is repaired without the workspace being re-created.
 
 #### Scenario: Mirror with tags fetched
 
 - **WHEN** a remote is fetched whose mirror carries tags from its own GitHub upstream
-- **THEN** the workspace's `refs/tags/*` is unchanged, and the mirror's branches are updated under `refs/remotes/<org>/<repo>/*`
+- **THEN** the workspace's `refs/tags/*` is unchanged,
+  and the mirror's branches are updated under `refs/remotes/<org>/<repo>/*`
 
 #### Scenario: Every remote fetched at once
 
@@ -101,7 +109,8 @@ so a remote configured before this requirement existed is repaired without the w
 #### Scenario: Remote configured before this rule
 
 - **WHEN** a remote exists without the setting
-- **THEN** the next run writes it, in the same pass that normalises the URL
+- **THEN** the next run writes it,
+  in the same pass that normalises the URL
 
 ### Requirement: Remotes are wired without fetching unless asked
 
@@ -109,7 +118,8 @@ The system SHALL configure the remotes without fetching from them by default,
 and SHALL fetch from every configured remote when explicitly asked to.
 
 A promotion reads one repository at a time.
-Configuring a remote costs nothing, while fetching every entry eagerly copies history into a second place on disk
+Configuring a remote costs nothing,
+while fetching every entry eagerly copies history into a second place on disk
 before anyone has asked for it.
 
 #### Scenario: Default run
@@ -125,7 +135,8 @@ before anyone has asked for it.
 #### Scenario: Fetching one repository by hand
 
 - **WHEN** an operator fetches a single remote by name
-- **THEN** that mirror's branches become available under `refs/remotes/<org>/<repo>/*` and no other remote is contacted
+- **THEN** that mirror's branches become available under `refs/remotes/<org>/<repo>/*`
+  and no other remote is contacted
 
 ### Requirement: Remotes are reconciled with the inventory
 
@@ -145,7 +156,8 @@ so a repository dropped from the inventory leaves nothing behind for a later che
 #### Scenario: Entry removed from the inventory
 
 - **WHEN** an entry is removed from `repos.yml` and the workspace is configured again
-- **THEN** its remote is removed, together with its refs under `refs/remotes/<org>/<repo>/*`
+- **THEN** its remote is removed,
+  together with its refs under `refs/remotes/<org>/<repo>/*`
 
 #### Scenario: Drift normalised
 
@@ -160,7 +172,8 @@ so a repository dropped from the inventory leaves nothing behind for a later che
 ### Requirement: The workspace's working state is never modified
 
 The system SHALL NOT check out, reset, rebase, merge or otherwise modify the workspace's working tree, index or `HEAD`.
-It manages remotes and, when asked, fetches.
+It manages remotes and,
+when asked, fetches.
 
 This is what separates the workspace from a mirror.
 A promotion is human work that spans runs --
@@ -185,7 +198,9 @@ and a tool that re-baselines would destroy it.
 ### Requirement: A promotion can be browsed, picked and pushed
 
 The system SHALL leave the workspace in a state where a commit from any configured mirror can be found,
-applied to the template and sent to the template's upstream using ordinary git, with no tooling of this project's own.
+applied to the template
+and sent to the template's upstream using ordinary git,
+with no tooling of this project's own.
 
 #### Scenario: Commits browsed across repositories
 
@@ -195,7 +210,8 @@ applied to the template and sent to the template's upstream using ordinary git, 
 #### Scenario: Commit cherry-picked into the template
 
 - **WHEN** an operator cherry-picks a mirror's commit onto a branch started from the template's default branch
-- **THEN** the commit applies and the workspace's `refs/tags/*` is unchanged
+- **THEN** the commit applies
+  and the workspace's `refs/tags/*` is unchanged
 
 #### Scenario: Promotion pushed to the template's upstream
 
@@ -207,9 +223,11 @@ applied to the template and sent to the template's upstream using ordinary git, 
 The system SHALL set `core.hooksPath` in the workspace to this repository's tracked `hooks/` directory,
 expressed relative to the workspace's working tree as `../hooks`.
 Git runs a hook with the top of the working tree as the current directory,
-so the relative path resolves wherever the tree as a whole sits and whichever subdirectory the command was run from.
+so the relative path resolves wherever the tree as a whole sits
+and whichever subdirectory the command was run from.
 
-The setting SHALL be written on every run, as the remotes are,
+The setting SHALL be written on every run,
+as the remotes are,
 so a workspace created before this requirement existed is repaired without being re-created.
 
 #### Scenario: Fresh workspace
@@ -219,8 +237,10 @@ so a workspace created before this requirement existed is repaired without being
 
 #### Scenario: Workspace configured before this rule
 
-- **WHEN** the workspace carries no `core.hooksPath`, or one pointing elsewhere
-- **THEN** the next run writes it, in the same pass that normalises the remotes
+- **WHEN** the workspace carries no `core.hooksPath`,
+  or one pointing elsewhere
+- **THEN** the next run writes it,
+  in the same pass that normalises the remotes
 
 #### Scenario: Hook runs from a subdirectory
 
@@ -238,17 +258,21 @@ The system SHALL ensure that a commit created in the workspace by replaying a co
 carries no issue reference that resolves against the template.
 
 The workspace is a clone of the template,
-so `#42` in a commit collected by `cynkra/dm` addresses the template's issue 42 once copied here,
+so `#42` in a commit collected by `cynkra/dm` addresses the template's issue 42
+once copied here,
 and under a closing keyword closes it on push.
 This is the same hazard the outward direction already guards,
 with the repositories exchanged.
 
 A reference of the form `#<number>` or `GH-<number>` SHALL be rewritten to `<org>/<repo>#<number>`
-of **the mirror the commit was replayed from**, not of the template,
+of **the mirror the commit was replayed from**,
+not of the template,
 except where a closing keyword immediately precedes it,
 in which case the commit SHALL be refused with a diagnostic naming the offending references.
 
-The commit SHALL likewise be refused, rather than rewritten, where the source cannot be named unambiguously:
+The commit SHALL likewise be refused,
+rather than rewritten,
+where the source cannot be named unambiguously:
 where the replayed commit is reachable from more than one mirror's namespace,
 or where that mirror's `<org>/<repo>` cannot be determined.
 
@@ -256,37 +280,46 @@ When `REPO_SYNC_TEMPLATE_REFS` is set to `block`,
 every such reference SHALL be refused rather than rewritten.
 
 A commit reachable only from `origin` SHALL be left alone:
-`origin` is the template itself, and such a commit's references already resolve here.
+`origin` is the template itself,
+and such a commit's references already resolve here.
 So SHALL a commit written in the workspace rather than replayed from a mirror.
 
-A reference already carrying an owner and repository, a URL,
-and text in a comment line or past a scissors line SHALL be left unchanged.
+A reference already carrying an owner and repository,
+a URL,
+and text in a comment line or past a scissors line
+SHALL be left unchanged.
 
 #### Scenario: Squash-merge suffix from a mirror
 
 - **WHEN** a commit whose subject ends in `(#42)` is cherry-picked from the mirror `cynkra/dm` into the workspace
-- **THEN** the workspace's commit reads `(cynkra/dm#42)`, and the rewrite is reported on stderr
+- **THEN** the workspace's commit reads `(cynkra/dm#42)`,
+  and the rewrite is reported on stderr
 
 #### Scenario: Reference under a closing keyword
 
 - **WHEN** the copied message contains `Fixes #7`
-- **THEN** the commit is refused, the message file is left unmodified,
-  and the replay state remains in place so the operator can commit again with a corrected message
+- **THEN** the commit is refused,
+  the message file is left unmodified,
+  and the replay state remains in place
+  so the operator can commit again with a corrected message
 
 #### Scenario: The template's own commit
 
 - **WHEN** a commit reachable only from `origin` is replayed in the workspace
-- **THEN** its message is unchanged, since `origin` is the template and its references already resolve here
+- **THEN** its message is unchanged,
+  since `origin` is the template and its references already resolve here
 
 #### Scenario: The workspace's own commit
 
-- **WHEN** a commit is written in the workspace rather than replayed from a mirror, and refers to `#99`
+- **WHEN** a commit is written in the workspace rather than replayed from a mirror,
+  and refers to `#99`
 - **THEN** the message is unchanged
 
 #### Scenario: Provenance is ambiguous
 
 - **WHEN** the replayed commit is reachable from more than one mirror's remote-tracking namespace
-- **THEN** the commit is refused with a diagnostic, rather than qualified against a guess
+- **THEN** the commit is refused with a diagnostic,
+  rather than qualified against a guess
 
 #### Scenario: A URL is not a reference
 
@@ -300,20 +333,25 @@ and text in a comment line or past a scissors line SHALL be left unchanged.
 
 ### Requirement: Failures are isolated
 
-The system SHALL continue configuring the remaining remotes when one fails,
-report every failure at the end, and exit non-zero,
+The system SHALL continue configuring the remaining remotes
+when one fails,
+report every failure at the end,
+and exit non-zero,
 matching the `clone` and `sync` capabilities.
 
 #### Scenario: One mirror missing
 
 - **WHEN** an inventory entry has no mirror checkout on disk
-- **THEN** its remote is still configured, since the path is relative and may resolve later,
+- **THEN** its remote is still configured,
+  since the path is relative and may resolve later,
   and a fetch of it is what reports the absence
 
 #### Scenario: One remote fails to be configured
 
 - **WHEN** configuring one remote fails
-- **THEN** the run records the failure, configures the rest, and exits non-zero with a summary listing every failure
+- **THEN** the run records the failure,
+  configures the rest,
+  and exits non-zero with a summary listing every failure
 
 #### Scenario: Clean run
 
@@ -324,7 +362,8 @@ matching the `clone` and `sync` capabilities.
 
 The system SHALL exit non-zero before touching the workspace
 if `repos.yml` does not contain exactly one entry with `template: true`,
-matching the `clone` and `sync` capabilities so every tool rejects the same malformed inventory.
+matching the `clone` and `sync` capabilities
+so every tool rejects the same malformed inventory.
 
 #### Scenario: No template flagged
 
