@@ -1,7 +1,10 @@
 # template-remote Specification
 
 ## Purpose
-TBD - created by archiving change template-remote. Update Purpose after archive.
+Carry the designated template repository outward to every mirror, by wiring a `template` remote on
+each one that resolves to the template's bare mirror on disk. The remote brings branches and
+nothing else: no tags, and no commit message whose issue reference would resolve against the
+wrong repository once copied.
 
 ## Requirements
 

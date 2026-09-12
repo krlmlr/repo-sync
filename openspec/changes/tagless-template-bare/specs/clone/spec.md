@@ -81,35 +81,6 @@ including removing branches the upstream no longer has.
   not moved
 - **THEN** a further run changes nothing and exits zero
 
-### Requirement: Process the template mirror first
-
-The system SHALL bring the entry flagged `template: true` into its bare form --
-created if absent, normalised and fetched if present --
-before processing any mirror checkout, the template's own checkout included,
-so that the local path used by `template` remotes always resolves on disk after a successful run
-and so that no checkout is wired up against a bare mirror that still carries tags.
-
-The template's checkout SHALL be processed with the other checkouts and not ahead of them.
-It is a mirror like any other once the bare mirror exists.
-
-#### Scenario: Template processed first on fresh run
-
-- **WHEN** `clone` runs against an empty `mirrors/` directory
-- **THEN** the template's bare mirror is created before any checkout is cloned,
-  so each subsequent `template` remote names an existing repository
-
-#### Scenario: Bare mirror normalised before any checkout is wired up
-
-- **WHEN** `clone` runs against a tree whose bare mirror still carries tags
-- **THEN** the bare mirror is normalised before any checkout's `template` remote
-  is configured
-
-#### Scenario: Template checkout is not special
-
-- **WHEN** the checkouts are processed
-- **THEN** the template's own checkout is processed among them by the same steps
-  as every other checkout
-
 ## ADDED Requirements
 
 ### Requirement: Configure the `template` remote on every mirror during clone
@@ -157,6 +128,44 @@ SHALL keep the setting rather than lose its only protection.
   still carries tags
 - **THEN** the setting is left in place
 
+### Requirement: Process the template's bare mirror first
+
+The system SHALL bring the entry flagged `template: true` into its bare form --
+created if absent, normalised and fetched if present --
+before processing any mirror checkout, the template's own checkout included,
+so that the local path used by `template` remotes always resolves on disk after a successful run
+and so that no checkout is wired up against a bare mirror that still carries tags.
+
+This SHALL hold as a barrier rather than as an ordering within a single pass:
+no checkout SHALL be started while the bare mirror is still being made.
+
+The template's checkout SHALL be processed with the other checkouts and not ahead of them.
+It is a mirror like any other once the bare mirror exists.
+
+#### Scenario: Template processed first on fresh run
+
+- **WHEN** `clone` runs against an empty `mirrors/` directory
+- **THEN** the template's bare mirror is created before any checkout is cloned,
+  so each subsequent `template` remote names an existing repository
+
+#### Scenario: Bare mirror normalised before any checkout is wired up
+
+- **WHEN** `clone` runs against a tree whose bare mirror still carries tags
+- **THEN** the bare mirror is normalised before any checkout's `template` remote
+  is configured
+
+#### Scenario: Template checkout is not special
+
+- **WHEN** the checkouts are processed
+- **THEN** the template's own checkout is processed among them by the same steps
+  as every other checkout
+
+#### Scenario: No checkout overlaps the bare mirror's creation
+
+- **WHEN** the inventory is mirrored several repositories at a time
+- **THEN** no checkout is begun until the bare mirror has been created or
+  normalised and fetched, successfully or otherwise
+
 ## REMOVED Requirements
 
 ### Requirement: Configure `template` remote during clone
@@ -164,3 +173,9 @@ SHALL keep the setting rather than lose its only protection.
 **Reason**: The contract changed from "every non-template mirror" to "every mirror", and the exception it carried -- the template's own checkout is skipped -- is the thing being removed. Replaced by "Configure the `template` remote on every mirror during clone".
 
 **Migration**: No action. A current `clone` run adds the `template` remote to the template's own checkout and leaves every other mirror's remote as it was.
+
+### Requirement: Process the template mirror first
+
+**Reason**: The requirement ordered both of the template's mirrors ahead of every other entry, and its "Both mirrors of the template at once" scenario made the checkout's place in that head start part of the contract. Under a tagless bare only the bare mirror has to go first, and the template's checkout is processed with the rest, so the ordering is replaced by "Process the template's bare mirror first" -- which keeps the barrier, now scoped to the bare mirror alone.
+
+**Migration**: No action. The barrier still holds where it matters, and a run under the new ordering reaches the same tree: the template's checkout is cloned or updated in the same pass as every other checkout.

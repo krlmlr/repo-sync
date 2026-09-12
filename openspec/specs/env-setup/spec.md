@@ -1,19 +1,8 @@
 ## Purpose
 
-Document the ambient environment a contributor must have ready (notably an authenticated `gh`) before running any tooling task.
+Document the ambient environment a contributor must have ready before running any tooling task: SSH access to GitHub and GNU parallel, with no API token and no `gh` login required by anything.
 
 ## Requirements
-
-### Requirement: gh authentication documented as prerequisite
-`mise.toml` SHALL document that `gh` must be authenticated before running the `clone` task, so contributors know what to set up.
-
-#### Scenario: gh authenticated
-- **WHEN** `gh` is authenticated (any method — token, device flow, etc.)
-- **THEN** `mise run clone` proceeds without additional configuration
-
-#### Scenario: gh not authenticated
-- **WHEN** `gh` is not authenticated
-- **THEN** `gh repo clone` fails with its own descriptive error; the task exits non-zero
 
 ### Requirement: GNU parallel documented as prerequisite
 
@@ -41,3 +30,31 @@ name, which understands none of the options the tasks use.
   wants the run reduced to one at a time to read a failure
 - **THEN** `REPO_SYNC_JOBS` is documented as the way to say so, and needs no
   edit to any script
+
+### Requirement: SSH access to GitHub documented as prerequisite
+
+`mise.toml` SHALL document that the operator needs SSH access to GitHub before
+running the `clone` task: a key their account knows, reachable by the agent, and
+`github.com` present in `known_hosts` so the first connection has nothing to ask
+about. No API token and no `gh` login SHALL be required by any task.
+
+#### Scenario: SSH configured
+
+- **WHEN** the operator's key is on their GitHub account and loaded in the agent
+- **THEN** `mise run clone` proceeds without additional configuration, for
+  public and private repositories alike
+
+#### Scenario: No usable key
+
+- **WHEN** no key the account accepts is available
+- **THEN** `git` fails for that repository with its own descriptive error, the
+  failure is recorded, and the task exits non-zero once the rest of the
+  inventory has been processed
+
+#### Scenario: Host key not yet known
+
+- **WHEN** `github.com` is absent from `known_hosts` and the run is
+  non-interactive
+- **THEN** the connection is refused rather than trusted silently; adding the
+  host key is a documented one-time setup step, not something the tooling
+  bypasses
