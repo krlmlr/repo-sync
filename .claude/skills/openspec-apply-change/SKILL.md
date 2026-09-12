@@ -11,16 +11,13 @@ metadata:
 
 Implement tasks from an OpenSpec change.
 
-**Input**: Optionally specify a change name.
-If omitted, check if it can be inferred from conversation context.
-If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
 **Steps**
 
 1. **Select the change**
 
-   If a name is provided, use it.
-   Otherwise:
+   If a name is provided, use it. Otherwise:
    - Infer from conversation context if the user mentioned a change
    - Auto-select if only one active change exists
    - If ambiguous, run `openspec list --json` to get available changes and use the **AskUserQuestion tool** to let the user select
