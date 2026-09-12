@@ -4,9 +4,11 @@ A `clone` or `sync` run is forty-eight independent conversations with GitHub,
 held one after another.
 
 Each of them spends almost all of its time waiting —
-on a TCP handshake, on an SSH key exchange,
+on a TCP handshake,
+on an SSH key exchange,
 on GitHub deciding which objects to send —
-and while one waits, nothing else happens.
+and while one waits,
+nothing else happens.
 The run therefore costs the sum of every wait,
 on a machine that was idle for nearly all of it.
 
