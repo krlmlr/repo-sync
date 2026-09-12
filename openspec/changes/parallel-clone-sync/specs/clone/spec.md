@@ -24,9 +24,7 @@ so a failure can be read without being reassembled from lines scattered across t
 #### Scenario: Reduced to one at a time
 
 - **WHEN** `REPO_SYNC_JOBS=1`
-- **THEN** the run performs the same work on the same mirrors,
-  one repository at a time,
-  and reaches the same result
+- **THEN** the run performs the same work on the same mirrors, one repository at a time, and reaches the same result
 
 #### Scenario: One repository's output stays together
 
@@ -37,22 +35,18 @@ so a failure can be read without being reassembled from lines scattered across t
 #### Scenario: Repository worked on by itself
 
 - **WHEN** the operator names a single mirror to create or update
-- **THEN** exactly that mirror is processed,
-  by the same steps the batch would have applied to it,
+- **THEN** exactly that mirror is processed, by the same steps the batch would have applied to it,
   so a failure seen in a batch can be reproduced on its own
 
 ### Requirement: GNU parallel is required and checked for
 
 The system SHALL verify before any mirror is touched that GNU parallel is available,
-and SHALL exit non-zero naming what to install
-if it is absent
-or if the `parallel` on `PATH` is a different program of the same name.
+and SHALL exit non-zero naming what to install if it is absent or if the `parallel` on `PATH` is a different program of the same name.
 
 #### Scenario: GNU parallel absent
 
 - **WHEN** no `parallel` is on `PATH`
-- **THEN** the run exits non-zero with a message naming the package to install,
-  before any mirror is cloned or updated
+- **THEN** the run exits non-zero with a message naming the package to install, before any mirror is cloned or updated
 
 #### Scenario: A different `parallel` on PATH
 
@@ -84,41 +78,32 @@ and a failure in one SHALL NOT prevent the other from being attempted.
 #### Scenario: No mirror overlaps the template's
 
 - **WHEN** the inventory is mirrored several repositories at a time
-- **THEN** no non-template mirror is begun until both of the template's mirrors have finished,
-  successfully or otherwise
+- **THEN** no non-template mirror is begun until both of the template's mirrors have finished, successfully or otherwise
 
 #### Scenario: Both mirrors of the template at once
 
 - **WHEN** the template's checkout and bare mirror are made
-- **THEN** they may be made concurrently,
-  and each reports its own outcome
+- **THEN** they may be made concurrently, and each reports its own outcome
 
 ### Requirement: Failures are isolated
 
-The system SHALL continue processing remaining repos
-if a single clone or fetch fails,
+The system SHALL continue processing remaining repos if a single clone or fetch fails,
 and report all failures at the end with a non-zero exit code.
-Failures SHALL be collected across every repository worked on,
-including those processed concurrently in separate processes,
+Failures SHALL be collected across every repository worked on, including those processed concurrently in separate processes,
 so the final report accounts for the whole run.
-The report SHALL list them in a stable order,
-independent of the order the repositories happened to finish in.
+The report SHALL list them in a stable order, independent of the order the repositories happened to finish in.
 
 #### Scenario: One repo unreachable
 
 - **WHEN** one repo returns a network or auth error
-- **THEN** the script logs the failure,
-  continues with the rest,
-  and exits non-zero after all repos are processed
+- **THEN** the script logs the failure, continues with the rest, and exits non-zero after all repos are processed
 
 #### Scenario: Failure raised while other repositories are in flight
 
 - **WHEN** a repository fails while others are still being mirrored
-- **THEN** the others run to completion,
-  and the failure is named in the report at the end of the run
+- **THEN** the others run to completion, and the failure is named in the report at the end of the run
 
 #### Scenario: Report is stable
 
 - **WHEN** the same set of repositories fails on two runs
-- **THEN** both runs print the same report,
-  in the same order
+- **THEN** both runs print the same report, in the same order

@@ -2,17 +2,14 @@
 
 ### Requirement: Discover repos checked out locally
 
-The system SHALL scan a base directory
-and report which `repos.yml` entries are checked out locally,
-supporting both the `mirrors/<org>/<repo>/` layout
-and a flat layout where repos are direct children of the base directory
+The system SHALL scan a base directory and report which `repos.yml` entries are checked out locally,
+supporting both the `mirrors/<org>/<repo>/` layout and a flat layout where repos are direct children of the base directory
 (siblings of `repo-sync`, with no intervening `<org>/` directory).
 
 #### Scenario: Flat-sibling discovery
 
 - **WHEN** the base directory contains flat sibling checkouts such as `dm/`, `cynkratemplate/`, and `repo-sync/` (no `<org>/` directory)
-- **THEN** each directory matching an inventory entry is reported as discovered
-  with its `<org>/<repo>` identity and absolute local path
+- **THEN** each directory matching an inventory entry is reported as discovered with its `<org>/<repo>` identity and absolute local path
 
 #### Scenario: Mirrors-layout discovery
 
@@ -27,8 +24,7 @@ and a flat layout where repos are direct children of the base directory
 
 ### Requirement: Match by repo name verified via origin remote
 
-The system SHALL treat a candidate directory as matching an inventory entry
-only when the directory basename equals the entry's `repo` field
+The system SHALL treat a candidate directory as matching an inventory entry only when the directory basename equals the entry's `repo` field
 AND the directory's git `origin` remote resolves to that entry's `<org>/<repo>`.
 Candidates that fail either condition SHALL NOT be matched.
 
@@ -40,27 +36,22 @@ Candidates that fail either condition SHALL NOT be matched.
 #### Scenario: Basename matches but origin mismatches
 
 - **WHEN** a directory named `dm` has an `origin` remote resolving to a different `<org>/<repo>` than the inventory entry
-- **THEN** the directory is not matched,
-  and the mismatch is reported
+- **THEN** the directory is not matched, and the mismatch is reported
 
 #### Scenario: Same repo name across orgs disambiguated by origin
 
 - **WHEN** two inventory entries share the same `repo` name under different orgs and a local directory carries that name
-- **THEN** the directory matches only the entry
-  whose `<org>/<repo>` equals the resolved `origin` remote
+- **THEN** the directory matches only the entry whose `<org>/<repo>` equals the resolved `origin` remote
 
 #### Scenario: Directory without an origin remote
 
 - **WHEN** a candidate directory has no `origin` remote
-- **THEN** the directory is not matched,
-  and it is reported as unrecognized
+- **THEN** the directory is not matched, and it is reported as unrecognized
 
 ### Requirement: Identify the template within the discovered subset
 
-The system SHALL identify the entry flagged `template: true` in `repos.yml`
-when it is present in the discovered subset,
-and SHALL mark it as the template in the emitted output
-so reconcile can use it as the canonical source.
+The system SHALL identify the entry flagged `template: true` in `repos.yml` when it is present in the discovered subset,
+and SHALL mark it as the template in the emitted output so reconcile can use it as the canonical source.
 
 #### Scenario: Template present locally
 
@@ -70,21 +61,18 @@ so reconcile can use it as the canonical source.
 #### Scenario: Template absent locally
 
 - **WHEN** the discovered subset does not include the `template: true` repo
-- **THEN** the system warns that the template is not checked out locally
-  and continues, marking no entry as template
+- **THEN** the system warns that the template is not checked out locally and continues, marking no entry as template
 
 ### Requirement: Report-and-continue robustness
 
-The system SHALL continue and exit zero whenever a valid subset is discovered,
-reporting anomalies rather than aborting.
+The system SHALL continue and exit zero whenever a valid subset is discovered, reporting anomalies rather than aborting.
 Directories that do not correspond to any inventory entry SHALL be reported as extras,
 and a missing template SHALL be reported as a warning.
 
 #### Scenario: Extra sibling not in inventory
 
 - **WHEN** a sibling directory does not correspond to any `repos.yml` entry
-- **THEN** it is reported as an unrecognized extra
-  and discovery continues with the remaining valid matches
+- **THEN** it is reported as an unrecognized extra and discovery continues with the remaining valid matches
 
 #### Scenario: Valid subset exits zero
 
@@ -98,8 +86,7 @@ and a missing template SHALL be reported as a warning.
 
 ### Requirement: Emit the discovered subset for reconcile
 
-The system SHALL emit the discovered subset as machine-readable output
-where each entry carries its `org`, `repo`, absolute local path,
+The system SHALL emit the discovered subset as machine-readable output where each entry carries its `org`, `repo`, absolute local path,
 and a boolean indicating whether it is the template.
 
 #### Scenario: Subset emitted with required fields

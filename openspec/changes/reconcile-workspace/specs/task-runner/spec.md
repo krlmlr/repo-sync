@@ -1,8 +1,7 @@
 ## MODIFIED Requirements
 
 ### Requirement: Named tasks for each script entry point
-`mise.toml` SHALL define a task for each script
-so contributors run `mise run <task>` without knowing the underlying path or interpreter.
+`mise.toml` SHALL define a task for each script so contributors run `mise run <task>` without knowing the underlying path or interpreter.
 
 #### Scenario: fetch-inventory task
 - **WHEN** a contributor runs `mise run fetch-inventory`
@@ -14,16 +13,12 @@ so contributors run `mise run <task>` without knowing the underlying path or int
 
 #### Scenario: sync task
 - **WHEN** a contributor runs `mise run sync`
-- **THEN** `mise` executes `scripts/sync.sh`,
-  which refreshes the template's bare mirror,
-  rebases every mirror onto its upstream,
-  and fetches the `template` remote everywhere
+- **THEN** `mise` executes `scripts/sync.sh`, which refreshes the template's bare mirror,
+  rebases every mirror onto its upstream, and fetches the `template` remote everywhere
 
 #### Scenario: reconcile-workspace task
 - **WHEN** a contributor runs `mise run reconcile-workspace`
-- **THEN** `mise` executes `scripts/reconcile_workspace.sh`,
-  which creates the workspace
-  if it is absent
+- **THEN** `mise` executes `scripts/reconcile_workspace.sh`, which creates the workspace if it is absent
   and brings its per-entry remotes into line with `repos.yml`,
   without fetching from them and without touching the workspace's working tree
 

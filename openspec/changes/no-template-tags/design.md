@@ -6,14 +6,12 @@ and `sync` fetches it in every mirror on every run.
 
 That fetch brings the template's tags with it.
 The mechanism is `git fetch`'s tag auto-following,
-which is on by default
-and is not a refspec:
+which is on by default and is not a refspec:
 after the refspec has been applied,
 git looks for tags pointing at objects it has just downloaded
 and writes them into `refs/tags/*`.
 The `template` refspec (`+refs/heads/*:refs/remotes/template/*`)
-never mentions tags
-and does not need to;
+never mentions tags and does not need to;
 the auto-follow happens regardless.
 
 The reason it matters, and the reason it is easy to miss,
@@ -54,8 +52,7 @@ the configuration belongs on the remote and not on a call site.
 It is written on every `clone` run,
 next to the `set-url` that already normalises the URL,
 so a mirror configured before this change is repaired by the same run
-that repairs a stale URL.
-Both are idempotent.
+that repairs a stale URL. Both are idempotent.
 
 *Alternative considered*: `git remote add --no-tags template ...`,
 which writes the same config key.
@@ -68,8 +65,7 @@ so the flag on `remote add` would be decoration.
 
 Two mechanisms for one guarantee, deliberately.
 
-The config is the durable one,
-and it is written by `clone`.
+The config is the durable one, and it is written by `clone`.
 But `clone` is the re-baselining tool, run when a mirror needs re-baselining;
 `sync` is the one that runs every day.
 Leaving `sync` to depend on config that only `clone` writes
@@ -83,23 +79,18 @@ and the flag is what the config expands to.
 
 ### `--prune-tags` in `clone`, and not in `sync`
 
-Setting `tagOpt` stops the import.
-It removes nothing already imported,
+Setting `tagOpt` stops the import. It removes nothing already imported,
 and the mirrors have been accumulating these tags for as long as
 the `template` remote has existed.
 
 `git fetch --prune --prune-tags` makes the mirror's tags equal its upstream's.
 It is a blunt instrument — it deletes any tag not on the upstream,
-including one a human made locally
-and has not pushed.
+including one a human made locally and has not pushed.
 That is precisely why it goes in `clone` and not in `sync`.
 `clone` already resets the working tree hard onto `origin/HEAD`:
-it is the tool that discards local state,
-and now discards local tags with it.
-`sync` promises the opposite —
-it rebases rather than resets,
-keeping commits that have not been pushed —
-and it keeps that promise for tags.
+it is the tool that discards local state, and now discards local tags with it.
+`sync` promises the opposite — it rebases rather than resets,
+keeping commits that have not been pushed — and it keeps that promise for tags.
 
 An operator with a local tag worth keeping uses `sync`, as before.
 The one who wants the mirror to look like its upstream runs `clone`, as before.
@@ -107,8 +98,7 @@ The one who wants the mirror to look like its upstream runs `clone`, as before.
 *Alternative considered*: a targeted deletion —
 tags the mirror shares with the bare template
 that its upstream does not have.
-It is precise,
-and it preserves unrelated local tags,
+It is precise, and it preserves unrelated local tags,
 so it could live in `sync`.
 It also costs a `git ls-remote` per repository
 to find out what the upstream's tags are, over the whole inventory,
@@ -119,31 +109,18 @@ The blunt version in the tool that is already blunt is a better trade.
 
 `+refs/tags/*:refs/remotes/template/tags/*` alongside `--no-tags`
 would keep them, namespaced, out of `git tag` and out of `git describe`.
-It works,
-and it is one config line
-if a use appears.
-Nothing reads them today.
-Left out.
+It works, and it is one config line if a use appears.
+Nothing reads them today. Left out.
 
 ## Risks / Trade-offs
 
-- **`clone` now deletes local-only tags.**
-  It already discarded local commits in the same function;
-  a mirror is not where unpushed work should live,
-  and `sync` remains the tool that respects it.
-- **A mirror not re-cloned keeps its imported tags.**
-  `sync` stops adding to them
-  but removes none.
-  The repair is `mise run clone`,
-  as it was for the `template` URL rewrite.
-- **A tag name shared by template and upstream.**
-  If the upstream has its own `v0.1.0`,
-  the imported one has already overwritten nothing —
-  auto-follow does not clobber an existing tag —
-  and `--prune-tags` keeps the upstream's.
-  Nothing to reconcile.
-- **`--prune-tags` needs git ≥ 2.17.**
-  Long since the floor for everything else the scripts use.
+- **`clone` now deletes local-only tags.** It already discarded local commits in the same function;
+  a mirror is not where unpushed work should live, and `sync` remains the tool that respects it.
+- **A mirror not re-cloned keeps its imported tags.** `sync` stops adding to them but removes none.
+  The repair is `mise run clone`, as it was for the `template` URL rewrite.
+- **A tag name shared by template and upstream.** If the upstream has its own `v0.1.0`, the imported one has already overwritten nothing —
+  auto-follow does not clobber an existing tag — and `--prune-tags` keeps the upstream's. Nothing to reconcile.
+- **`--prune-tags` needs git ≥ 2.17.** Long since the floor for everything else the scripts use.
 
 ## Migration Plan
 
@@ -154,15 +131,11 @@ and prunes the tags already imported, in the same pass.
 and stops importing tags even where `clone` has not run yet.
 
 To roll back: `git config --unset remote.template.tagOpt` in each mirror.
-The tags come back on the next fetch,
-which is the way to tell it worked.
+The tags come back on the next fetch, which is the way to tell it worked.
 
 ## Open Questions
 
 - Should the bare mirror of the template stop being a full `--mirror` clone?
-  It holds the template's tags,
-  which is right —
-  it is the template.
-  The question only arises
-  if reconcile ever wants a tag-free view of it,
+  It holds the template's tags, which is right — it is the template.
+  The question only arises if reconcile ever wants a tag-free view of it,
   and the namespaced refspec above answers it better than a narrower clone.
