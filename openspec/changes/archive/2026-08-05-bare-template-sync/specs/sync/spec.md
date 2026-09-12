@@ -86,8 +86,7 @@ The template's own mirror SHALL be skipped, as it carries no `template` remote.
 
 ### Requirement: Failures are isolated
 
-The system SHALL continue processing the remaining mirrors when one step fails,
-report every failure at the end, and exit non-zero.
+The system SHALL continue processing the remaining mirrors when one step fails, report every failure at the end, and exit non-zero.
 
 #### Scenario: One mirror unreachable
 
@@ -107,15 +106,13 @@ report every failure at the end, and exit non-zero.
 
 ### Requirement: Invalid template designation is fatal
 
-The system SHALL exit non-zero before touching any mirror if `repos.yml` does
-not contain exactly one entry with `template: true`, matching the `clone`
-capability so both tools reject the same malformed inventory.
+The system SHALL exit non-zero before touching any mirror if `repos.yml` does not contain exactly one entry with `template: true`,
+matching the `clone` capability so both tools reject the same malformed inventory.
 
 #### Scenario: No template flagged
 
 - **WHEN** `repos.yml` has no entry with `template: true`
-- **THEN** sync exits non-zero with a message naming the missing flag, before
-  fetching or rebasing anything
+- **THEN** sync exits non-zero with a message naming the missing flag, before fetching or rebasing anything
 
 #### Scenario: Multiple templates flagged
 

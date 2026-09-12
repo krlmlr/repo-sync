@@ -13,7 +13,8 @@
 
 #### Scenario: sync task
 - **WHEN** a contributor runs `mise run sync`
-- **THEN** `mise` executes `scripts/sync.sh`, which refreshes the template's bare mirror, rebases every mirror onto its upstream, and fetches the `template` remote everywhere
+- **THEN** `mise` executes `scripts/sync.sh`, which refreshes the template's bare mirror, rebases every mirror onto its upstream,
+  and fetches the `template` remote everywhere
 
 #### Scenario: Unknown task
 - **WHEN** a contributor runs `mise run nonexistent`

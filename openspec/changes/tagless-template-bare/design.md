@@ -136,7 +136,8 @@ Leaving the setting behind would be harmless, since it guards against tags that 
 It is removed anyway, because these specs already normalise drift of this kind
 and because leaving it contradicts the claim that the guarantee has one home.
 
-The removal is gated. `clone.sh` has a child entry point — `clone.sh --checkout <slug>` — that an operator can run by hand against a tree whose bare mirror has not been normalised.
+The removal is gated. `clone.sh` has a child entry point — `clone.sh --checkout <slug>` —
+that an operator can run by hand against a tree whose bare mirror has not been normalised.
 Unsetting `tagOpt` there would strip the only protection a mirror has.
 So the unset is conditional on the bare mirror on disk carrying no tags,
 checked by a small `lib.sh` predicate alongside the existing `template_bare_usable`
@@ -163,8 +164,7 @@ the template's own checkout is no longer skipped, because it now carries the rem
 a checkout with no `template` remote is no longer a failure, because fetching every remote fetches the ones that are there;
 and the checkout's own upstream tags still arrive, because only the template's were ever the problem.
 
-The `template` remote is still fetched into `refs/remotes/template/*` exactly as before,
-so what a checkout ends a run holding is unchanged.
+The `template` remote is still fetched into `refs/remotes/template/*` exactly as before, so what a checkout ends a run holding is unchanged.
 
 ### The template's checkout keeps `origin` on GitHub and gains a `template` remote
 
@@ -182,8 +182,7 @@ The drift window between the checkout and the bare mirror remains, and is noted 
 
 Fetching `+refs/tags/*:refs/template-tags/*` into the bare mirror was verified to work:
 the bare mirror advertises nothing under `refs/tags/`, so there is nothing to auto-follow,
-and a consumer fetching with tags explicitly requested received `refs/template-tags/*`
-while its own `refs/tags/` stayed empty.
+and a consumer fetching with tags explicitly requested received `refs/template-tags/*` while its own `refs/tags/` stayed empty.
 It preserves the option of anchoring reconcile on a template release.
 
 It is not adopted. Nothing in ROADMAP §2.2 anchors on a template tag today,
@@ -209,8 +208,7 @@ is easier to state and to check. The refspec can be added later without disturbi
 - **The template's checkout and its bare mirror are still fetched from GitHub independently,**
   so they can sit at different commits mid-run, and a human reading the checkout may see commits
   the mirrors' `template/*` refs do not yet have.
-  → Accepted for this change; the alternative costs a two-hop push for template edits.
-  Revisit if reconcile turns out to be sensitive to it.
+  → Accepted for this change; the alternative costs a two-hop push for template edits. Revisit if reconcile turns out to be sensitive to it.
 
 - **The bare mirror remains invisible to `s` and `h`.**
   → Unchanged and inherent: it has no working tree to discover. This change makes it the only such exception.
@@ -225,12 +223,10 @@ No operator action. The first `mise run clone` or `mise run sync` after this cha
 
 Steps 2 and 3 happen in the fan-out, after step 1's barrier, so the ordering the gate depends on holds.
 
-Rollback is `git revert` of the scripts.
-A `mirrors/` tree normalised by this change keeps working with the previous scripts:
+Rollback is `git revert` of the scripts. A `mirrors/` tree normalised by this change keeps working with the previous scripts:
 the old `sync` passes `--no-tags` explicitly and the old `clone` rewrites `tagOpt`,
 so a bare mirror holding no tags is simply a remote with nothing to suppress.
-The one asymmetry is that the reverted `clone` would not restore `remote.origin.mirror`,
-which is a setting worth not restoring.
+The one asymmetry is that the reverted `clone` would not restore `remote.origin.mirror`, which is a setting worth not restoring.
 
 ## Open Questions
 
