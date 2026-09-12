@@ -66,8 +66,7 @@ A later `git fetch --prune` SHALL bring its branches in line with the upstream's
 
 ### Requirement: Process the template mirror first
 
-The system SHALL bring the entry flagged `template: true` into its bare form --
-created if absent, normalised and fetched if present --
+The system SHALL bring the entry flagged `template: true` into its bare form -- created if absent, normalised and fetched if present --
 before processing any mirror checkout, the template's own checkout included,
 so that the local path used by `template` remotes always resolves on disk after a successful run
 and so that no checkout is wired up against a bare mirror that still carries tags.
@@ -84,66 +83,59 @@ It is a mirror like any other once the bare mirror exists.
 #### Scenario: Bare mirror normalised before any checkout is wired up
 
 - **WHEN** `clone` runs against a tree whose bare mirror still carries tags
-- **THEN** the bare mirror is normalised before any checkout's `template` remote
-  is configured
+- **THEN** the bare mirror is normalised before any checkout's `template` remote is configured
 
 #### Scenario: Template checkout is not special
 
 - **WHEN** the checkouts are processed
-- **THEN** the template's own checkout is processed among them by the same steps
-  as every other checkout
+- **THEN** the template's own checkout is processed among them by the same steps as every other checkout
 
 ## ADDED Requirements
 
 ### Requirement: Configure the `template` remote on every mirror during clone
 
 The system SHALL configure a git remote named `template` on every mirror after a successful clone or update,
-the template's own checkout included,
-pointing at the local relative path `../../<template-org>/<template-repo>.git`
+the template's own checkout included, pointing at the local relative path `../../<template-org>/<template-repo>.git`
 (resolving to the template's bare mirror under `mirrors/`).
 
 The system SHALL NOT write per-mirror tag configuration on that remote.
 Where an earlier version wrote `remote.template.tagOpt`, the system SHALL remove it,
-but only once the bare mirror on disk is verifiably free of tags:
-a mirror whose bare mirror has not yet been normalised
+but only once the bare mirror on disk is verifiably free of tags: a mirror whose bare mirror has not yet been normalised
 SHALL keep the setting rather than lose its only protection.
 
 #### Scenario: Template URL added to a mirror
 
 - **WHEN** a mirror is cloned or updated successfully
-- **THEN** the script ensures a `template` remote exists in that mirror with URL
-  `../../<template-org>/<template-repo>.git`
+- **THEN** the script ensures a `template` remote exists in that mirror with URL `../../<template-org>/<template-repo>.git`
 
 #### Scenario: Template's own checkout carries the remote
 
 - **WHEN** the mirror being processed is the template repo's own checkout
-- **THEN** it is given the same `template` remote as every other mirror, so no
-  checkout is an exception to a sweep that fetches every remote
+- **THEN** it is given the same `template` remote as every other mirror, so no checkout is an exception to a sweep that fetches every remote
 
 #### Scenario: Drift normalised
 
 - **WHEN** the template entry in `repos.yml` changes between runs, or a mirror
   still carries a `template` URL pointing at the template's checkout
-- **THEN** the next `clone` run rewrites every mirror's `template` remote URL to
-  match the current template's bare mirror path
+- **THEN** the next `clone` run rewrites every mirror's `template` remote URL to match the current template's bare mirror path
 
 #### Scenario: Stale tag configuration removed
 
-- **WHEN** a mirror carries `remote.template.tagOpt` from an earlier version and
-  the bare mirror on disk carries no tags
-- **THEN** the setting is removed, leaving the guarantee resting on the bare
-  mirror alone
+- **WHEN** a mirror carries `remote.template.tagOpt` from an earlier version and the bare mirror on disk carries no tags
+- **THEN** the setting is removed, leaving the guarantee resting on the bare mirror alone
 
 #### Scenario: Stale tag configuration kept while the bare mirror still has tags
 
-- **WHEN** a mirror carries `remote.template.tagOpt` and the bare mirror on disk
-  still carries tags
+- **WHEN** a mirror carries `remote.template.tagOpt` and the bare mirror on disk still carries tags
 - **THEN** the setting is left in place
 
 ## REMOVED Requirements
 
 ### Requirement: Configure `template` remote during clone
 
-**Reason**: The contract changed from "every non-template mirror" to "every mirror", and the exception it carried -- the template's own checkout is skipped -- is the thing being removed. Replaced by "Configure the `template` remote on every mirror during clone".
+**Reason**: The contract changed from "every non-template mirror" to "every mirror",
+and the exception it carried -- the template's own checkout is skipped -- is the thing being removed.
+Replaced by "Configure the `template` remote on every mirror during clone".
 
-**Migration**: No action. A current `clone` run adds the `template` remote to the template's own checkout and leaves every other mirror's remote as it was.
+**Migration**: No action.
+A current `clone` run adds the `template` remote to the template's own checkout and leaves every other mirror's remote as it was.
