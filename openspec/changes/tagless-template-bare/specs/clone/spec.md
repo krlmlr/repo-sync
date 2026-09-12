@@ -51,20 +51,17 @@ A later `git fetch --prune` SHALL bring its branches in line with the upstream's
 
 #### Scenario: Bare path occupied by a non-bare repository
 
-- **WHEN** a directory exists at the bare mirror's path but is not a bare
-  repository
+- **WHEN** a directory exists at the bare mirror's path but is not a bare repository
 - **THEN** the script records a failure and does not fetch into it
 
 #### Scenario: Both mirrors attempted independently
 
-- **WHEN** either the template's checkout or its bare mirror fails to clone,
-  normalise or update
+- **WHEN** either the template's checkout or its bare mirror fails to clone, normalise or update
 - **THEN** the other is still attempted, and each failure is reported on its own
 
 #### Scenario: Idempotent run
 
-- **WHEN** the bare mirror is already in the required shape and the upstream has
-  not moved
+- **WHEN** the bare mirror is already in the required shape and the upstream has not moved
 - **THEN** a further run changes nothing and exits zero
 
 ### Requirement: Process the template mirror first
