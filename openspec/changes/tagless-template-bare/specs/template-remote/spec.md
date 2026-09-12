@@ -101,12 +101,26 @@ a sweep that fetches every remote in every checkout needs no list of which check
 
 ### Requirement: Configure `template` remote on non-template mirrors
 
-**Reason**: The contract changed from "every non-template mirror" to "every mirror". The exception it carried -- the template repo itself gets no `template` remote -- is what made the template's checkout the last per-repository special case in a sweep over checkouts. Replaced by "Every mirror carries the `template` remote".
+**Reason**: The contract changed from "every non-template mirror" to "every mirror".
+The exception it carried -- the template repo itself gets no `template` remote --
+is what made the template's checkout the last per-repository special case in a sweep over checkouts.
+Replaced by "Every mirror carries the `template` remote".
 
-**Migration**: No action. A current `clone` run adds the remote to the template's own checkout; every other mirror's remote is unchanged.
+**Migration**: No action.
+A current `clone` run adds the remote to the template's own checkout;
+every other mirror's remote is unchanged.
 
 ### Requirement: The `template` remote imports no tags
 
-**Reason**: The guarantee moved from each mirror's `remote.template.tagOpt` to the bare mirror itself, which carries no tags for a fetch to follow. Enforcing it per mirror made it behavioural: it held only for mirrors a `clone` run had reached, and only for commands that knew to pass the option, which is exactly what stopped generic tooling from sweeping the checkouts. Replaced by "The bare mirror is the single place the no-tags guarantee lives".
+**Reason**: The guarantee moved from each mirror's `remote.template.tagOpt` to the bare mirror itself,
+which carries no tags for a fetch to follow.
+Enforcing it per mirror made it behavioural: it held only for mirrors a `clone` run had reached,
+and only for commands that knew to pass the option,
+which is exactly what stopped generic tooling from sweeping the checkouts.
+Replaced by "The bare mirror is the single place the no-tags guarantee lives".
 
-**Migration**: No action. A current `clone` or `sync` run normalises the bare mirror to its tagless shape and then removes `remote.template.tagOpt` from each mirror. The setting is removed only once the bare mirror on disk is verifiably tagless, so a partially migrated tree is never left with neither protection.
+**Migration**: No action.
+A current `clone` or `sync` run normalises the bare mirror to its tagless shape
+and then removes `remote.template.tagOpt` from each mirror.
+The setting is removed only once the bare mirror on disk is verifiably tagless,
+so a partially migrated tree is never left with neither protection.

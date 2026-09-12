@@ -128,7 +128,8 @@ It lives in `lib.sh` and runs as the first thing both commands do, at the existi
 That makes "the invariant is re-established before any mirror fetches" true per command rather than per tree.
 
 *Alternative considered:* have `sync` verify and fail loudly instead of repairing.
-Rejected — it turns a routine migration into an error the operator must act on, for a repair that is four config writes and a ref deletion.
+Rejected — it turns a routine migration into an error the operator must act on,
+for a repair that is four config writes and a ref deletion.
 
 ### Remove `remote.template.tagOpt`, but only against a verifiably tagless bare mirror
 
@@ -208,7 +209,9 @@ is easier to state and to check. The refspec can be added later without disturbi
 - **The template's checkout and its bare mirror are still fetched from GitHub independently,**
   so they can sit at different commits mid-run, and a human reading the checkout may see commits
   the mirrors' `template/*` refs do not yet have.
-  → Accepted for this change; the alternative costs a two-hop push for template edits. Revisit if reconcile turns out to be sensitive to it.
+  → Accepted for this change;
+  the alternative costs a two-hop push for template edits.
+  Revisit if reconcile turns out to be sensitive to it.
 
 - **The bare mirror remains invisible to `s` and `h`.**
   → Unchanged and inherent: it has no working tree to discover. This change makes it the only such exception.
