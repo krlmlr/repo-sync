@@ -6,60 +6,48 @@ The system SHALL additionally mirror the entry flagged `template: true` as a bar
 at `mirrors/<template-org>/<template-repo>.git/`, holding the upstream's branches and nothing else.
 The bare mirror is what the `template` remotes point at; the checkout beside it remains the copy to read and reconcile against.
 
-The bare mirror SHALL carry no tags,
-and SHALL be configured so that fetching its upstream imports none:
+The bare mirror SHALL carry no tags, and SHALL be configured so that fetching its upstream imports none:
 its fetch refspec SHALL map the upstream's branches into `refs/heads/*` and SHALL map nothing into `refs/tags/*`,
 and tag auto-following SHALL be off.
-This is where the guarantee that the mirrors import no template tags is established,
-rather than in each mirror's configuration.
+This is where the guarantee that the mirrors import no template tags is established, rather than in each mirror's configuration.
 
 The bare mirror SHALL NOT be configured as a push mirror.
 A repository whose refs are a strict subset of its upstream's, pushed as a mirror,
-deletes from the upstream everything it does not itself have --
-for a tagless bare, every tag on the GitHub repository.
+deletes from the upstream everything it does not itself have -- for a tagless bare, every tag on the GitHub repository.
 
-The bare mirror's `HEAD` SHALL name the upstream's default branch,
-so a consumer can resolve the template's default branch through it.
-An empty repository initialised locally names whatever branch the local git is configured to default to,
-which need not be the upstream's.
+The bare mirror's `HEAD` SHALL name the upstream's default branch, so a consumer can resolve the template's default branch through it.
+An empty repository initialised locally names whatever branch the local git is configured to default to, which need not be the upstream's.
 
-A later `git fetch --prune` SHALL bring its branches in line with the upstream's,
-including removing branches the upstream no longer has.
+A later `git fetch --prune` SHALL bring its branches in line with the upstream's, including removing branches the upstream no longer has.
 
 #### Scenario: Fresh bare mirror
 
 - **WHEN** `mirrors/<template-org>/<template-repo>.git/` does not exist
-- **THEN** the script creates a bare mirror there over the same SSH transport as
-  every other clone, holding the upstream's branches under `refs/heads/*`, with
-  `refs/tags/*` empty and `HEAD` naming the upstream's default branch
+- **THEN** the script creates a bare mirror there over the same SSH transport as every other clone,
+  holding the upstream's branches under `refs/heads/*`, with `refs/tags/*` empty and `HEAD` naming the upstream's default branch
 
 #### Scenario: Upstream tags are not imported
 
 - **WHEN** the template's GitHub repository carries tags
-- **THEN** the bare mirror's `refs/tags/*` is empty after the run, and stays
-  empty across further runs
+- **THEN** the bare mirror's `refs/tags/*` is empty after the run, and stays empty across further runs
 
 #### Scenario: Existing full mirror normalised in place
 
 - **WHEN** the bare mirror exists but was created as a full mirror of every ref,
   so it carries tags, a refspec that copies them, and a push-mirror setting
-- **THEN** the run rewrites the refspec, deletes every ref under `refs/tags/`,
-  clears the push-mirror setting, and corrects `HEAD` if it names a branch the
-  bare mirror does not have, without re-cloning and without contacting the
-  upstream for anything beyond the usual fetch
+- **THEN** the run rewrites the refspec, deletes every ref under `refs/tags/`, clears the push-mirror setting,
+  and corrects `HEAD` if it names a branch the bare mirror does not have,
+  without re-cloning and without contacting the upstream for anything beyond the usual fetch
 
 #### Scenario: A push from the bare mirror deletes nothing upstream
 
 - **WHEN** a push is made from the bare mirror to its GitHub upstream
-- **THEN** no ref on the upstream is deleted, and in particular the upstream's
-  tags are untouched
+- **THEN** no ref on the upstream is deleted, and in particular the upstream's tags are untouched
 
 #### Scenario: Existing bare mirror updated
 
-- **WHEN** `mirrors/<template-org>/<template-repo>.git/` already exists and is a
-  bare repository
-- **THEN** the script fetches into it with pruning rather than re-cloning, and
-  branches the upstream no longer has are removed
+- **WHEN** `mirrors/<template-org>/<template-repo>.git/` already exists and is a bare repository
+- **THEN** the script fetches into it with pruning rather than re-cloning, and branches the upstream no longer has are removed
 
 #### Scenario: Bare path occupied by a non-bare repository
 
