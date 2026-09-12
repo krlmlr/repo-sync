@@ -285,15 +285,12 @@ and text in a comment line or past a scissors line SHALL be left unchanged.
 
 #### Scenario: Provenance is ambiguous
 
-- **WHEN** the replayed commit is reachable from more than one mirror's
-  remote-tracking namespace
-- **THEN** the commit is refused with a diagnostic, rather than qualified
-  against a guess
+- **WHEN** the replayed commit is reachable from more than one mirror's remote-tracking namespace
+- **THEN** the commit is refused with a diagnostic, rather than qualified against a guess
 
 #### Scenario: A URL is not a reference
 
-- **WHEN** the copied message contains a URL ending in a fragment such as
-  `https://example.org/x#9`
+- **WHEN** the copied message contains a URL ending in a fragment such as `https://example.org/x#9`
 - **THEN** it is left unchanged
 
 #### Scenario: Block mode
@@ -310,14 +307,13 @@ matching the `clone` and `sync` capabilities.
 #### Scenario: One mirror missing
 
 - **WHEN** an inventory entry has no mirror checkout on disk
-- **THEN** its remote is still configured, since the path is relative and may
-  resolve later, and a fetch of it is what reports the absence
+- **THEN** its remote is still configured, since the path is relative and may resolve later,
+  and a fetch of it is what reports the absence
 
 #### Scenario: One remote fails to be configured
 
 - **WHEN** configuring one remote fails
-- **THEN** the run records the failure, configures the rest, and exits non-zero
-  with a summary listing every failure
+- **THEN** the run records the failure, configures the rest, and exits non-zero with a summary listing every failure
 
 #### Scenario: Clean run
 

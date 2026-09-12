@@ -2,11 +2,9 @@
 
 ### Requirement: Mirror the template as a bare clone as well
 
-The system SHALL additionally mirror the entry flagged `template: true` as a
-bare repository at `mirrors/<template-org>/<template-repo>.git/`,
-holding the upstream's branches and nothing else.
-The bare mirror is what the `template` remotes point at;
-the checkout beside it remains the copy to read and reconcile against.
+The system SHALL additionally mirror the entry flagged `template: true` as a bare repository
+at `mirrors/<template-org>/<template-repo>.git/`, holding the upstream's branches and nothing else.
+The bare mirror is what the `template` remotes point at; the checkout beside it remains the copy to read and reconcile against.
 
 The bare mirror SHALL carry no tags,
 and SHALL be configured so that fetching its upstream imports none:
