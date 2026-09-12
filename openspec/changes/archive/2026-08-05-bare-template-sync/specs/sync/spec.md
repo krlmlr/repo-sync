@@ -60,15 +60,13 @@ Mirrors that are not cloned SHALL be skipped without failing the run, since clon
 
 ### Requirement: Fetch the `template` remote in every mirror
 
-The system SHALL fetch the `template` remote in every non-template mirror that
-exists on disk, so each mirror holds the template refs it will be reconciled
-against. The template's own mirror SHALL be skipped, as it carries no `template`
-remote.
+The system SHALL fetch the `template` remote in every non-template mirror that exists on disk,
+so each mirror holds the template refs it will be reconciled against.
+The template's own mirror SHALL be skipped, as it carries no `template` remote.
 
 #### Scenario: Template refs updated
 
-- **WHEN** a non-template mirror has a `template` remote and the bare mirror has
-  moved
+- **WHEN** a non-template mirror has a `template` remote and the bare mirror has moved
 - **THEN** the mirror's `template/*` refs are updated to match the bare mirror
 
 #### Scenario: Mirror without a `template` remote
