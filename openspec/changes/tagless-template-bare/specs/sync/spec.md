@@ -59,6 +59,13 @@ a fetch refspec that imports branches and no tags, no push-mirror setting, no re
 and a `HEAD` naming a branch the bare mirror has --
 so that a tree last touched by an older version is corrected by whichever command runs next rather than only by `clone`.
 
+Bringing it into shape and fetching it SHALL be a barrier:
+no checkout SHALL be started until both have finished, whatever their outcome.
+
+Whether the bare mirror can be fetched from SHALL be determined from the repository on disk
+rather than carried as state through the run,
+so every process that asks reaches the same answer.
+
 The bare mirror carries no `.git` entry, and so is not reachable by a sweep that discovers repositories by their working tree;
 refreshing it is this capability's responsibility and no other's. It is the one step of a sync that generic tooling cannot perform.
 
@@ -74,6 +81,13 @@ refreshing it is this capability's responsibility and no other's. It is the one 
 - **THEN** the bare mirror is brought into its tagless shape before any checkout fetches from it,
   so no checkout imports a tag during that run
 
+#### Scenario: No mirror overlaps the bare fetch
+
+- **WHEN** the checkouts are synced several at a time
+- **THEN** none of them is started until the bare mirror has been brought into
+  shape and fetched, so no checkout can fetch template refs that the bare mirror
+  was about to replace, nor a tag it was about to drop
+
 #### Scenario: Bare mirror missing
 
 - **WHEN** `mirrors/<template-org>/<template-repo>.git` does not exist
@@ -84,6 +98,12 @@ refreshing it is this capability's responsibility and no other's. It is the one 
 
 - **WHEN** a directory exists at the bare mirror's path but is not a bare repository
 - **THEN** the run records a failure and does not fetch into it
+
+#### Scenario: Missing bare mirror reported once
+
+- **WHEN** the bare mirror is missing or is not a bare repository
+- **THEN** the run says so once, rather than once per checkout that would have
+  fetched from it
 
 #### Scenario: Stale bare mirror still usable
 
