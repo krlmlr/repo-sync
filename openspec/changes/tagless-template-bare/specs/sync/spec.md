@@ -50,13 +50,14 @@ A fetch of every remote fetches the remotes that are there; wiring remotes up is
 
 ### Requirement: Refresh the template's bare mirror first
 
-The system SHALL bring the template's bare mirror at `mirrors/<template-org>/<template-repo>.git` into its required shape
-and up to date before any checkout fetches from it, so that the template refs the checkouts receive are the ones the upstream has and so
-that the bare mirror holds no tags for them to import.
+The system SHALL bring the template's bare mirror at `mirrors/<template-org>/<template-repo>.git` into its required shape, and up to date,
+before any checkout fetches from it.
+The checkouts then receive the template refs the upstream has, and the bare mirror holds no tags for them to import.
 
-Bringing it into shape SHALL cover the same properties the `clone` capability establishes -- a fetch refspec that imports branches
-and no tags, no push-mirror setting, no refs under `refs/tags/`, and a `HEAD` naming a branch the bare mirror has --
-so that a tree last touched by an older version is corrected by whichever command runs next rather than only by `clone`.
+Bringing it into shape SHALL cover the same properties the `clone` capability establishes: a fetch refspec that imports branches
+and no tags, no push-mirror setting, no refs under `refs/tags/`, and a `HEAD` naming a branch the bare mirror has.
+Establishing them here as well means a tree last touched by an older version is corrected by whichever command runs next,
+rather than only by `clone`.
 
 Bringing it into shape and fetching it SHALL be a barrier: no checkout SHALL be started until both have finished, whatever their outcome.
 

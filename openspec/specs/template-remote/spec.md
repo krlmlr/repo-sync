@@ -98,9 +98,10 @@ so an auto-followed tag arrives indistinguishable from the mirror's own and is n
 The system SHALL ensure that a commit created in a mirror by replaying a commit reachable from
 that mirror's `refs/remotes/template/*` carries no issue reference that resolves against the mirror it lands in.
 
-A reference of the form `#<number>` or `GH-<number>` SHALL be rewritten to `<template-org>/<template-repo>#<number>`, except
-where a closing keyword (`close`, `closes`, `closed`, `fix`, `fixes`, `fixed`, `resolve`, `resolves`, `resolved`) immediately precedes it,
-in which case the commit SHALL be refused with a diagnostic naming the offending references.
+A reference of the form `#<number>` or `GH-<number>` SHALL be rewritten to `<template-org>/<template-repo>#<number>`.
+Where a closing keyword immediately precedes the reference, the commit SHALL instead be refused,
+with a diagnostic naming the offending references.
+The closing keywords are `close`, `closes`, `closed`, `fix`, `fixes`, `fixed`, `resolve`, `resolves`, and `resolved`.
 Where the template's `<org>/<repo>` cannot be determined, the commit SHALL be refused rather than rewritten.
 
 When `REPO_SYNC_TEMPLATE_REFS` is set to `block`, every such reference SHALL be refused rather than rewritten.
