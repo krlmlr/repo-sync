@@ -2,15 +2,15 @@
 
 ### Requirement: The per-checkout step is generic
 
-The system SHALL bring each checkout in step using git commands that carry no knowledge of this repository:
-a rebasing pull of its upstream, and a pruned fetch of every remote it has.
+The system SHALL bring each checkout in step using git commands that carry no knowledge of this repository: a rebasing pull of its upstream,
+and a pruned fetch of every remote it has.
 No template-specific option SHALL be passed, no checkout SHALL be skipped for being the template,
 and no checkout's remotes SHALL be inspected to decide what to run against it.
 
 This is the point of keeping the template's bare mirror free of tags.
 Once the far end holds no tags, the correct command for a checkout is the obvious one,
-so the per-checkout half of a sync is something any tool that iterates over checkouts can perform --
-`s`, `h`, a shell loop, or this capability's own fan-out -- and all of them reach the same result.
+so the per-checkout half of a sync is something any tool that iterates over checkouts can perform -- `s`, `h`, a shell loop,
+or this capability's own fan-out -- and all of them reach the same result.
 
 A checkout that has no `template` remote SHALL NOT fail the run on that account.
 A fetch of every remote fetches the remotes that are there; wiring remotes up is the `clone` capability's responsibility.
@@ -50,43 +50,40 @@ A fetch of every remote fetches the remotes that are there; wiring remotes up is
 
 ### Requirement: Refresh the template's bare mirror first
 
-The system SHALL bring the template's bare mirror at `mirrors/<template-org>/<template-repo>.git` into its required shape and up to date
-before any checkout fetches from it, so that the template refs the checkouts receive are the ones the upstream has
-and so that the bare mirror holds no tags for them to import.
+The system SHALL bring the template's bare mirror at `mirrors/<template-org>/<template-repo>.git` into its required shape
+and up to date before any checkout fetches from it, so that the template refs the checkouts receive are the ones the upstream has and so
+that the bare mirror holds no tags for them to import.
 
-Bringing it into shape SHALL cover the same properties the `clone` capability establishes --
-a fetch refspec that imports branches and no tags, no push-mirror setting, no refs under `refs/tags/`,
-and a `HEAD` naming a branch the bare mirror has --
+Bringing it into shape SHALL cover the same properties the `clone` capability establishes -- a fetch refspec that imports branches
+and no tags, no push-mirror setting, no refs under `refs/tags/`, and a `HEAD` naming a branch the bare mirror has --
 so that a tree last touched by an older version is corrected by whichever command runs next rather than only by `clone`.
 
-Bringing it into shape and fetching it SHALL be a barrier:
-no checkout SHALL be started until both have finished, whatever their outcome.
+Bringing it into shape and fetching it SHALL be a barrier: no checkout SHALL be started until both have finished, whatever their outcome.
 
-Whether the bare mirror can be fetched from SHALL be determined from the repository on disk
-rather than carried as state through the run,
+Whether the bare mirror can be fetched from SHALL be determined from the repository on disk rather than carried as state through the run,
 so every process that asks reaches the same answer.
 
 The bare mirror carries no `.git` entry, and so is not reachable by a sweep that discovers repositories by their working tree;
-refreshing it is this capability's responsibility and no other's. It is the one step of a sync that generic tooling cannot perform.
+refreshing it is this capability's responsibility and no other's.
+It is the one step of a sync that generic tooling cannot perform.
 
 #### Scenario: Bare mirror refreshed before the template fetches
 
 - **WHEN** sync runs against a populated `mirrors/` tree
-- **THEN** the bare mirror is fetched before any checkout fetches from it, and
-  every checkout ends the run with the template refs the upstream has
+- **THEN** the bare mirror is fetched before any checkout fetches from it,
+  and every checkout ends the run with the template refs the upstream has
 
 #### Scenario: Bare mirror normalised before the checkouts fetch
 
 - **WHEN** sync runs against a tree whose bare mirror still carries tags or a refspec that would import them
-- **THEN** the bare mirror is brought into its tagless shape before any checkout fetches from it,
-  so no checkout imports a tag during that run
+- **THEN** the bare mirror is brought into its tagless shape before any checkout fetches from it, so no checkout imports a tag during
+  that run
 
 #### Scenario: No mirror overlaps the bare fetch
 
 - **WHEN** the checkouts are synced several at a time
-- **THEN** none of them is started until the bare mirror has been brought into
-  shape and fetched, so no checkout can fetch template refs that the bare mirror
-  was about to replace, nor a tag it was about to drop
+- **THEN** none of them is started until the bare mirror has been brought into shape and fetched, so no checkout can fetch template refs
+  that the bare mirror was about to replace, nor a tag it was about to drop
 
 #### Scenario: Bare mirror missing
 
@@ -102,25 +99,27 @@ refreshing it is this capability's responsibility and no other's. It is the one 
 #### Scenario: Missing bare mirror reported once
 
 - **WHEN** the bare mirror is missing or is not a bare repository
-- **THEN** the run says so once, rather than once per checkout that would have
-  fetched from it
+- **THEN** the run says so once, rather than once per checkout that would have fetched from it
 
 #### Scenario: Stale bare mirror still usable
 
 - **WHEN** the fetch of the bare mirror fails after it has been brought into shape
-- **THEN** the run records the failure and continues with the checkouts, since
-  the refs the bare mirror already holds remain readable and carry no tags
+- **THEN** the run records the failure and continues with the checkouts, since the refs the bare mirror already holds remain readable
+  and carry no tags
 
 ## REMOVED Requirements
 
 ### Requirement: Fetch the `template` remote in every mirror
 
-**Reason**: Replaced by "The per-checkout step is generic". Naming the `template` remote, passing `--no-tags` to its fetch,
-skipping the template's own checkout, and failing a mirror that has no such remote were all consequences of the bare mirror holding tags.
-With the bare mirror tagless and every checkout carrying the remote,
-the correct per-checkout command is a rebasing pull and a pruned fetch of every remote, which is what generic tooling already does.
+**Reason**: Replaced by "The per-checkout step is generic".
+Naming the `template` remote, passing `--no-tags` to its fetch, skipping the template's own checkout, and failing a mirror
+that has no such remote were all consequences of the bare mirror holding tags.
+With the bare mirror tagless and every checkout carrying the remote, the correct per-checkout command is a rebasing pull
+and a pruned fetch of every remote, which is what generic tooling already does.
 
-**Migration**: No action. The replacement requirement fetches the `template` remote as one of the remotes it fetches,
+**Migration**: No action.
+The replacement requirement fetches the `template` remote as one of the remotes it fetches,
 so the `refs/remotes/template/*` a checkout ends with are unchanged.
 Two behaviours are deliberately dropped: a checkout without a `template` remote is no longer a failure,
-and the template's own checkout is no longer skipped. Run `mise run clone` to wire up a checkout whose `template` remote is missing.
+and the template's own checkout is no longer skipped.
+Run `mise run clone` to wire up a checkout whose `template` remote is missing.
