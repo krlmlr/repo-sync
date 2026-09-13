@@ -28,7 +28,8 @@ and the one thing missing is the measurement.
     since `duckdb-r` ships `duckdb` and `rigraph` ships `igraph`.
   - **Release position** — latest release and its age, the commits on the default branch since it,
     classified by Conventional Commits prefix so that three `feat:` reads differently from twelve `chore:`,
-    the CRAN version and its age, and whether a release-drafter draft is already open.
+    the CRAN version and its age, and — where we have push access, since drafts are not public —
+    whether a release-drafter draft is already open.
   - **CI, with history** — the latest conclusion per workflow on the default branch,
     the last ninety days of runs as a pass/fail strip, the success rate and median duration over that window,
     and, when red, how many runs in a row and since when.
@@ -88,7 +89,8 @@ This change adds the API back, and the difference is not a reversal:
   No R and no rmarkdown, though `actions-sync` uses both: it was already an R package, and this repository is not.
 - **`.gitignore`**: `/reports/`, beside `/mirrors/`.
 - **`mise.toml`**: three named tasks.
-- **New workflow** `.github/workflows/dashboard.yaml`, and a fine-grained read-only token as a secret, as `actions-sync` already keeps one.
+- **New workflow** `.github/workflows/dashboard.yaml`, reading the `GITHUB_TOKEN` Actions already mints.
+  No stored secret: a credential is required, one this project keeps is not.
 - **`ROADMAP.md`**: §2.2's report bullet is partly delivered here, and the "public web UI" non-goal is retired — see below.
 - **No changes** to `clone.sh`, `sync.sh`, `repos.yml`, the hook, or any mirror.
 

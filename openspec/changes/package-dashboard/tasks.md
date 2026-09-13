@@ -17,10 +17,10 @@
 - [ ] 3.1 Batch the repository facts into aliased queries covering several repositories per request; verify the whole inventory is collected in a number of requests an order of magnitude below one per metric per package, and that the count is reported.
 - [ ] 3.2 Collect the latest release, its date, and the commits on the default branch since it; verify a package with no release records the fields as absent rather than as zero.
 - [ ] 3.3 Classify those commits by Conventional Commits type, counting unrecognised subjects as unclassified; verify a mixed set of subjects lands in the expected buckets and the buckets sum to the total.
-- [ ] 3.4 Record whether an unpublished draft release exists; verify a repository with a release-drafter draft is distinguished from one without.
+- [ ] 3.4 Record whether an unpublished draft release exists where the credential has push access, and record the field as unavailable where it does not; verify a repository we can push to distinguishes a draft from none, and that one we cannot reports unavailable rather than none.
 - [ ] 3.5 Collect the latest workflow conclusion on the default branch and the run series over the retention window; verify the series is ordered oldest-first and records the window actually covered.
 - [ ] 3.6 Derive success rate, median duration, consecutive-failure count and red-since timestamp from the series; verify three failing runs yield a count of three and the first one's timestamp, and that an alternating series is not recorded as consecutively failing while the latest run succeeded.
-- [ ] 3.7 Collect open issue and pull-request counts with the actionable cuts — no maintainer reply, beyond a configured age, outside contributors, bots, drafts, awaiting review — and the oldest age of each; verify an empty tracker records zeros with the age fields absent.
+- [ ] 3.7 Collect open issue and pull-request counts with the actionable cuts — no maintainer reply, beyond a configured age, outside contributors, bots, drafts, awaiting review — and the oldest age of each, identifying a maintainer reply by the comment's public author association rather than by a permission lookup; verify an empty tracker records zeros with the age fields absent, and that an owner's reply is distinguished from a stranger's without push access.
 - [ ] 3.8 Collect last commit date, commits in the recent window, distinct authors in the longer window, and the dormancy flag; verify a repository with no commit inside the dormancy period is marked dormant.
 
 ## 4. Collector: CRAN
@@ -77,14 +77,15 @@
 - [ ] 9.3 Commit nothing when the output is identical to what is published; verify a second run against an unchanged reading adds no commit.
 - [ ] 9.4 Retain each published snapshot under its collection time and append the portfolio-level counters to a series beside it; verify two publications leave two retained snapshots and two series entries.
 - [ ] 9.5 Render the trend from that series and omit it when the series cannot be read; verify the current reading still renders in full with the series removed.
-- [ ] 9.6 Add the scheduled workflow, with a manual trigger, reading the token from a secret and falling back to the workflow's own credential for public repositories; verify a manual run publishes and that a run without the secret still collects every public entry.
+- [ ] 9.6 Add the scheduled workflow, with a manual trigger, reading the `GITHUB_TOKEN` Actions mints and storing no secret of its own; verify a manual run publishes and collects every public entry.
 - [ ] 9.7 Verify disabling the workflow leaves local collection and rendering working unchanged.
 
 ## 10. Wiring
 
 - [ ] 10.1 Add the `metrics`, `dashboard` and `publish-dashboard` tasks to `mise.toml`, documenting their prerequisites as the existing tasks document theirs; verify `mise tasks` lists all three and each runs its script.
 - [ ] 10.2 Add the HTTP client to `requirements.txt` beside `PyYAML`; verify `mise run install` succeeds from a clean environment.
-- [ ] 10.3 Add `/reports/` to `.gitignore` beside `/mirrors/`; verify `git status` is clean after a local collect and render.
+- [ ] 10.3 Read the credential from the environment, falling back to an existing `gh` login, and fail with a message naming both when neither is available; verify a run with no credential says what to do rather than reporting every package unreadable.
+- [ ] 10.4 Add `/reports/` to `.gitignore` beside `/mirrors/`; verify `git status` is clean after a local collect and render.
 
 ## 11. End-to-end verification
 
@@ -101,5 +102,5 @@
 
 - [ ] 12.1 Remove the "public web UI" entry from ROADMAP's out-of-scope list and mark §2.2's report bullet delivered for the observable half, leaving classification open; verify the section no longer contradicts what ships.
 - [ ] 12.2 Add a ROADMAP entry for the dashboard under §2.4, naming the snapshot as its published contract; verify the section describes collection, rendering and publication.
-- [ ] 12.3 Document the token: what it is for, why public entries need no grant, and that a fine-grained token only reaches repositories its owner administers; verify the note matches what the workflow actually does.
+- [ ] 12.3 Document the credential: that one is required because GraphQL refuses anonymous requests, that it is `GITHUB_TOKEN` in CI and an existing `gh` login locally, and what declining a stored token costs — draft releases, maintainer precision by permission, private entries, headroom; verify the note matches what the workflow actually does.
 - [ ] 12.4 Record in `design.md` which CRAN source was chosen and what it returns; verify the Open Question is answered rather than left standing.

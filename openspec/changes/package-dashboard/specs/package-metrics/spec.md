@@ -56,8 +56,9 @@ from that file. A repository without one SHALL carry no package-level fields rat
 ### Requirement: Release position
 
 The system SHALL record, per package, the most recent release and its age, the number of commits on the default branch since
-that release classified by Conventional Commits type, whether an unpublished draft release exists, and the version and release
-date currently on CRAN.
+that release classified by Conventional Commits type, and the version and release date currently on CRAN. Where the credential
+in use has push access to the repository, the system SHALL also record whether an unpublished draft release exists; where it
+does not, that field SHALL be recorded as unavailable rather than as absent, since draft releases are not public.
 
 #### Scenario: Unreleased commits are classified
 
@@ -68,6 +69,11 @@ date currently on CRAN.
 
 - **WHEN** the `DESCRIPTION` version is higher than the version CRAN serves
 - **THEN** the entry records both versions and that the development version is ahead
+
+#### Scenario: Draft release is not visible
+
+- **WHEN** the credential in use has no push access to a repository
+- **THEN** the draft-release field is recorded as unavailable, distinct from a recorded absence of a draft
 
 #### Scenario: Package has never been released
 

@@ -65,17 +65,30 @@ and is the one place a per-repository call is genuinely per-repository.
 The resulting budget is low three figures against five thousand an hour, and a request count is a thing the collector
 reports at the end, the way `clone` and `sync` report failures.
 
-### Any token reads the public portfolio; the secret is only for what is private
+### A credential is required; a stored secret is not
 
-Every entry in `repos.yml` today is a public repository, and public issues, releases and workflow runs are readable
-with any valid credential — including the `GITHUB_TOKEN` that Actions mints for `repo-sync` itself, whose *write*
-scope stops at this repository but whose reads do not.
+Some credential is not optional. The GraphQL API refuses unauthenticated requests outright, so batching — the thing
+that makes collecting the whole inventory cheap — is unavailable without one, and unauthenticated REST is sixty
+requests an hour against an inventory that needs more than that in a single run.
 
-That matters because most of the inventory is not the user's to grant: a fine-grained PAT can only be given access
-to repositories its owner administers, and `r-lib`, `tidyverse`, `igraph` and `r-dbi` are not that.
-So the design does not depend on one. A PAT is supported and documented — `actions-sync` already keeps a
-`TOKEN_KEYS` secret and the same pattern applies — and it buys exactly one thing: entries that are private.
-Where no credential can see a repository, the collector records it as unreadable and moves on.
+But it need not be a secret anyone stores. In Actions it is the `GITHUB_TOKEN` minted for `repo-sync` itself, whose
+*write* scope stops at this repository and whose reads do not: public issues, pull requests, releases, commits and
+workflow runs in any repository are readable with it. Locally it is an existing `gh` login, read at run time.
+Neither is a secret this project keeps, rotates or can leak.
+
+What a stored fine-grained token would add, and what declining one therefore costs:
+
+- **Draft releases**, which are not public: GitHub returns them only to a caller with push access to that repository.
+  So this is lost for the inventory whatever token is used, since most of it is not ours to push to.
+  The metric is specified as optional for that reason.
+- **Maintainer identification by permission**, which needs push access. It degrades rather than disappears:
+  `author_association` is public on every comment, so an owner's reply is still distinguishable from a stranger's.
+- **Private entries**, if the inventory ever holds one. A fine-grained token reaches only repositories its owner
+  administers, so it could add entries under `krlmlr` and `cynkra` and none under `r-lib`, `tidyverse` or `r-dbi`.
+- **Headroom** — a thousand requests an hour rather than five thousand, against a budget in the low hundreds.
+
+None of those is worth a secret to hold and rotate, so the default is no stored token.
+A repository no credential can see is recorded as unreadable, and the run moves on.
 
 ### A failure is a stale cell, never a missing run
 
