@@ -1,6 +1,7 @@
 ## Purpose
 
-Mirror every repository listed in `repos.yml` into a predictable local directory layout (`mirrors/<org>/<repo>/`), keeping the local copy fast-forwardable to its GitHub default branch on subsequent runs.
+Mirror every repository listed in `repos.yml` into a predictable local directory layout (`mirrors/<org>/<repo>/`),
+keeping the local copy fast-forwardable to its GitHub default branch on subsequent runs.
 
 ## Requirements
 
@@ -32,12 +33,11 @@ the upstream does not have is local state it discards like any other.
 
 ### Requirement: Failures are isolated
 
-The system SHALL continue processing remaining repos if a single clone or fetch
-fails, and report all failures at the end with a non-zero exit code. Failures
-SHALL be collected across every repository worked on, including those processed
-concurrently in separate processes, so the final report accounts for the whole
-run. The report SHALL list them in a stable order, independent of the order the
-repositories happened to finish in.
+The system SHALL continue processing remaining repos if a single clone or fetch fails,
+and report all failures at the end with a non-zero exit code.
+Failures SHALL be collected across every repository worked on, including those processed concurrently in separate processes,
+so the final report accounts for the whole run.
+The report SHALL list them in a stable order, independent of the order the repositories happened to finish in.
 
 #### Scenario: One repo unreachable
 
@@ -57,7 +57,9 @@ repositories happened to finish in.
 - **THEN** both runs print the same report, in the same order
 
 ### Requirement: Configure `template` remote during clone
-The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update, pointing at the local relative path `../../<template-org>/<template-repo>.git` (resolving to the template's bare mirror under `mirrors/`).
+The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update,
+pointing at the local relative path `../../<template-org>/<template-repo>.git`
+(resolving to the template's bare mirror under `mirrors/`).
 
 #### Scenario: Template URL added to non-template mirror
 - **WHEN** a non-template mirror is cloned or updated successfully
@@ -68,34 +70,32 @@ The system SHALL configure a git remote named `template` on every non-template m
 - **THEN** the script does not add a `template` remote on it
 
 #### Scenario: Drift normalised
-- **WHEN** the template entry in `repos.yml` changes between runs, or a mirror still carries a `template` URL pointing at the template's checkout
+- **WHEN** the template entry in `repos.yml` changes between runs,
+  or a mirror still carries a `template` URL pointing at the template's checkout
 - **THEN** the next `clone` run rewrites every non-template mirror's `template` remote URL to match the current template's bare mirror path
 
 ### Requirement: Process the template mirror first
 
-The system SHALL finish cloning or updating the entry flagged `template: true`
-— both its checkout and its bare mirror — before it begins processing any
-non-template entry, so the local path used by `template` remotes always
-resolves on disk after a successful run. This SHALL hold as a barrier rather
-than as an ordering within a single pass: no non-template entry SHALL be
-started while either of the template's mirrors is still being made.
+The system SHALL finish cloning or updating the entry flagged `template: true` — both its checkout and its bare mirror —
+before it begins processing any non-template entry,
+so the local path used by `template` remotes always resolves on disk after a successful run.
+This SHALL hold as a barrier rather than as an ordering within a single pass:
+no non-template entry SHALL be started while either of the template's mirrors is still being made.
 
-The template's two mirrors are independent clones of one upstream, so they MAY
-be made at the same time as each other, and a failure in one SHALL NOT prevent
-the other from being attempted.
+The template's two mirrors are independent clones of one upstream,
+so they MAY be made at the same time as each other,
+and a failure in one SHALL NOT prevent the other from being attempted.
 
 #### Scenario: Template processed first on fresh run
 
 - **WHEN** `clone.sh` runs against an empty `mirrors/` directory
-- **THEN** the template's checkout and its bare mirror are created before any
-  non-template entry, so each subsequent `git remote add template
-  ../../<template-org>/<template-repo>.git` resolves to an existing repository
+- **THEN** the template's checkout and its bare mirror are created before any non-template entry,
+  so each subsequent `git remote add template ../../<template-org>/<template-repo>.git` resolves to an existing repository
 
 #### Scenario: No mirror overlaps the template's
 
 - **WHEN** the inventory is mirrored several repositories at a time
-- **THEN** no non-template mirror is begun until both of the template's mirrors
-  have finished, successfully or otherwise
+- **THEN** no non-template mirror is begun until both of the template's mirrors have finished, successfully or otherwise
 
 #### Scenario: Both mirrors of the template at once
 
@@ -115,34 +115,28 @@ The system SHALL exit non-zero before processing any mirror if `repos.yml` does 
 
 ### Requirement: Mirror the template as a bare clone as well
 
-The system SHALL additionally clone the entry flagged `template: true` as a
-bare mirror at `mirrors/<template-org>/<template-repo>.git/`, using `git clone
---mirror` semantics so a later `git fetch --prune` brings every ref in line with
-the upstream. The bare mirror is what the `template` remotes point at; the
-checkout beside it remains the copy to read and reconcile against.
+The system SHALL additionally clone the entry flagged `template: true` as a bare mirror at `mirrors/<template-org>/<template-repo>.git/`,
+using `git clone --mirror` semantics so a later `git fetch --prune` brings every ref in line with the upstream.
+The bare mirror is what the `template` remotes point at; the checkout beside it remains the copy to read and reconcile against.
 
 #### Scenario: Fresh bare mirror
 
 - **WHEN** `mirrors/<template-org>/<template-repo>.git/` does not exist
-- **THEN** the script clones the template repo there as a bare mirror, over SSH
-  like every other clone
+- **THEN** the script clones the template repo there as a bare mirror, over SSH like every other clone
 
 #### Scenario: Existing bare mirror updated
 
-- **WHEN** `mirrors/<template-org>/<template-repo>.git/` already exists and is
-  a bare repository
+- **WHEN** `mirrors/<template-org>/<template-repo>.git/` already exists and is a bare repository
 - **THEN** the script runs `git fetch --prune` in it rather than re-cloning
 
 #### Scenario: Bare path occupied by a non-bare repository
 
-- **WHEN** a directory exists at the bare mirror's path but is not a bare
-  repository
+- **WHEN** a directory exists at the bare mirror's path but is not a bare repository
 - **THEN** the script records a failure and does not fetch into it
 
 #### Scenario: Both mirrors attempted independently
 
-- **WHEN** either the template's checkout or its bare mirror fails to clone or
-  update
+- **WHEN** either the template's checkout or its bare mirror fails to clone or update
 - **THEN** the other is still attempted, and each failure is reported on its own
 
 ### Requirement: Mirrors are processed several at a time

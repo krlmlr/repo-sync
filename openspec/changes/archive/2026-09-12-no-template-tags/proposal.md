@@ -47,8 +47,7 @@ which is a great deal harder to walk back than a local ref.
 ### Modified Capabilities
 
 - `template-remote`: The `template` remote is configured to import no tags.
-- `clone`: An incremental update brings the mirror's tags in line with its
-  upstream's, removing any the upstream does not have.
+- `clone`: An incremental update brings the mirror's tags in line with its upstream's, removing any the upstream does not have.
 - `sync`: The `template` fetch imports no tags,
   whether or not the remote carries the setting.
 
@@ -57,8 +56,7 @@ which is a great deal harder to walk back than a local ref.
 - **`scripts/clone.sh`** — `--prune-tags` on the update fetch,
   and `remote.template.tagOpt` written beside the `template` URL.
 - **`scripts/sync.sh`** — `--no-tags` on the `template` fetch.
-- **`ROADMAP.md`** — §2.2 records that the `template` remote carries branches
-  and not tags.
+- **`ROADMAP.md`** — §2.2 records that the `template` remote carries branches and not tags.
 - **Existing mirrors**: one `mise run clone` configures every `template` remote
   and drops the tags already imported. No manual migration.
 - No new dependencies, and no change to what is fetched otherwise:

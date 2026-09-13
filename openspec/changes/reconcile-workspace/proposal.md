@@ -65,7 +65,8 @@ Stated that way, the existing behaviour is the case where that remote is `templa
 ## Capabilities
 
 ### New Capabilities
-- `reconcile-workspace`: Create and maintain a separate clone of the template that can reach every other repository's history, so a change made in one mirror can be browsed and cherry-picked into the template.
+- `reconcile-workspace`: Create and maintain a separate clone of the template that can reach every other repository's history,
+  so a change made in one mirror can be browsed and cherry-picked into the template.
 
 ### Modified Capabilities
 - `task-runner`: the named-task requirement enumerates one scenario per script entry point, so it gains one for the new task.
@@ -86,8 +87,10 @@ Stated that way, the existing behaviour is the case where that remote is `templa
 
 ## Out of Scope
 
-- Deciding *what* to promote. This change provides the workspace a promotion happens in; the reconcile engine that finds candidates is ROADMAP §2.2 proper.
-- Pushing the template's result anywhere. The workspace's `origin` is the template's GitHub upstream, so an ordinary `git push` reaches it; no tooling is added for that.
+- Deciding *what* to promote. This change provides the workspace a promotion happens in;
+  the reconcile engine that finds candidates is ROADMAP §2.2 proper.
+- Pushing the template's result anywhere. The workspace's `origin` is the template's GitHub upstream,
+  so an ordinary `git push` reaches it; no tooling is added for that.
 - Any change to the outward direction. The template's bare mirror and the `template` remotes are untouched,
   and the outward guard's observable behaviour on a mirror is unchanged:
   `template` is a non-`origin` remote, so the generalised rule selects it exactly as the current one does.

@@ -1,6 +1,7 @@
 ## Purpose
 
-Document the ambient environment a contributor must have ready before running any tooling task: SSH access to GitHub and GNU parallel, with no API token and no `gh` login required by anything.
+Document the ambient environment a contributor must have ready before running any tooling task:
+SSH access to GitHub and GNU parallel, with no API token and no `gh` login required by anything.
 
 ## Requirements
 

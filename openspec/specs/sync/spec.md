@@ -2,33 +2,34 @@
 
 ## Purpose
 
-Bring every mirror back in step in one command: refresh the template's bare
-mirror, rebase each mirror onto its own upstream keeping unpushed local work,
-and fetch the `template` remote everywhere. The bare mirror has no `.git` entry
-and so is reachable by no sweep over working trees (`s`, `h`); this is the
-capability that keeps it current.
+Bring every mirror back in step in one command:
+refresh the template's bare mirror, rebase each mirror onto its own upstream keeping unpushed local work,
+and fetch the `template` remote everywhere.
+The bare mirror has no `.git` entry and so is reachable by no sweep over working trees (`s`, `h`);
+this is the capability that keeps it current.
 
 ## Requirements
 
 ### Requirement: Refresh the template's bare mirror first
 
-The system SHALL fetch the template's bare mirror at
-`mirrors/<template-org>/<template-repo>.git` before any mirror fetches from it,
-so the template refs the mirrors receive are the ones the upstream has. That
-fetch SHALL be a barrier: no mirror SHALL be started until it has finished,
-whatever its outcome. The bare mirror carries no `.git` entry, and so is not
-reachable by a sweep that discovers repositories by their working tree;
+The system SHALL fetch the template's bare mirror at `mirrors/<template-org>/<template-repo>.git`
+before any mirror fetches from it,
+so the template refs the mirrors receive are the ones the upstream has.
+That fetch SHALL be a barrier:
+no mirror SHALL be started until it has finished, whatever its outcome.
+The bare mirror carries no `.git` entry,
+and so is not reachable by a sweep that discovers repositories by their working tree;
 refreshing it is this capability's responsibility and no other's.
 
-Whether the bare mirror can be fetched from SHALL be determined from the
-repository on disk rather than carried as state through the run, so every
-process that asks reaches the same answer.
+Whether the bare mirror can be fetched from SHALL be determined from the repository on disk
+rather than carried as state through the run,
+so every process that asks reaches the same answer.
 
 #### Scenario: Bare mirror refreshed before the template fetches
 
 - **WHEN** sync runs against a populated `mirrors/` tree
-- **THEN** the bare mirror is fetched before any mirror fetches its `template`
-  remote, and every mirror ends the run with the template refs the upstream has
+- **THEN** the bare mirror is fetched before any mirror fetches its `template` remote,
+  and every mirror ends the run with the template refs the upstream has
 
 #### Scenario: No mirror overlaps the bare fetch
 
@@ -40,13 +41,12 @@ process that asks reaches the same answer.
 
 - **WHEN** `mirrors/<template-org>/<template-repo>.git` does not exist
 - **THEN** the run records a failure naming `mise run clone` as the repair,
-  skips the per-mirror `template` fetches rather than failing each one against
-  a path that does not resolve, and still rebases the mirrors
+  skips the per-mirror `template` fetches rather than failing each one against a path that does not resolve,
+  and still rebases the mirrors
 
 #### Scenario: Bare path occupied by a non-bare repository
 
-- **WHEN** a directory exists at the bare mirror's path but is not a bare
-  repository
+- **WHEN** a directory exists at the bare mirror's path but is not a bare repository
 - **THEN** the run records a failure and does not fetch into it
 
 #### Scenario: Missing bare mirror reported once
@@ -58,15 +58,14 @@ process that asks reaches the same answer.
 #### Scenario: Stale bare mirror still usable
 
 - **WHEN** the fetch of the bare mirror fails
-- **THEN** the run records the failure and continues to fetch `template` in the
-  mirrors, since the refs the bare mirror already holds remain readable
+- **THEN** the run records the failure and continues to fetch `template` in the mirrors,
+  since the refs the bare mirror already holds remain readable
 
 ### Requirement: Rebase every mirror onto its upstream
 
-The system SHALL run `git pull --rebase` in every mirror checkout listed in
-`repos.yml` that exists on disk, keeping local commits that have not been
-pushed. Mirrors that are not cloned SHALL be skipped without failing the run,
-since cloning is the `clone` capability's responsibility.
+The system SHALL run `git pull --rebase` in every mirror checkout listed in `repos.yml` that exists on disk,
+keeping local commits that have not been pushed.
+Mirrors that are not cloned SHALL be skipped without failing the run, since cloning is the `clone` capability's responsibility.
 
 #### Scenario: Mirror fast-forwarded
 
@@ -75,39 +74,33 @@ since cloning is the `clone` capability's responsibility.
 
 #### Scenario: Local commits preserved
 
-- **WHEN** a mirror carries a local commit that is not on its upstream, and the
-  upstream has moved
-- **THEN** the local commit is rebased on top of the new upstream tip rather
-  than discarded
+- **WHEN** a mirror carries a local commit that is not on its upstream, and the upstream has moved
+- **THEN** the local commit is rebased on top of the new upstream tip rather than discarded
 
 #### Scenario: Mirror not cloned
 
 - **WHEN** an inventory entry has no directory under `mirrors/`
-- **THEN** the entry is reported as skipped and the run does not count it as a
-  failure
+- **THEN** the entry is reported as skipped and the run does not count it as a failure
 
 #### Scenario: Rebase stops on a conflict
 
 - **WHEN** a mirror's rebase stops on a conflict
-- **THEN** the failure is recorded, the mirror is left for a human to resolve,
-  and the run continues with the remaining mirrors
+- **THEN** the failure is recorded, the mirror is left for a human to resolve, and the run continues with the remaining mirrors
 
 ### Requirement: Fetch the `template` remote in every mirror
 
-The system SHALL fetch the `template` remote in every non-template mirror that
-exists on disk, so each mirror holds the template refs it will be reconciled
-against, and SHALL do so without importing tags. The template's own mirror
-SHALL be skipped, as it carries no `template` remote.
+The system SHALL fetch the `template` remote in every non-template mirror that exists on disk,
+so each mirror holds the template refs it will be reconciled against,
+and SHALL do so without importing tags.
+The template's own mirror SHALL be skipped, as it carries no `template` remote.
 
-The fetch SHALL suppress tags itself rather than relying on the remote's
-configuration: `clone` writes that configuration, `sync` is the command that
-runs every day, and a mirror wired up before the configuration existed must not
-keep importing tags until someone happens to run the other command.
+The fetch SHALL suppress tags itself rather than relying on the remote's configuration:
+`clone` writes that configuration, `sync` is the command that runs every day,
+and a mirror wired up before the configuration existed must not keep importing tags until someone happens to run the other command.
 
 #### Scenario: Template refs updated
 
-- **WHEN** a non-template mirror has a `template` remote and the bare mirror has
-  moved
+- **WHEN** a non-template mirror has a `template` remote and the bare mirror has moved
 - **THEN** the mirror's `template/*` refs are updated to match the bare mirror
 
 #### Scenario: Template tags stay out
@@ -143,18 +136,16 @@ keep importing tags until someone happens to run the other command.
 
 ### Requirement: Failures are isolated
 
-The system SHALL continue processing the remaining mirrors when one step fails,
-report every failure at the end, and exit non-zero. Failures SHALL be collected
-across every mirror worked on, including those processed concurrently in
-separate processes, so the final report accounts for the whole run. The report
-SHALL list them in a stable order, independent of the order the mirrors
-happened to finish in.
+The system SHALL continue processing the remaining mirrors when one step fails, report every failure at the end, and exit non-zero.
+Failures SHALL be collected across every mirror worked on, including those processed concurrently in separate processes,
+so the final report accounts for the whole run.
+The report SHALL list them in a stable order, independent of the order the mirrors happened to finish in.
 
 #### Scenario: One mirror unreachable
 
 - **WHEN** one mirror's pull or fetch fails
-- **THEN** the run logs the failure, continues with the rest, and exits non-zero
-  after all mirrors are processed with a summary listing every failure
+- **THEN** the run logs the failure, continues with the rest,
+  and exits non-zero after all mirrors are processed with a summary listing every failure
 
 #### Scenario: Failure raised while other mirrors are in flight
 
@@ -179,15 +170,13 @@ happened to finish in.
 
 ### Requirement: Invalid template designation is fatal
 
-The system SHALL exit non-zero before touching any mirror if `repos.yml` does
-not contain exactly one entry with `template: true`, matching the `clone`
-capability so both tools reject the same malformed inventory.
+The system SHALL exit non-zero before touching any mirror if `repos.yml` does not contain exactly one entry with `template: true`,
+matching the `clone` capability so both tools reject the same malformed inventory.
 
 #### Scenario: No template flagged
 
 - **WHEN** `repos.yml` has no entry with `template: true`
-- **THEN** sync exits non-zero with a message naming the missing flag, before
-  fetching or rebasing anything
+- **THEN** sync exits non-zero with a message naming the missing flag, before fetching or rebasing anything
 
 #### Scenario: Multiple templates flagged
 

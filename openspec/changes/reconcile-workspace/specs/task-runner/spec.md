@@ -13,11 +13,14 @@
 
 #### Scenario: sync task
 - **WHEN** a contributor runs `mise run sync`
-- **THEN** `mise` executes `scripts/sync.sh`, which refreshes the template's bare mirror, rebases every mirror onto its upstream, and fetches the `template` remote everywhere
+- **THEN** `mise` executes `scripts/sync.sh`, which refreshes the template's bare mirror,
+  rebases every mirror onto its upstream, and fetches the `template` remote everywhere
 
 #### Scenario: reconcile-workspace task
 - **WHEN** a contributor runs `mise run reconcile-workspace`
-- **THEN** `mise` executes `scripts/reconcile_workspace.sh`, which creates the workspace if it is absent and brings its per-entry remotes into line with `repos.yml`, without fetching from them and without touching the workspace's working tree
+- **THEN** `mise` executes `scripts/reconcile_workspace.sh`, which creates the workspace if it is absent
+  and brings its per-entry remotes into line with `repos.yml`,
+  without fetching from them and without touching the workspace's working tree
 
 #### Scenario: Unknown task
 - **WHEN** a contributor runs `mise run nonexistent`
