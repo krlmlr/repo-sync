@@ -1,14 +1,19 @@
 ## MODIFIED Requirements
 
 ### Requirement: Configure `template` remote on non-template mirrors
-The system SHALL ensure every non-template mirror has a git remote named `template` pointing at the local path of the template repo's **bare** mirror, expressed relative to the mirror's working tree as `../../<template-org>/<template-repo>.git`. The remote SHALL NOT point at the template's checkout: git refuses a push to the branch a non-bare repository has checked out, and a working tree is state a fetch has no business seeing.
+The system SHALL ensure every non-template mirror has a git remote named `template`
+pointing at the local path of the template repo's **bare** mirror,
+expressed relative to the mirror's working tree as `../../<template-org>/<template-repo>.git`.
+The remote SHALL NOT point at the template's checkout: git refuses a push to the branch a non-bare repository has checked out,
+and a working tree is state a fetch has no business seeing.
 
 #### Scenario: Fresh non-template mirror
 - **WHEN** a non-template mirror is freshly cloned and has no `template` remote
 - **THEN** the system runs `git remote add template ../../<template-org>/<template-repo>.git` inside that mirror
 
 #### Scenario: Existing `template` remote with stale URL
-- **WHEN** a non-template mirror already has a `template` remote pointing at a different URL, including one pointing at the template's checkout
+- **WHEN** a non-template mirror already has a `template` remote pointing at a different URL,
+  including one pointing at the template's checkout
 - **THEN** the system runs `git remote set-url template ../../<template-org>/<template-repo>.git` to normalise it
 
 #### Scenario: Template repo itself

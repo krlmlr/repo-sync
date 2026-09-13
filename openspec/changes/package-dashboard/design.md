@@ -40,7 +40,7 @@ Collection and rendering are two entry points over one versioned JSON document, 
 
 The alternative — render straight from the API — is shorter by a file and worse in every other way.
 A snapshot makes the renderer a pure function, so the page can be iterated on offline against a fixture
-instead of against forty-seven live repositories; it makes a failed collection leave the *previous* page standing;
+instead of against forty-six live repositories; it makes a failed collection leave the *previous* page standing;
 and it is what the history is made of, so building it costs nothing extra.
 
 That document is a deliverable and not an intermediate. It is published beside the page at a stable relative URL,
@@ -57,7 +57,7 @@ score and its reasons included.
 
 One GraphQL query carries many repositories as aliased fields, and each one carries its issues, pull requests,
 releases, default branch and last commit in the same round trip. Ten repositories per query keeps the response
-readable and the node budget low, so the whole inventory is five queries rather than forty-seven times five REST calls.
+readable and the node budget low, so the whole inventory is five queries rather than forty-six times five REST calls.
 
 Workflow runs stay on REST: the run history is paginated differently, is filtered by branch and event,
 and is the one place a per-repository call is genuinely per-repository.
@@ -98,7 +98,7 @@ A run whose every package failed still writes a snapshot, and it is the old one 
 
 This is the API-shaped version of what `fail` and `report_failures` do in the shell tools: record, continue, summarise,
 exit non-zero. The exit status is for the scheduler; the page is for the human, and the human is better served by
-forty-six fresh rows and one grey one than by yesterday's page or none.
+forty-five fresh rows and one grey one than by yesterday's page or none.
 
 ### CI history comes from GitHub's retention, not from ours
 
@@ -135,7 +135,7 @@ The mirrors and the template have unrelated histories — template changes arriv
 has no meaning and `git cherry` does: it compares patch-ids and reports which template commits have no equivalent
 in the mirror.
 
-Patch-id over two full histories is real work at forty-seven repositories, so the mirror side is bounded by date:
+Patch-id over two full histories is real work at forty-six repositories, so the mirror side is bounded by date:
 a commit authored before a template commit existed cannot be a copy of it.
 
 This group is the one thing CI cannot compute — it would need every repository's history, which is what `mirrors/`

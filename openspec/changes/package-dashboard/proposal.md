@@ -1,12 +1,12 @@
 ## Why
 
-`repos.yml` knows forty-seven packages by name and nothing else about them.
+`repos.yml` knows forty-six packages by name and nothing else about them.
 
 Every question a maintainer actually asks is answered somewhere else, one repository at a time:
 whether CI is red, how long it has been red, what has accumulated since the last CRAN release,
 which issue has been waiting longest, whether a package has gone dormant.
-The answers exist — GitHub and CRAN both publish them — but they exist forty-seven times over,
-and the cost of the portfolio is that nobody visits forty-seven pages to find the two that need work.
+The answers exist — GitHub and CRAN both publish them — but they exist forty-six times over,
+and the cost of the portfolio is that nobody visits forty-six pages to find the two that need work.
 
 [`actions-sync`](https://github.com/krlmlr/actions-sync) already showed the shape of the fix.
 Its [status page](https://krlmlr.github.io/actions-sync/) is one table, one row per repository, rebuilt daily,
@@ -64,7 +64,7 @@ This change adds the API back, and the difference is not a reversal:
 - **It is off the critical path.** `clone` and `sync` gain nothing and lose nothing.
   A dashboard run that fails leaves a stale page, not an unmirrored portfolio.
 - **It degrades instead of collapsing.** A package that cannot be read keeps its last known values, marked stale.
-  The other forty-six still render.
+  The other forty-five still render.
 - **It is one run.** Batched by GraphQL, the whole inventory costs a low three-figure request count against an hourly five thousand.
 
 ## Capabilities

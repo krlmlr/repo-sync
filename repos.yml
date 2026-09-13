@@ -33,8 +33,6 @@ repos:
   - org: krlmlr
     repo: mockr
   - org: krlmlr
-    repo: plogr
-  - org: krlmlr
     repo: utf8
   - org: krlmlr
     repo: wrswoR

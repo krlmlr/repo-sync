@@ -1,7 +1,8 @@
 ## ADDED Requirements
 
 ### Requirement: Designate exactly one template repo
-The system SHALL recognise exactly one entry in `repos.yml` carrying `template: true` as the canonical template repo. Zero or multiple flagged entries SHALL be treated as a configuration error.
+The system SHALL recognise exactly one entry in `repos.yml` carrying `template: true` as the canonical template repo.
+Zero or multiple flagged entries SHALL be treated as a configuration error.
 
 #### Scenario: One entry flagged
 - **WHEN** `repos.yml` has a single entry with `template: true`
@@ -16,7 +17,8 @@ The system SHALL recognise exactly one entry in `repos.yml` carrying `template: 
 - **THEN** any consumer of the template exits non-zero with a clear error
 
 ### Requirement: Configure `template` remote on non-template mirrors
-The system SHALL ensure every non-template mirror has a git remote named `template` pointing at the local mirror path of the template repo, expressed relative to the mirror's working tree as `../../<template-org>/<template-repo>`.
+The system SHALL ensure every non-template mirror has a git remote named `template` pointing at the local mirror path of the template repo,
+expressed relative to the mirror's working tree as `../../<template-org>/<template-repo>`.
 
 #### Scenario: Fresh non-template mirror
 - **WHEN** a non-template mirror is freshly cloned and has no `template` remote
@@ -31,7 +33,8 @@ The system SHALL ensure every non-template mirror has a git remote named `templa
 - **THEN** the system does not add a `template` remote on it
 
 ### Requirement: Idempotent template-remote configuration
-The system SHALL configure the `template` remote without error on repeated runs, producing no changes when the configuration is already correct.
+The system SHALL configure the `template` remote without error on repeated runs,
+producing no changes when the configuration is already correct.
 
 #### Scenario: Second run with no drift
 - **WHEN** `clone.sh` is run twice with no inventory or template-URL changes
