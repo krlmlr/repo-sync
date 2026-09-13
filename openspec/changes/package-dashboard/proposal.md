@@ -82,13 +82,20 @@ This change adds the API back, and the difference is not a reversal:
 
 ## Impact
 
-- **New scripts** `scripts/collect_metrics.py` and `scripts/render_dashboard.py`, and a `mise` task for each.
+- **New scripts** `scripts/collect_metrics.py`, `scripts/render_dashboard.py` and `scripts/publish_dashboard.sh`,
+  a `mise` task for each, and the `scripts/portfolio/` package the first two share.
 - **A published contract**: `metrics.json` at a stable URL, versioned and consumable by anything that is not this page.
 - **`scripts/lib.sh`**: nothing. The collector reads `repos.yml` through the same rules but does not clone, fetch or fan out over SSH.
-- **`requirements.txt`**: an HTTP client beside `PyYAML`.
-  No R and no rmarkdown, though `actions-sync` uses both: it was already an R package, and this repository is not.
+- **`requirements.txt`**: nothing. `urllib.request` from the standard library makes the JSON requests with a bearer token that both
+  APIs want, so the HTTP client this proposal first budgeted for is not there: a dependency to install, pin and update buys a portfolio
+  reading nothing. No R and no rmarkdown either, though `actions-sync` uses both:
+  it was already an R package, and this repository is not.
+- **`dashboard.yml`**: the score weights and the windows, as configuration rather than as code.
+- **`docs/dashboard.md`**: the field reference, the credential note, and what publication does.
 - **`.gitignore`**: `/reports/`, beside `/mirrors/`.
-- **`mise.toml`**: three named tasks.
+- **`mise.toml`**: three named tasks, and a fourth for the suite they are verified by.
+- **`tests/`**: the suite, which runs offline — the two services answered from recorded payloads, the mirrors from git repositories
+  built in a temporary directory, and the page's JavaScript from node.
 - **New workflow** `.github/workflows/dashboard.yaml`, reading the `GITHUB_TOKEN` Actions already mints.
   No stored secret: a credential is required, one this project keeps is not.
 - **`ROADMAP.md`**: the "public web UI" non-goal retired and §2.5 added, both in this change — see below.

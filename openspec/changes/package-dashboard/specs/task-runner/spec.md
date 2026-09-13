@@ -30,6 +30,11 @@
 - **WHEN** a contributor runs `mise run publish-dashboard`
 - **THEN** `mise` publishes the current snapshot and page, having first removed the workspace group that is local to the machine
 
+#### Scenario: test task
+- **WHEN** a contributor runs `mise run test`
+- **THEN** `mise` runs the suite that verifies the collector, the scoring, the page and the publication,
+  with no network access and no mirrors required
+
 #### Scenario: Unknown task
 - **WHEN** a contributor runs `mise run nonexistent`
 - **THEN** `mise` exits non-zero with a list of available tasks

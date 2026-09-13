@@ -65,6 +65,17 @@ and is the one place a per-repository call is genuinely per-repository.
 The resulting budget is low three figures against five thousand an hour, and a request count is a thing the collector
 reports at the end, the way `clone` and `sync` report failures.
 
+Both APIs are spoken with `urllib.request`. They want a JSON body and a bearer header, which is what `urlopen` does, so the HTTP client
+the proposal first budgeted for is not there; every request goes through one injectable transport instead, which is also what makes the
+collector testable with no network at all.
+
+Two bounds came out of implementation, and both are recorded in the snapshot rather than hidden in it.
+Commits since the last release are the ones newer than the release in the hundred-commit history the batch already carries, so a package
+with more than that many unreleased commits records `commits_since_truncated` rather than a number that is quietly a floor;
+asking GitHub to compare a tag against a branch per package would be a second round trip each for a number that is only ever read as
+"a lot". The issue and pull-request cuts are likewise computed over the newest fifty of each, and the entry records how many were
+examined beside the totals, so a cut reads as the floor it is.
+
 ### A credential is required; a stored secret is not
 
 Some credential is not optional. The GraphQL API refuses unauthenticated requests outright, so batching — the thing
@@ -119,6 +130,10 @@ portfolio-level counters to a `history.jsonl` beside it.
 for more of it, the page can fetch its own history as a relative URL with no API and no token,
 and pruning is a delete on a branch nobody bisects.
 
+Publication works in a *worktree* of this checkout rather than in a fresh clone, because the credential that can push is the one the
+checkout already has -- an SSH key or a `gh` login locally, the header `actions/checkout` configures in CI. A clone into a temporary
+directory would have neither, and the alternative is a URL with a token in it, which is one stray log line away from being published.
+
 ### The attention score shows its work
 
 Each package gets a score from weighted reasons — days red, a CRAN deadline, user-facing commits since the last
@@ -137,6 +152,11 @@ in the mirror.
 
 Patch-id over two full histories is real work at forty-six repositories, so the mirror side is bounded by date:
 a commit authored before a template commit existed cannot be a copy of it.
+
+`git cherry` turned out not to be able to express that bound. Its `<limit>` argument narrows the side being *reported* -- the template --
+and the side that needs narrowing is the mirror's history, so what the collector runs is the `rev-list | diff-tree | patch-id` pipeline
+`git cherry` runs internally, with `--since` on the mirror side. The measure is unchanged, and a test on a fixture asserts the bounded
+run and the unbounded one agree.
 
 This group is the one thing CI cannot compute — it would need every repository's history, which is what `mirrors/`
 already is — so it is present when collection runs on a machine that has the mirrors and absent otherwise.
@@ -172,7 +192,8 @@ copying the accident rather than the idea.
 ### What is deliberately not measured
 
 - **Per-workflow CI status.** `actions-sync` renders a badge per workflow per repository and owns that view.
-  This page reports the default branch's outcome and links to it.
+  This page reports the default branch's outcome and links to it -- to the page itself rather than to a per-repository anchor in it,
+  since that page's anchors are its business and a link built on a guess about them is a link that rots quietly.
 - **Anything needing admin scope** — branch protection, secrets, settings. Most of the inventory is not ours to administer,
   so a column that is empty for two thirds of the rows is worse than no column.
 - **File-level template divergence.** `cynkratemplate` is a whole R package; `DESCRIPTION` and `R/` are meant to differ.
@@ -204,8 +225,14 @@ Rollback is disabling the workflow. The branch can be deleted; nothing reads it 
 
 ## Open Questions
 
-- **Which CRAN endpoint.** Several expose check results and none is contractually stable. Decided at implementation
-  against the live service; the requirement is stated in terms of the facts, not the source.
+- ~~**Which CRAN endpoint.**~~ *Answered during implementation, against the live service.* Two pages per package:
+  `web/packages/<pkg>/DESCRIPTION` for the version CRAN serves and its `Date/Publication`, which is the same format the repository's own
+  `DESCRIPTION` is in and so is read by the same parser; and `web/checks/check_results_<pkg>.html` for the status per flavour and for a
+  deadline. There is no contractually stable machine-readable equivalent that carries both -- `web/checks/check_results.rds` is a table
+  of flavour, package, version, maintainer, status and timings with no deadline column, and it is RDS, which would mean R.
+  Confirmed against `tibble` (five NOTE flavours and eight OK) and `here` (thirteen OK).
+  The deadline is the one part not confirmed against a live example: no package under one was reachable when this was implemented,
+  so the pattern is parsed defensively and the field stays absent when it does not match.
 - **How long history is kept.** Starts unbounded because a JSON file a day is small, with pruning added if the branch
   becomes unwieldy. It affects nothing but the branch.
 - **Whether `r-pkg-maintain` should own this instead.** Its charter names a *Portfolio view* track —
