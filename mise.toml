@@ -36,3 +36,41 @@ run = "bash scripts/clone.sh"
 description = "Fetch the bare template mirror, pull --rebase every mirror, fetch `template` everywhere"
 depends = ["install"]
 run = "bash scripts/sync.sh"
+
+# Prerequisites for the three dashboard tasks below:
+#
+# A GitHub credential, and specifically not a stored secret. The GraphQL API refuses anonymous
+# requests outright, and batching is what makes reading forty-six repositories cost five queries
+# instead of two hundred, so there is no anonymous mode to fall back to. In Actions the credential
+# is the `GITHUB_TOKEN` that workflow mints; locally it is an existing `gh` login, read at run time
+# with `gh auth token`. `GITHUB_TOKEN` or `GH_TOKEN` in the environment wins over both.
+# What declining a stored token costs is written down in `docs/dashboard.md`.
+#
+# Nothing else. CRAN is read over plain HTTPS and degrades to an unavailable group when it cannot
+# be reached; `mirrors/` is read when it is there and its two groups are omitted when it is not;
+# and there is no `parallel` here on purpose -- the collector serialises its requests, because
+# GitHub's secondary rate limits react to concurrency and answer with a 403 that ends the run.
+[tasks.metrics]
+description = "Collect one snapshot of the portfolio into reports/metrics.json"
+depends = ["install"]
+run = "python3 scripts/collect_metrics.py"
+
+# Takes the snapshot and produces a page; collects nothing and needs no network.
+# The reading is inlined, so reports/index.html opens from disk on a double-click.
+[tasks.dashboard]
+description = "Render reports/index.html from the latest snapshot"
+run = "python3 scripts/render_dashboard.py"
+
+# The published shape: a page that fetches its data, the data beside it with the workspace group
+# stripped, and the reading retained as history. Pushes to the deploy branch, creating it if absent.
+[tasks.publish-dashboard]
+description = "Publish the snapshot, the page and the history to the deploy branch"
+run = "bash scripts/publish_dashboard.sh"
+
+# The suite the collector, the scoring, the page and the publication are verified by.
+# Every test runs offline: the two services are replaced by recorded answers, and the mirrors by
+# git repositories built in a temporary directory.
+[tasks.test]
+description = "Run the test suite"
+depends = ["install"]
+run = "python3 -m unittest discover -s tests -t ."

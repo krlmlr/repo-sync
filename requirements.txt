@@ -1,1 +1,3 @@
+# The collector talks HTTP with `urllib.request` from the standard library rather than with a
+# dependency: it makes plain JSON requests with a bearer token, which is what `urlopen` does.
 PyYAML==6.0.2
