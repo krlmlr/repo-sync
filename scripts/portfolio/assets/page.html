@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio status</title>
+<style>
+{{STYLE}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Portfolio status</h1>
+<div class="meta" id="meta">Loading the snapshot&hellip;</div>
+<div id="notes"></div>
+<div id="main" hidden>
+<div class="counters" id="counters"></div>
+<div class="controls">
+<label class="muted" for="filter">Filter</label>
+<input type="search" id="filter" placeholder="organisation, repository or package">
+<span class="muted" id="shown"></span>
+<span class="muted">Click a column to sort, a row for detail.</span>
+</div>
+<div class="scroll"><table id="table"></table></div>
+<div id="trend"></div>
+</div>
+<footer>
+Every value on this page is a field in the snapshot it was rendered from:
+<a href="metrics.json">metrics.json</a> is the machine-readable version of exactly this reading.
+The page ranks work; it does not do any.
+</footer>
+</div>
+<script type="application/json" id="snapshot-data">{{DATA}}</script>
+<script>
+{{SCRIPT}}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+# One reading of the portfolio a day, published as a page and as the document behind it.
+#
+# The credential is the `GITHUB_TOKEN` this workflow is given, and no secret is stored: its write
+# scope stops at this repository, which is exactly what publishing needs, and its reads reach the
+# public issues, pull requests, releases, commits and workflow runs of every repository in the
+# inventory, which is exactly what collecting needs.
+#
+# Collection failing for some packages does not stop publication. A package that cannot be read
+# keeps its last known values marked stale, and forty-five fresh rows beside one grey one serve a
+# reader better than yesterday's page; the run still ends non-zero, because the exit status is for
+# whoever is watching the schedule.
+name: dashboard
+
+on:
+  schedule:
+    # Early enough that the reading is waiting in the morning, and not on the hour, which is when
+    # everybody else's cron jobs queue up.
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dashboard
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      # The previous reading, so that a package that cannot be read today keeps the values it had
+      # yesterday rather than being recorded as never observed.
+      - name: Fetch the published snapshot
+        run: |
+          mkdir -p reports
+          git fetch --depth 1 origin gh-pages 2>/dev/null &&
+            git show FETCH_HEAD:metrics.json > reports/metrics.json ||
+            echo "no published snapshot yet"
+
+      - id: collect
+        name: Collect
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/collect_metrics.py
+
+      - name: Publish
+        run: bash scripts/publish_dashboard.sh
+
+      - name: Report unreadable packages
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "::warning::some packages could not be read; the page shows them stale"
+          exit 1
