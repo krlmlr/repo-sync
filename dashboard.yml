@@ -1,0 +1,63 @@
+# The numbers the portfolio reading depends on, kept out of the code.
+#
+# Everything here is opinion rather than fact: how long a window is, how much a red build is worth
+# against an unanswered issue. An opinion that lives in Python is argued with; one that lives in a
+# file is tuned. Every value is optional -- what is not set here keeps the default recorded in
+# `scripts/portfolio/config.py`, and the field reference in `docs/dashboard.md` says what each means.
+#
+# Change a weight and re-run `mise run metrics -- --rescore reports/metrics.json`:
+# the scores and the ranking move, and nothing else in the snapshot does.
+
+windows:
+  # Ninety days is not a choice: it is what GitHub retains of a workflow run.
+  ci_days: 90
+  activity_days: 90
+  authors_days: 365
+  dormancy_days: 365
+  # An issue nobody has touched in three months is a different thing from a busy one.
+  stale_issue_days: 90
+  # A pull request is awaiting review once it has waited longer than a fortnight.
+  review_wait_days: 14
+
+weights:
+  # Days red, capped: a build that broke last year is not sixty times the problem of one that broke
+  # last week, and an uncapped term would push every other reason off the top of the ranking.
+  ci_red_per_day: 0.5
+  ci_red_max: 30
+
+  # A CRAN deadline is the only hard date in the portfolio, so it outweighs everything else on its
+  # own, and grows as the date approaches or passes.
+  cran_deadline_base: 25
+  cran_deadline_per_day_remaining: 1
+  cran_deadline_days_counted: 30
+
+  # User-facing commits since the last release -- `feat:` and `fix:` -- scaled by how long the
+  # oldest of them has been waiting. Three fixes from this morning are not the debt three from
+  # March are.
+  unreleased_user_facing_per_commit: 1
+  unreleased_age_scale_days: 30
+  unreleased_age_factor_max: 3
+  unreleased_max: 30
+
+  # An issue nobody has answered is the cheapest work in the portfolio and the rudest to leave.
+  issue_no_reply_per_issue: 0.5
+  issue_no_reply_max: 10
+
+  # A pull request waiting on us, which is somebody else's time we are spending.
+  pr_awaiting_review_per_pr: 1
+  pr_awaiting_review_max: 10
+
+  # Template commits the mirror still lacks, present only where the mirrors are.
+  template_commit_per_commit: 0.5
+  template_commit_max: 10
+
+collection:
+  # Ten repositories per query: enough to make the whole inventory five queries,
+  # few enough that one response stays readable and the node budget stays low.
+  graphql_batch: 10
+  issues_per_repo: 50
+  pull_requests_per_repo: 50
+  comments_per_issue: 10
+  commits_per_repo: 100
+  workflow_run_pages: 2
+  workflow_runs_per_page: 100

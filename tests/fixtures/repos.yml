@@ -1,0 +1,16 @@
+repos:
+- org: cynkra
+  repo: cynkratemplate
+  template: true
+- org: ghost
+  repo: missing
+- org: ghost
+  repo: never
+- org: krlmlr
+  repo: bindr
+- org: krlmlr
+  repo: notapackage
+- org: r-dbi
+  repo: RKazam
+- org: tidyverse
+  repo: tibble

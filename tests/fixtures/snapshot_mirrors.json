@@ -1,0 +1,1220 @@
+{
+  "schema_version": 1,
+  "collected_at": "2026-09-01T12:00:00Z",
+  "template_slug": "cynkra/cynkratemplate",
+  "groups": [
+    "identity",
+    "release",
+    "ci",
+    "cran",
+    "tickets",
+    "activity",
+    "template",
+    "workspace",
+    "score"
+  ],
+  "groups_collected": {
+    "template": true,
+    "workspace": true
+  },
+  "requests": {
+    "cran": 7,
+    "graphql": 3,
+    "rest": 5,
+    "total": 15
+  },
+  "failures": [
+    "ghost/missing",
+    "ghost/never"
+  ],
+  "packages": {
+    "cynkra/cynkratemplate": {
+      "slug": "cynkra/cynkratemplate",
+      "org": "cynkra",
+      "repo": "cynkratemplate",
+      "is_template": true,
+      "observed_at": "2026-09-01T12:00:00Z",
+      "stale": false,
+      "never_observed": false,
+      "error": null,
+      "identity": {
+        "default_branch": "main",
+        "links": {
+          "repository": "https://github.com/cynkra/cynkratemplate",
+          "actions": "https://github.com/cynkra/cynkratemplate/actions?query=branch%3Amain",
+          "actions_sync": "https://krlmlr.github.io/actions-sync/"
+        },
+        "description": "cynkra/cynkratemplate description",
+        "url": "https://github.com/cynkra/cynkratemplate",
+        "visibility": "public",
+        "archived": false,
+        "is_r_package": true,
+        "package": "cynkratemplate",
+        "version": "0.1.0.9000",
+        "viewer_can_push": true
+      },
+      "release": {
+        "latest_tag": "v0.1.0",
+        "latest_url": "https://example.invalid/r",
+        "latest_published_at": "2026-07-23T12:00:00Z",
+        "latest_age_days": 40,
+        "commits_since": 2,
+        "commits_since_truncated": true,
+        "commits_by_type": {
+          "chore": 1,
+          "docs": 1
+        },
+        "oldest_unreleased_at": "2026-08-27T12:00:00Z",
+        "draft_release": "none",
+        "cran_version": null,
+        "cran_published_at": null,
+        "cran_age_days": null,
+        "ahead_of_cran": null
+      },
+      "ci": {
+        "latest_conclusion": "success",
+        "latest_run_at": "2026-08-30T12:00:00Z",
+        "latest_run_url": "https://github.com/example/example/actions/runs/1",
+        "runs": [
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-02T12:00:00Z",
+            "duration_seconds": 600,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-12T12:00:00Z",
+            "duration_seconds": 600,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-22T12:00:00Z",
+            "duration_seconds": 600,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-30T12:00:00Z",
+            "duration_seconds": 600,
+            "url": "https://github.com/example/example/actions/runs/1"
+          }
+        ],
+        "window_days": 90,
+        "window_from": "2026-08-02T12:00:00Z",
+        "window_to": "2026-08-30T12:00:00Z",
+        "success_rate": 1.0,
+        "median_duration_seconds": 600,
+        "consecutive_failures": 0,
+        "red_since": null
+      },
+      "cran": {
+        "state": "absent",
+        "package": "cynkratemplate",
+        "version": null,
+        "published_at": null,
+        "flavours": [],
+        "status_counts": {},
+        "worst_status": null,
+        "deadline": null,
+        "checked_at": null,
+        "package_url": "https://cran.r-project.org/package=cynkratemplate",
+        "checks_url": "https://cran.r-project.org/web/checks/check_results_cynkratemplate.html"
+      },
+      "tickets": {
+        "open_issues": 0,
+        "open_pull_requests": 0,
+        "issues_sampled": 0,
+        "pull_requests_sampled": 0,
+        "issues_no_maintainer_reply": 0,
+        "issues_stale": 0,
+        "issues_stale_after_days": 90,
+        "pull_requests_outside": 0,
+        "pull_requests_bot": 0,
+        "pull_requests_draft": 0,
+        "pull_requests_awaiting_review": 0,
+        "pull_requests_review_after_days": 14,
+        "oldest_issue_age_days": null,
+        "oldest_pull_request_age_days": null
+      },
+      "activity": {
+        "last_commit_at": "2026-08-29T12:00:00Z",
+        "last_commit_age_days": 3,
+        "commits_recent": 2,
+        "commits_recent_window_days": 90,
+        "authors_recent": 1,
+        "authors_window_days": 365,
+        "authors_truncated": false,
+        "dormant": false,
+        "dormancy_days": 365
+      },
+      "template": {
+        "collected": false,
+        "reason": "the template is not measured against itself"
+      },
+      "workspace": {
+        "dirty": false,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "unpushed": 0,
+        "upstream": "origin/main",
+        "operation_in_progress": null
+      },
+      "score": {
+        "value": 0,
+        "reasons": [],
+        "stale": false
+      }
+    },
+    "ghost/missing": {
+      "slug": "ghost/missing",
+      "org": "ghost",
+      "repo": "missing",
+      "is_template": false,
+      "observed_at": "2026-09-01T12:00:00Z",
+      "stale": true,
+      "never_observed": false,
+      "error": "repository not readable with this credential",
+      "identity": {
+        "default_branch": "main",
+        "links": {
+          "repository": "https://github.com/ghost/missing",
+          "actions": "https://github.com/ghost/missing/actions?query=branch%3Amain",
+          "actions_sync": "https://krlmlr.github.io/actions-sync/"
+        },
+        "description": "ghost/missing description",
+        "url": "https://github.com/ghost/missing",
+        "visibility": "public",
+        "archived": false,
+        "is_r_package": true,
+        "package": "ghostly",
+        "version": "1.0.0",
+        "viewer_can_push": false
+      },
+      "release": {
+        "latest_tag": "v1.0.0",
+        "latest_url": "https://example.invalid/g",
+        "latest_published_at": "2026-02-13T12:00:00Z",
+        "latest_age_days": 200,
+        "commits_since": 1,
+        "commits_since_truncated": true,
+        "commits_by_type": {
+          "fix": 1
+        },
+        "oldest_unreleased_at": "2026-04-04T12:00:00Z",
+        "draft_release": "unavailable",
+        "cran_version": "1.0.0",
+        "cran_published_at": "2026-02-02",
+        "cran_age_days": 211,
+        "ahead_of_cran": false
+      },
+      "ci": {
+        "latest_conclusion": "success",
+        "latest_run_at": "2026-07-03T12:00:00Z",
+        "latest_run_url": "https://github.com/example/example/actions/runs/1",
+        "runs": [
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-07-03T12:00:00Z",
+            "duration_seconds": 600,
+            "url": "https://github.com/example/example/actions/runs/1"
+          }
+        ],
+        "window_days": 90,
+        "window_from": "2026-07-03T12:00:00Z",
+        "window_to": "2026-07-03T12:00:00Z",
+        "success_rate": 1.0,
+        "median_duration_seconds": 600,
+        "consecutive_failures": 0,
+        "red_since": null
+      },
+      "cran": {
+        "state": "available",
+        "package": "ghostly",
+        "version": "1.0.0",
+        "published_at": "2026-02-02",
+        "flavours": [],
+        "status_counts": {},
+        "worst_status": null,
+        "deadline": null,
+        "checked_at": null,
+        "package_url": "https://cran.r-project.org/package=ghostly",
+        "checks_url": "https://cran.r-project.org/web/checks/check_results_ghostly.html"
+      },
+      "tickets": {
+        "open_issues": 0,
+        "open_pull_requests": 0,
+        "issues_sampled": 0,
+        "pull_requests_sampled": 0,
+        "issues_no_maintainer_reply": 0,
+        "issues_stale": 0,
+        "issues_stale_after_days": 90,
+        "pull_requests_outside": 0,
+        "pull_requests_bot": 0,
+        "pull_requests_draft": 0,
+        "pull_requests_awaiting_review": 0,
+        "pull_requests_review_after_days": 14,
+        "oldest_issue_age_days": null,
+        "oldest_pull_request_age_days": null
+      },
+      "activity": {
+        "last_commit_at": "2026-04-04T12:00:00Z",
+        "last_commit_age_days": 150,
+        "commits_recent": 0,
+        "commits_recent_window_days": 90,
+        "authors_recent": 1,
+        "authors_window_days": 365,
+        "authors_truncated": false,
+        "dormant": false,
+        "dormancy_days": 365
+      },
+      "template": {
+        "collected": false,
+        "reason": "no mirror at mirrors/ghost/missing"
+      },
+      "workspace": {
+        "dirty": false,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "unpushed": 0,
+        "upstream": "origin/main",
+        "operation_in_progress": null
+      },
+      "score": {
+        "value": 3.0,
+        "reasons": [
+          {
+            "code": "unreleased",
+            "label": "1 user-facing commit unreleased",
+            "detail": {
+              "feat": 0,
+              "fix": 1,
+              "oldest_age_days": 150
+            },
+            "contribution": 3.0
+          }
+        ],
+        "stale": true
+      }
+    },
+    "ghost/never": {
+      "slug": "ghost/never",
+      "org": "ghost",
+      "repo": "never",
+      "is_template": false,
+      "observed_at": null,
+      "stale": true,
+      "never_observed": true,
+      "error": "repository not readable with this credential",
+      "identity": null,
+      "release": null,
+      "ci": null,
+      "cran": null,
+      "tickets": null,
+      "activity": null,
+      "template": {
+        "collected": false,
+        "reason": "no mirror at mirrors/ghost/never"
+      },
+      "workspace": {
+        "dirty": false,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "unpushed": 0,
+        "upstream": "origin/main",
+        "operation_in_progress": null
+      },
+      "score": {
+        "value": 0,
+        "reasons": [],
+        "stale": true
+      }
+    },
+    "krlmlr/bindr": {
+      "slug": "krlmlr/bindr",
+      "org": "krlmlr",
+      "repo": "bindr",
+      "is_template": false,
+      "observed_at": "2026-09-01T12:00:00Z",
+      "stale": false,
+      "never_observed": false,
+      "error": null,
+      "identity": {
+        "default_branch": "main",
+        "links": {
+          "repository": "https://github.com/krlmlr/bindr",
+          "actions": "https://github.com/krlmlr/bindr/actions?query=branch%3Amain",
+          "actions_sync": "https://krlmlr.github.io/actions-sync/"
+        },
+        "description": "krlmlr/bindr description",
+        "url": "https://github.com/krlmlr/bindr",
+        "visibility": "public",
+        "archived": true,
+        "is_r_package": true,
+        "package": "bindr",
+        "version": "0.1.2",
+        "viewer_can_push": true
+      },
+      "release": {
+        "latest_tag": "v0.1.2",
+        "latest_url": "https://example.invalid/b",
+        "latest_published_at": "2022-11-01T12:00:00Z",
+        "latest_age_days": 1400,
+        "commits_since": 0,
+        "commits_since_truncated": false,
+        "commits_by_type": {},
+        "oldest_unreleased_at": null,
+        "draft_release": "none",
+        "cran_version": "0.1.2",
+        "cran_published_at": "2023-03-02",
+        "cran_age_days": 1279,
+        "ahead_of_cran": false
+      },
+      "ci": {
+        "latest_conclusion": null,
+        "latest_run_at": null,
+        "latest_run_url": null,
+        "runs": [],
+        "window_days": 90,
+        "window_from": null,
+        "window_to": null,
+        "success_rate": null,
+        "median_duration_seconds": null,
+        "consecutive_failures": 0,
+        "red_since": null
+      },
+      "cran": {
+        "state": "available",
+        "package": "bindr",
+        "version": "0.1.2",
+        "published_at": "2023-03-02",
+        "flavours": [
+          {
+            "flavour": "r-devel-linux-x86_64-debian-clang",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-debian-gcc",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-fedora-clang",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-fedora-gcc",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-windows-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-patched-linux-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-linux-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-macos-arm64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-macos-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-windows-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-macos-arm64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-macos-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-windows-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          }
+        ],
+        "status_counts": {
+          "OK": 13
+        },
+        "worst_status": "OK",
+        "deadline": null,
+        "checked_at": "2026-09-13",
+        "package_url": "https://cran.r-project.org/package=bindr",
+        "checks_url": "https://cran.r-project.org/web/checks/check_results_bindr.html"
+      },
+      "tickets": {
+        "open_issues": 0,
+        "open_pull_requests": 0,
+        "issues_sampled": 0,
+        "pull_requests_sampled": 0,
+        "issues_no_maintainer_reply": 0,
+        "issues_stale": 0,
+        "issues_stale_after_days": 90,
+        "pull_requests_outside": 0,
+        "pull_requests_bot": 0,
+        "pull_requests_draft": 0,
+        "pull_requests_awaiting_review": 0,
+        "pull_requests_review_after_days": 14,
+        "oldest_issue_age_days": null,
+        "oldest_pull_request_age_days": null
+      },
+      "activity": {
+        "last_commit_at": "2022-11-01T12:00:00Z",
+        "last_commit_age_days": 1400,
+        "commits_recent": 0,
+        "commits_recent_window_days": 90,
+        "authors_recent": 0,
+        "authors_window_days": 365,
+        "authors_truncated": false,
+        "dormant": true,
+        "dormancy_days": 365
+      },
+      "template": {
+        "collected": true,
+        "template_ref": "template/main",
+        "bounded_from": "2024-10-01T12:00:00Z",
+        "outstanding": 9,
+        "outstanding_commits": [
+          {
+            "sha": "0000000000000000000000000000000000000000",
+            "authored_at": "2025-07-28T12:00:00Z",
+            "subject": "feat: template commit"
+          }
+        ],
+        "oldest_outstanding_at": "2025-07-28T12:00:00Z"
+      },
+      "workspace": {
+        "dirty": false,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "unpushed": 0,
+        "upstream": "origin/main",
+        "operation_in_progress": null
+      },
+      "score": {
+        "value": 4.5,
+        "reasons": [
+          {
+            "code": "template_outstanding",
+            "label": "9 template commits outstanding",
+            "detail": {
+              "commits": 9,
+              "oldest": "2025-07-28T12:00:00Z"
+            },
+            "contribution": 4.5
+          }
+        ],
+        "stale": false
+      }
+    },
+    "krlmlr/notapackage": {
+      "slug": "krlmlr/notapackage",
+      "org": "krlmlr",
+      "repo": "notapackage",
+      "is_template": false,
+      "observed_at": "2026-09-01T12:00:00Z",
+      "stale": false,
+      "never_observed": false,
+      "error": null,
+      "identity": {
+        "default_branch": "main",
+        "links": {
+          "repository": "https://github.com/krlmlr/notapackage",
+          "actions": "https://github.com/krlmlr/notapackage/actions?query=branch%3Amain",
+          "actions_sync": "https://krlmlr.github.io/actions-sync/"
+        },
+        "description": "krlmlr/notapackage description",
+        "url": "https://github.com/krlmlr/notapackage",
+        "visibility": "public",
+        "archived": false,
+        "is_r_package": false,
+        "package": null,
+        "version": null,
+        "viewer_can_push": true
+      },
+      "release": {
+        "latest_tag": null,
+        "latest_url": null,
+        "latest_published_at": null,
+        "latest_age_days": null,
+        "commits_since": null,
+        "commits_since_truncated": false,
+        "commits_by_type": null,
+        "oldest_unreleased_at": null,
+        "draft_release": "none",
+        "cran_version": null,
+        "cran_published_at": null,
+        "cran_age_days": null,
+        "ahead_of_cran": null
+      },
+      "ci": {
+        "latest_conclusion": null,
+        "latest_run_at": null,
+        "latest_run_url": null,
+        "runs": [],
+        "window_days": 90,
+        "window_from": null,
+        "window_to": null,
+        "success_rate": null,
+        "median_duration_seconds": null,
+        "consecutive_failures": 0,
+        "red_since": null
+      },
+      "cran": null,
+      "tickets": {
+        "open_issues": 2,
+        "open_pull_requests": 1,
+        "issues_sampled": 2,
+        "pull_requests_sampled": 1,
+        "issues_no_maintainer_reply": 1,
+        "issues_stale": 1,
+        "issues_stale_after_days": 90,
+        "pull_requests_outside": 1,
+        "pull_requests_bot": 0,
+        "pull_requests_draft": 0,
+        "pull_requests_awaiting_review": 1,
+        "pull_requests_review_after_days": 14,
+        "oldest_issue_age_days": 120,
+        "oldest_pull_request_age_days": 30
+      },
+      "activity": {
+        "last_commit_at": "2026-08-30T12:00:00Z",
+        "last_commit_age_days": 2,
+        "commits_recent": 4,
+        "commits_recent_window_days": 90,
+        "authors_recent": 2,
+        "authors_window_days": 365,
+        "authors_truncated": false,
+        "dormant": false,
+        "dormancy_days": 365
+      },
+      "template": {
+        "collected": true,
+        "template_ref": "template/main",
+        "bounded_from": "2024-10-01T12:00:00Z",
+        "outstanding": 0,
+        "outstanding_commits": [],
+        "oldest_outstanding_at": null
+      },
+      "workspace": {
+        "dirty": false,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "unpushed": 0,
+        "upstream": "origin/main",
+        "operation_in_progress": null
+      },
+      "score": {
+        "value": 1.5,
+        "reasons": [
+          {
+            "code": "issues_no_reply",
+            "label": "1 issue with no maintainer reply",
+            "detail": {
+              "issues": 1
+            },
+            "contribution": 0.5
+          },
+          {
+            "code": "prs_awaiting_review",
+            "label": "1 pull request awaiting review",
+            "detail": {
+              "pull_requests": 1
+            },
+            "contribution": 1.0
+          }
+        ],
+        "stale": false
+      }
+    },
+    "r-dbi/RKazam": {
+      "slug": "r-dbi/RKazam",
+      "org": "r-dbi",
+      "repo": "RKazam",
+      "is_template": false,
+      "observed_at": "2026-09-01T12:00:00Z",
+      "stale": false,
+      "never_observed": false,
+      "error": null,
+      "identity": {
+        "default_branch": "main",
+        "links": {
+          "repository": "https://github.com/r-dbi/RKazam",
+          "actions": "https://github.com/r-dbi/RKazam/actions?query=branch%3Amain",
+          "actions_sync": "https://krlmlr.github.io/actions-sync/"
+        },
+        "description": "r-dbi/RKazam description",
+        "url": "https://github.com/r-dbi/RKazam",
+        "visibility": "public",
+        "archived": false,
+        "is_r_package": true,
+        "package": "RKazam",
+        "version": "0.2.0.9000",
+        "viewer_can_push": false
+      },
+      "release": {
+        "latest_tag": "v0.2.0",
+        "latest_url": "https://example.invalid/k",
+        "latest_published_at": "2026-06-03T12:00:00Z",
+        "latest_age_days": 90,
+        "commits_since": 4,
+        "commits_since_truncated": true,
+        "commits_by_type": {
+          "chore": 1,
+          "feat": 1,
+          "fix": 1,
+          "unclassified": 1
+        },
+        "oldest_unreleased_at": "2026-06-13T12:00:00Z",
+        "draft_release": "unavailable",
+        "cran_version": "0.2.0",
+        "cran_published_at": "2026-06-03",
+        "cran_age_days": 90,
+        "ahead_of_cran": true
+      },
+      "ci": {
+        "latest_conclusion": "failure",
+        "latest_run_at": "2026-08-31T12:00:00Z",
+        "latest_run_url": "https://github.com/example/example/actions/runs/1",
+        "runs": [
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "failure",
+            "status": "completed",
+            "created_at": "2026-08-02T12:00:00Z",
+            "duration_seconds": 900,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-07T12:00:00Z",
+            "duration_seconds": 800,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "failure",
+            "status": "completed",
+            "created_at": "2026-08-18T12:00:00Z",
+            "duration_seconds": 1000,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "failure",
+            "status": "completed",
+            "created_at": "2026-08-23T12:00:00Z",
+            "duration_seconds": 1100,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "failure",
+            "status": "completed",
+            "created_at": "2026-08-31T12:00:00Z",
+            "duration_seconds": 1200,
+            "url": "https://github.com/example/example/actions/runs/1"
+          }
+        ],
+        "window_days": 90,
+        "window_from": "2026-08-02T12:00:00Z",
+        "window_to": "2026-08-31T12:00:00Z",
+        "success_rate": 0.2,
+        "median_duration_seconds": 1000,
+        "consecutive_failures": 3,
+        "red_since": "2026-08-18T12:00:00Z"
+      },
+      "cran": {
+        "state": "available",
+        "package": "RKazam",
+        "version": "0.2.0",
+        "published_at": "2026-06-03",
+        "flavours": [
+          {
+            "flavour": "r-devel-linux-x86_64-debian-clang",
+            "version": "1.0.2",
+            "status": "ERROR"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-debian-gcc",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-fedora-clang",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-fedora-gcc",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-devel-windows-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-patched-linux-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-linux-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-macos-arm64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-macos-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-windows-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-macos-arm64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-macos-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-windows-x86_64",
+            "version": "1.0.2",
+            "status": "OK"
+          }
+        ],
+        "status_counts": {
+          "ERROR": 1,
+          "OK": 12
+        },
+        "worst_status": "ERROR",
+        "deadline": "2026-09-20",
+        "checked_at": "2026-09-13",
+        "package_url": "https://cran.r-project.org/package=RKazam",
+        "checks_url": "https://cran.r-project.org/web/checks/check_results_RKazam.html"
+      },
+      "tickets": {
+        "open_issues": 3,
+        "open_pull_requests": 3,
+        "issues_sampled": 3,
+        "pull_requests_sampled": 3,
+        "issues_no_maintainer_reply": 3,
+        "issues_stale": 2,
+        "issues_stale_after_days": 90,
+        "pull_requests_outside": 2,
+        "pull_requests_bot": 1,
+        "pull_requests_draft": 1,
+        "pull_requests_awaiting_review": 2,
+        "pull_requests_review_after_days": 14,
+        "oldest_issue_age_days": 200,
+        "oldest_pull_request_age_days": 40
+      },
+      "activity": {
+        "last_commit_at": "2026-08-22T12:00:00Z",
+        "last_commit_age_days": 10,
+        "commits_recent": 4,
+        "commits_recent_window_days": 90,
+        "authors_recent": 3,
+        "authors_window_days": 365,
+        "authors_truncated": false,
+        "dormant": false,
+        "dormancy_days": 365
+      },
+      "template": {
+        "collected": true,
+        "template_ref": "template/main",
+        "bounded_from": "2024-10-01T12:00:00Z",
+        "outstanding": 3,
+        "outstanding_commits": [
+          {
+            "sha": "1111111111111111111111111111111111111111",
+            "authored_at": "2026-05-04T12:00:00Z",
+            "subject": "ci: template commit"
+          }
+        ],
+        "oldest_outstanding_at": "2026-05-04T12:00:00Z"
+      },
+      "workspace": {
+        "dirty": true,
+        "staged": 1,
+        "unstaged": 2,
+        "untracked": 0,
+        "unpushed": 3,
+        "upstream": "origin/main",
+        "operation_in_progress": [
+          "cherry_pick"
+        ]
+      },
+      "score": {
+        "value": 55.0,
+        "reasons": [
+          {
+            "code": "ci_red",
+            "label": "CI red for 14 days",
+            "detail": {
+              "days": 14,
+              "consecutive_failures": 3
+            },
+            "contribution": 7.0
+          },
+          {
+            "code": "cran_deadline",
+            "label": "CRAN deadline 2026-09-20",
+            "detail": {
+              "deadline": "2026-09-20",
+              "days_remaining": 18
+            },
+            "contribution": 37.0
+          },
+          {
+            "code": "unreleased",
+            "label": "2 user-facing commits unreleased",
+            "detail": {
+              "feat": 1,
+              "fix": 1,
+              "oldest_age_days": 80
+            },
+            "contribution": 6.0
+          },
+          {
+            "code": "issues_no_reply",
+            "label": "3 issues with no maintainer reply",
+            "detail": {
+              "issues": 3
+            },
+            "contribution": 1.5
+          },
+          {
+            "code": "prs_awaiting_review",
+            "label": "2 pull requests awaiting review",
+            "detail": {
+              "pull_requests": 2
+            },
+            "contribution": 2.0
+          },
+          {
+            "code": "template_outstanding",
+            "label": "3 template commits outstanding",
+            "detail": {
+              "commits": 3,
+              "oldest": "2026-05-04T12:00:00Z"
+            },
+            "contribution": 1.5
+          }
+        ],
+        "stale": false
+      }
+    },
+    "tidyverse/tibble": {
+      "slug": "tidyverse/tibble",
+      "org": "tidyverse",
+      "repo": "tibble",
+      "is_template": false,
+      "observed_at": "2026-09-01T12:00:00Z",
+      "stale": false,
+      "never_observed": false,
+      "error": null,
+      "identity": {
+        "default_branch": "main",
+        "links": {
+          "repository": "https://github.com/tidyverse/tibble",
+          "actions": "https://github.com/tidyverse/tibble/actions?query=branch%3Amain",
+          "actions_sync": "https://krlmlr.github.io/actions-sync/"
+        },
+        "description": "tidyverse/tibble description",
+        "url": "https://github.com/tidyverse/tibble",
+        "visibility": "public",
+        "archived": false,
+        "is_r_package": true,
+        "package": "tibble",
+        "version": "3.3.1.9000",
+        "viewer_can_push": true
+      },
+      "release": {
+        "latest_tag": "v3.3.1",
+        "latest_url": "https://example.invalid/t",
+        "latest_published_at": "2026-08-02T12:00:00Z",
+        "latest_age_days": 30,
+        "commits_since": 2,
+        "commits_since_truncated": true,
+        "commits_by_type": {
+          "chore": 1,
+          "docs": 1
+        },
+        "oldest_unreleased_at": "2026-08-12T12:00:00Z",
+        "draft_release": "present",
+        "cran_version": "3.3.1",
+        "cran_published_at": "2026-01-11",
+        "cran_age_days": 233,
+        "ahead_of_cran": true
+      },
+      "ci": {
+        "latest_conclusion": "success",
+        "latest_run_at": "2026-08-29T12:00:00Z",
+        "latest_run_url": "https://github.com/example/example/actions/runs/1",
+        "runs": [
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "failure",
+            "status": "completed",
+            "created_at": "2026-07-13T12:00:00Z",
+            "duration_seconds": 700,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-07-23T12:00:00Z",
+            "duration_seconds": 650,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "cancelled",
+            "status": "completed",
+            "created_at": "2026-08-02T12:00:00Z",
+            "duration_seconds": 100,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-20T12:00:00Z",
+            "duration_seconds": 600,
+            "url": "https://github.com/example/example/actions/runs/1"
+          },
+          {
+            "workflow": "R-CMD-check",
+            "conclusion": "success",
+            "status": "completed",
+            "created_at": "2026-08-29T12:00:00Z",
+            "duration_seconds": 620,
+            "url": "https://github.com/example/example/actions/runs/1"
+          }
+        ],
+        "window_days": 90,
+        "window_from": "2026-07-13T12:00:00Z",
+        "window_to": "2026-08-29T12:00:00Z",
+        "success_rate": 0.75,
+        "median_duration_seconds": 620,
+        "consecutive_failures": 0,
+        "red_since": null
+      },
+      "cran": {
+        "state": "available",
+        "package": "tibble",
+        "version": "3.3.1",
+        "published_at": "2026-01-11",
+        "flavours": [
+          {
+            "flavour": "r-devel-linux-x86_64-debian-clang",
+            "version": "3.3.1",
+            "status": "NOTE"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-debian-gcc",
+            "version": "3.3.1",
+            "status": "NOTE"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-fedora-clang",
+            "version": "3.3.1",
+            "status": "NOTE"
+          },
+          {
+            "flavour": "r-devel-linux-x86_64-fedora-gcc",
+            "version": "3.3.1",
+            "status": "NOTE"
+          },
+          {
+            "flavour": "r-devel-windows-x86_64",
+            "version": "3.3.1",
+            "status": "NOTE"
+          },
+          {
+            "flavour": "r-patched-linux-x86_64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-linux-x86_64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-macos-arm64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-macos-x86_64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-release-windows-x86_64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-macos-arm64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-macos-x86_64",
+            "version": "3.3.1",
+            "status": "OK"
+          },
+          {
+            "flavour": "r-oldrel-windows-x86_64",
+            "version": "3.3.1",
+            "status": "OK"
+          }
+        ],
+        "status_counts": {
+          "NOTE": 5,
+          "OK": 8
+        },
+        "worst_status": "NOTE",
+        "deadline": null,
+        "checked_at": "2026-09-13",
+        "package_url": "https://cran.r-project.org/package=tibble",
+        "checks_url": "https://cran.r-project.org/web/checks/check_results_tibble.html"
+      },
+      "tickets": {
+        "open_issues": 2,
+        "open_pull_requests": 1,
+        "issues_sampled": 2,
+        "pull_requests_sampled": 1,
+        "issues_no_maintainer_reply": 0,
+        "issues_stale": 1,
+        "issues_stale_after_days": 90,
+        "pull_requests_outside": 0,
+        "pull_requests_bot": 0,
+        "pull_requests_draft": 0,
+        "pull_requests_awaiting_review": 0,
+        "pull_requests_review_after_days": 14,
+        "oldest_issue_age_days": 20,
+        "oldest_pull_request_age_days": 5
+      },
+      "activity": {
+        "last_commit_at": "2026-08-28T12:00:00Z",
+        "last_commit_age_days": 4,
+        "commits_recent": 6,
+        "commits_recent_window_days": 90,
+        "authors_recent": 2,
+        "authors_window_days": 365,
+        "authors_truncated": false,
+        "dormant": false,
+        "dormancy_days": 365
+      },
+      "template": {
+        "collected": true,
+        "template_ref": "template/main",
+        "bounded_from": "2024-10-01T12:00:00Z",
+        "outstanding": 1,
+        "outstanding_commits": [
+          {
+            "sha": "2222222222222222222222222222222222222222",
+            "authored_at": "2026-08-02T12:00:00Z",
+            "subject": "chore: template commit"
+          }
+        ],
+        "oldest_outstanding_at": "2026-08-02T12:00:00Z"
+      },
+      "workspace": {
+        "dirty": false,
+        "staged": 0,
+        "unstaged": 0,
+        "untracked": 0,
+        "unpushed": 0,
+        "upstream": "origin/main",
+        "operation_in_progress": null
+      },
+      "score": {
+        "value": 0.5,
+        "reasons": [
+          {
+            "code": "template_outstanding",
+            "label": "1 template commit outstanding",
+            "detail": {
+              "commits": 1,
+              "oldest": "2026-08-02T12:00:00Z"
+            },
+            "contribution": 0.5
+          }
+        ],
+        "stale": false
+      }
+    }
+  },
+  "portfolio": {
+    "collected_at": "2026-09-01T12:00:00Z",
+    "packages": 7,
+    "stale": 2,
+    "ci_failing": 1,
+    "cran_not_ok": 2,
+    "unreleased_commits": 9,
+    "open_issues": 7,
+    "open_pull_requests": 5,
+    "issues_no_maintainer_reply": 4,
+    "dormant": 1,
+    "attention_total": 64.5
+  }
+}
