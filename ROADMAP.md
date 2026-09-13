@@ -58,7 +58,9 @@ A small toolkit that operates on the inventory from section 1.
       and refuses the copy outright where a closing keyword would have a dependent repository close an issue in the template.
 - [ ] For each foreign repo, diff the working tree against a canonical template / set of patches maintained in this repo.
 - [ ] Classify divergences: clean (can auto-apply), conflicting (needs human review), or intentional (skip).
-- [ ] Emit a report per repo and an aggregate summary across the inventory.
+- [x] Emit a report per repo and an aggregate summary across the inventory.
+      Delivered as §2.5's snapshot and page: one entry per repository and one set of portfolio-level counters beside them,
+      reporting what is measurably true. The classification above stays open, and the page never says a divergence is fine.
 
 ### 2.3 Commit & push
 
@@ -80,13 +82,17 @@ A small toolkit that operates on the inventory from section 1.
 
 One daily reading of every package in the inventory, so that the list of names also says which of them needs attention.
 
-- [ ] Collect per-package metrics into one versioned snapshot — release position, CI with its recent history, CRAN health,
+- [x] Collect per-package metrics into one versioned snapshot — release position, CI with its recent history, CRAN health,
       open issues and pull requests, activity and dormancy, and the template commits each mirror still lacks.
       Failure is isolated per package: one unreadable repository costs one stale row, not a missing reading.
-- [ ] Rank the portfolio by an attention score, recording beside it the reasons that produced it,
+      `mise run metrics`; the fields are documented in [`docs/dashboard.md`](docs/dashboard.md).
+- [x] Rank the portfolio by an attention score, recording beside it the reasons that produced it,
       so the top of the reading is a worklist and not a number nobody can check.
+      The weights and windows are configuration, in [`dashboard.yml`](dashboard.yml), and every reason carries its own contribution.
 - [ ] Publish that snapshot as the machine-readable version, and a page that reads it, on a schedule.
       Local workspace state — a dirty tree, an unpushed commit — is collected for the local reading and never published.
+      `mise run dashboard`, `mise run publish-dashboard` and the scheduled workflow have landed;
+      this is ticked once a scheduled run has actually published.
 
 ## Out of scope (for now)
 
