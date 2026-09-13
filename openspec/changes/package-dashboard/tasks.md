@@ -100,7 +100,6 @@
 
 ## 12. Documentation
 
-- [ ] 12.1 Remove the "public web UI" entry from ROADMAP's out-of-scope list and mark §2.2's report bullet delivered for the observable half, leaving classification open; verify the section no longer contradicts what ships.
-- [ ] 12.2 Add a ROADMAP entry for the dashboard under §2.4, naming the snapshot as its published contract; verify the section describes collection, rendering and publication.
-- [ ] 12.3 Document the credential: that one is required because GraphQL refuses anonymous requests, that it is `GITHUB_TOKEN` in CI and an existing `gh` login locally, and what declining a stored token costs — draft releases, maintainer precision by permission, private entries, headroom; verify the note matches what the workflow actually does.
-- [ ] 12.4 Record in `design.md` which CRAN source was chosen and what it returns; verify the Open Question is answered rather than left standing.
+- [ ] 12.1 Tick ROADMAP §2.5's bullets as each lands, and mark §2.2's report bullet delivered for its observable half while leaving classification open; verify both sections describe what actually ships. The non-goal's retirement and §2.5 itself landed with the proposal, so nothing here re-does them.
+- [ ] 12.2 Document the credential: that one is required because GraphQL refuses anonymous requests, that it is `GITHUB_TOKEN` in CI and an existing `gh` login locally, and what declining a stored token costs — draft releases, maintainer precision by permission, private entries, headroom; verify the note matches what the workflow actually does.
+- [ ] 12.3 Record in `design.md` which CRAN source was chosen and what it returns; verify the Open Question is answered rather than left standing.

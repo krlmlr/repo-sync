@@ -99,8 +99,26 @@ A small toolkit that operates on the inventory from section 1.
 - [ ] Run the whole pipeline from GitHub Actions on a schedule,
       surfacing failures per repo without aborting the batch.
 
+### 2.5 Portfolio status
+
+One daily reading of every package in the inventory, so that the list of
+names also says which of them needs attention.
+
+- [ ] Collect per-package metrics — release position, CI with its
+      recent history, CRAN health, open issues and pull requests,
+      activity and dormancy, and the template commits each mirror still
+      lacks — into one versioned snapshot. Failure is isolated per
+      package: one unreadable repository costs one stale row, not a
+      missing reading.
+- [ ] Rank the portfolio by an attention score, recording the reasons
+      that produced it beside it, so the top of the reading is a
+      worklist and not a number nobody can check.
+- [ ] Publish that snapshot as the machine-readable version, and a page
+      that reads it, on a schedule. Local workspace state — a dirty
+      tree, an unpushed commit — is collected for the local reading and
+      never published.
+
 ## Out of scope (for now)
 
 - Managing repository settings (branch protection, labels, etc.) —
   only file contents are reconciled.
-- Hosting a public web UI for the reconciliation reports.

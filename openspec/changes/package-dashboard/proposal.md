@@ -91,16 +91,19 @@ This change adds the API back, and the difference is not a reversal:
 - **`mise.toml`**: three named tasks.
 - **New workflow** `.github/workflows/dashboard.yaml`, reading the `GITHUB_TOKEN` Actions already mints.
   No stored secret: a credential is required, one this project keeps is not.
-- **`ROADMAP.md`**: §2.2's report bullet is partly delivered here, and the "public web UI" non-goal is retired — see below.
+- **`ROADMAP.md`**: the "public web UI" non-goal retired and §2.5 added, both in this change — see below.
+  §2.2's report bullet is marked delivered when the work ships, not now.
 - **No changes** to `clone.sh`, `sync.sh`, `repos.yml`, the hook, or any mirror.
 
-### The ROADMAP says this is out of scope
+### The ROADMAP said this was out of scope
 
-It does: *"Hosting a public web UI for the reconciliation reports"*, under **Out of scope (for now)**.
-The parenthesis is doing real work there — it is a deferral, and this change is the decision to stop deferring.
-The entry is removed rather than quietly contradicted, and §2.2's
-*"Emit a report per repo and an aggregate summary across the inventory"*
-is marked as delivered for the observable half.
+It did: *"Hosting a public web UI for the reconciliation reports"*, under **Out of scope (for now)**.
+The parenthesis was doing the work there — a deferral rather than a refusal — and this change is the decision to stop deferring.
+
+So the entry is retired by this change rather than quietly contradicted by it, and §2.5 takes its place as planned work.
+That much is a scope decision and lands with the proposal; what waits for the implementation is the claim that any of it is built.
+§2.2's *"Emit a report per repo and an aggregate summary across the inventory"*
+is marked delivered for its observable half then, and not before.
 
 What stays out is the other half: classification.
 The page reports what is measurably true and never says a divergence is fine.
