@@ -19,7 +19,8 @@
 ## 4. Verification
 
 - [x] 4.1 `bash -n` and `shellcheck -x` clean on all three scripts
-- [x] 4.2 A fresh clone produces the same mirror layout as before, over an SSH `origin`, with no `upstream` remote and no credential anywhere
+- [x] 4.2 A fresh clone produces the same mirror layout as before, over an SSH `origin`,
+          with no `upstream` remote and no credential anywhere
 - [x] 4.3 A second `clone` run changes nothing and exits zero
 - [x] 4.4 A mirror carrying an HTTPS `origin` is rewritten to SSH and fetched, without being re-cloned
 - [x] 4.5 `sync` still advances mirrors, updates `template/*` refs and rebases unpushed local work

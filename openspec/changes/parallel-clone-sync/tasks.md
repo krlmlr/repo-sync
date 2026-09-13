@@ -33,7 +33,8 @@
 - [x] 5.1 Add `run_one` taking one slug: skip if not cloned, then `pull_rebase` and `fetch_template`, both attempted
 - [x] 5.2 Dispatch to it when the script is called with an argument, rejecting a wrong count
 - [x] 5.3 Fetch the bare mirror in the parent, before the fan-out, reporting missing and non-bare separately
-- [x] 5.4 Have `fetch_template` consult `template_bare_usable` rather than an inherited flag, and stay quiet about what the parent already reported
+- [x] 5.4 Have `fetch_template` consult `template_bare_usable` rather than an inherited flag,
+          and stay quiet about what the parent already reported
 - [x] 5.5 Fan out over the template's checkout and every other mirror
 
 ## 6. Documentation

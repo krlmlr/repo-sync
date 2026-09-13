@@ -1,8 +1,11 @@
 ## Purpose
 
-Persist the foreign-repo inventory parsed from `krlmlr/actions-sync` branch names as a stable, machine-readable `repos.yml` so all downstream tooling has a single source of truth.
+Persist the foreign-repo inventory parsed from `krlmlr/actions-sync` branch names as a stable, machine-readable `repos.yml`
+so all downstream tooling has a single source of truth.
 
-> **Note:** `repos.yml` is a one-time import. The script is run manually, the diff reviewed, and the result committed. There is no automated refresh; updates follow the same manual process.
+> **Note:** `repos.yml` is a one-time import.
+The script is run manually, the diff reviewed, and the result committed.
+There is no automated refresh; updates follow the same manual process.
 ## Requirements
 ### Requirement: Write inventory to repos.yml
 The system SHALL write the parsed `(org, repo)` tuple list to `repos.yml` at the repository root as a YAML document under the top-level key `repos`.
@@ -20,7 +23,8 @@ The system SHALL write the parsed `(org, repo)` tuple list to `repos.yml` at the
 - **THEN** the system overwrites it atomically with the new inventory
 
 ### Requirement: Inventory is sorted case-insensitively and stable
-The system SHALL write the `repos` list sorted ascending by `org` (case-insensitive) then by `repo` (case-insensitive) so that mixed-case names sort alphabetically and repeated runs produce identical output.
+The system SHALL write the `repos` list sorted ascending by `org` (case-insensitive) then by `repo` (case-insensitive)
+so that mixed-case names sort alphabetically and repeated runs produce identical output.
 
 #### Scenario: Deterministic output
 - **WHEN** the same set of branches is fetched in any order
@@ -35,7 +39,8 @@ The system SHALL write the `repos` list sorted ascending by `org` (case-insensit
 - **THEN** they appear as `adbi`, `DBI`, `RSQLite` (case-insensitive alpha order)
 
 ### Requirement: repos.yml format is human-readable YAML
-The system SHALL produce valid YAML that a human can read and edit. Each entry SHALL use block-style mapping with `org:` and `repo:` keys on separate lines.
+The system SHALL produce valid YAML that a human can read and edit.
+Each entry SHALL use block-style mapping with `org:` and `repo:` keys on separate lines.
 
 #### Scenario: Valid YAML output
 - **WHEN** `repos.yml` is written
@@ -46,7 +51,8 @@ The system SHALL produce valid YAML that a human can read and edit. Each entry S
 - **THEN** entries are not collapsed to flow style (e.g. `{org: x, repo: y}`)
 
 ### Requirement: Preserve `template: true` flag across refreshes
-The system SHALL preserve the `template: true` flag on the matching `(org, repo)` entry when refreshing `repos.yml` from upstream branches. The flag is human-curated metadata not derivable from `actions-sync`.
+The system SHALL preserve the `template: true` flag on the matching `(org, repo)` entry when refreshing `repos.yml` from upstream branches.
+The flag is human-curated metadata not derivable from `actions-sync`.
 
 #### Scenario: Flag retained when repo still in inventory
 - **WHEN** `repos.yml` exists with `template: true` on `<org>/<repo>` and a refresh sees the same `<org>/<repo>` in the new branch list

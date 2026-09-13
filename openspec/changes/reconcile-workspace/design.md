@@ -32,9 +32,8 @@ and `clone` re-baselines every mirror with `git reset --hard origin/HEAD` and `g
 A git worktree was the obvious candidate and is wrong.
 Remotes are per-repository, not per-worktree:
 `git config` is shared across every worktree of a repository, as are its refs and its object database.
-On the fixture, adding a remote inside a worktree of the template's checkout
-made that remote appear in the checkout itself, and a single fetch put `dm-v1.0.0` and `dm-v2.0.0`
-into the checkout's `refs/tags/`.
+On the fixture, adding a remote inside a worktree of the template's checkout made that remote appear in the checkout itself,
+and a single fetch put `dm-v1.0.0` and `dm-v2.0.0` into the checkout's `refs/tags/`.
 That is the outward guarantee broken from the other side, in the one repository every mirror reads.
 
 `extensions.worktreeConfig` does not rescue it: it scopes a small fixed set of settings, not remotes.
@@ -50,8 +49,8 @@ Rejected for both reasons above — it is the worktree case without the worktree
 ### Remotes named `<org>/<repo>`
 
 A remote name may contain a slash.
-The fixture confirmed `git remote add cynkra/dm ...` works, that its branches land at
-`refs/remotes/cynkra/dm/main`, and that `git rev-parse cynkra/dm/main` resolves.
+The fixture confirmed `git remote add cynkra/dm ...` works, that its branches land at `refs/remotes/cynkra/dm/main`,
+and that `git rev-parse cynkra/dm/main` resolves.
 
 Naming remotes for the repository alone would be shorter and is unsafe:
 repository names are not unique across orgs,
@@ -201,7 +200,8 @@ which is a reason to sequence the two and not a reason to duplicate the hook her
 ## Risks / Trade-offs
 
 - **The workspace's tag cleanliness rests on configuration, not on structure.**
-  → One repository, one config file, one command to verify and one to repair. There is no tagless far end available in this direction, so this is the sound form rather than a weaker form of something better.
+  → One repository, one config file, one command to verify and one to repair.
+  There is no tagless far end available in this direction, so this is the sound form rather than a weaker form of something better.
 
 - **A second copy of the history of every repository promoted from.**
   → Bounded by lazy fetching: only repositories actually fetched are duplicated. Sharing objects was considered and rejected above.
@@ -214,8 +214,9 @@ which is a reason to sequence the two and not a reason to duplicate the hook her
 
 - **The generalised provenance rule widens what the shared hook acts on in a mirror:**
   any non-`origin` remote, not only `template`.
-  → No mirror this project configures has another remote, and a foreign remote added by hand
-  carries the same hazard the rule exists for, so the wider rule is the more correct one.
+  → No mirror this project configures has another remote,
+  and a foreign remote added by hand carries the same hazard the rule exists for,
+  so the wider rule is the more correct one.
   It is called out because it is a behaviour change to a hook this change does not own.
 
 - **A stale remote left behind after an inventory entry is dropped**

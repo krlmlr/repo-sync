@@ -4,41 +4,33 @@
 
 The system SHALL keep the template's bare mirror free of tags,
 and SHALL treat that as the whole of the guarantee that no mirror imports the template's tags.
-No mirror SHALL be required to carry configuration for it,
-and no command SHALL be required to pass an option for it.
+No mirror SHALL be required to carry configuration for it, and no command SHALL be required to pass an option for it.
 
 A fetch auto-follows tags the far end advertises under `refs/tags/*`.
-A far end that advertises none offers nothing to follow,
-so the guarantee holds for any command a mirror runs against that remote --
-including one that asks for tags explicitly,
-and including one run by tooling that knows nothing about this repository.
+A far end that advertises none offers nothing to follow, so the guarantee holds for any command a mirror runs against that remote --
+including one that asks for tags explicitly, and including one run by tooling that knows nothing about this repository.
 
 The guarantee SHALL be re-established at the start of every command that fetches the `template` remote,
-before any mirror fetches from the bare mirror,
-so that a tree left in an older shape is corrected rather than relied upon.
+before any mirror fetches from the bare mirror, so that a tree left in an older shape is corrected rather than relied upon.
 
 #### Scenario: Mirror fetches the template remote
 
 - **WHEN** a mirror fetches its `template` remote
-- **THEN** its `refs/tags/*` is unchanged, and its `refs/remotes/template/*`
-  branch refs are updated to match the bare mirror
+- **THEN** its `refs/tags/*` is unchanged, and its `refs/remotes/template/*` branch refs are updated to match the bare mirror
 
 #### Scenario: Tags requested explicitly
 
 - **WHEN** a mirror fetches its `template` remote with tags explicitly requested
-- **THEN** its `refs/tags/*` is still unchanged, because the bare mirror
-  advertises no tags to import
+- **THEN** its `refs/tags/*` is still unchanged, because the bare mirror advertises no tags to import
 
 #### Scenario: Mirror carrying no tag configuration
 
-- **WHEN** a mirror's `template` remote carries no tag-related configuration at
-  all
+- **WHEN** a mirror's `template` remote carries no tag-related configuration at all
 - **THEN** a fetch of it still imports no tags
 
 #### Scenario: Generic tooling sweeps the checkouts
 
-- **WHEN** a tool with no knowledge of this repository fetches every remote in
-  every checkout
+- **WHEN** a tool with no knowledge of this repository fetches every remote in every checkout
 - **THEN** no mirror's `refs/tags/*` gains a ref from the template
 
 #### Scenario: Tree left in an older shape
@@ -109,12 +101,26 @@ a sweep that fetches every remote in every checkout needs no list of which check
 
 ### Requirement: Configure `template` remote on non-template mirrors
 
-**Reason**: The contract changed from "every non-template mirror" to "every mirror". The exception it carried -- the template repo itself gets no `template` remote -- is what made the template's checkout the last per-repository special case in a sweep over checkouts. Replaced by "Every mirror carries the `template` remote".
+**Reason**: The contract changed from "every non-template mirror" to "every mirror".
+The exception it carried -- the template repo itself gets no `template` remote --
+is what made the template's checkout the last per-repository special case in a sweep over checkouts.
+Replaced by "Every mirror carries the `template` remote".
 
-**Migration**: No action. A current `clone` run adds the remote to the template's own checkout; every other mirror's remote is unchanged.
+**Migration**: No action.
+A current `clone` run adds the remote to the template's own checkout;
+every other mirror's remote is unchanged.
 
 ### Requirement: The `template` remote imports no tags
 
-**Reason**: The guarantee moved from each mirror's `remote.template.tagOpt` to the bare mirror itself, which carries no tags for a fetch to follow. Enforcing it per mirror made it behavioural: it held only for mirrors a `clone` run had reached, and only for commands that knew to pass the option, which is exactly what stopped generic tooling from sweeping the checkouts. Replaced by "The bare mirror is the single place the no-tags guarantee lives".
+**Reason**: The guarantee moved from each mirror's `remote.template.tagOpt` to the bare mirror itself,
+which carries no tags for a fetch to follow.
+Enforcing it per mirror made it behavioural: it held only for mirrors a `clone` run had reached,
+and only for commands that knew to pass the option,
+which is exactly what stopped generic tooling from sweeping the checkouts.
+Replaced by "The bare mirror is the single place the no-tags guarantee lives".
 
-**Migration**: No action. A current `clone` or `sync` run normalises the bare mirror to its tagless shape and then removes `remote.template.tagOpt` from each mirror. The setting is removed only once the bare mirror on disk is verifiably tagless, so a partially migrated tree is never left with neither protection.
+**Migration**: No action.
+A current `clone` or `sync` run normalises the bare mirror to its tagless shape
+and then removes `remote.template.tagOpt` from each mirror.
+The setting is removed only once the bare mirror on disk is verifiably tagless,
+so a partially migrated tree is never left with neither protection.

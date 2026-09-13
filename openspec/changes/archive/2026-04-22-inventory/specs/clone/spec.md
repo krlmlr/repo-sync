@@ -23,7 +23,8 @@ The system SHALL skip re-cloning if a directory already exists and instead fetch
 - **THEN** the second run makes no changes and exits zero
 
 ### Requirement: Failures are isolated
-The system SHALL continue processing remaining repos if a single clone or fetch fails, and report all failures at the end with a non-zero exit code.
+The system SHALL continue processing remaining repos if a single clone or fetch fails,
+and report all failures at the end with a non-zero exit code.
 
 #### Scenario: One repo unreachable
 - **WHEN** one repo returns a network or auth error

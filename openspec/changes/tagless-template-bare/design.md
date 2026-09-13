@@ -5,8 +5,7 @@ See `proposal.md` — Why.
 The mechanics below were verified against git 2.55 on a local fixture
 (an upstream carrying one branch and two tags, a bare mirror, and a consumer fetching from it)
 rather than reasoned about from the documentation.
-Each decision records what the fixture showed,
-because several of them turn on behaviour that is easy to assume wrongly.
+Each decision records what the fixture showed, because several of them turn on behaviour that is easy to assume wrongly.
 
 Two constraints shape the approach.
 `scripts/lib.sh` already exists as the single home for what `clone` and `sync` both do,
@@ -35,10 +34,8 @@ so anything a child needs must either be inherited through the environment or re
 ### Build the bare with `git init --bare`, not `git clone --mirror`
 
 `git clone --mirror` sets `remote.origin.fetch = +refs/*:refs/*` and `remote.origin.mirror = true`.
-The first copies `refs/tags/*` and is the reason the bare mirror has tags to leak;
-the second is worse, and is covered below.
-There is no option to `clone --mirror` that excludes tags,
-so the bare mirror is built explicitly instead:
+The first copies `refs/tags/*` and is the reason the bare mirror has tags to leak; the second is worse, and is covered below.
+There is no option to `clone --mirror` that excludes tags, so the bare mirror is built explicitly instead:
 
 ```
 git init --bare <dest>
@@ -105,8 +102,9 @@ git -C <dest> config --unset-all remote.origin.mirror
 git -C <dest> for-each-ref --format='delete %(refname)' refs/tags/ | git -C <dest> update-ref --stdin
 ```
 
-`--replace-all` rather than plain `config`, because a repository that has accumulated more than one
-`remote.origin.fetch` value must end with exactly one, not with the old value still present.
+`--replace-all` rather than plain `config`,
+because a repository that has accumulated more than one `remote.origin.fetch` value must end with exactly one,
+not with the old value still present.
 `update-ref --stdin` rather than a loop over `git tag -d`,
 because it takes the whole deletion as one batch and accepts empty input without complaint,
 which is what makes the step idempotent on an already-normalised repository.
@@ -167,8 +165,7 @@ the template's own checkout is no longer skipped, because it now carries the rem
 a checkout with no `template` remote is no longer a failure, because fetching every remote fetches the ones that are there;
 and the checkout's own upstream tags still arrive, because only the template's were ever the problem.
 
-The `template` remote is still fetched into `refs/remotes/template/*` exactly as before,
-so what a checkout ends a run holding is unchanged.
+The `template` remote is still fetched into `refs/remotes/template/*` exactly as before, so what a checkout ends a run holding is unchanged.
 
 ### The template's checkout keeps `origin` on GitHub and gains a `template` remote
 
@@ -186,8 +183,7 @@ The drift window between the checkout and the bare mirror remains, and is noted 
 
 Fetching `+refs/tags/*:refs/template-tags/*` into the bare mirror was verified to work:
 the bare mirror advertises nothing under `refs/tags/`, so there is nothing to auto-follow,
-and a consumer fetching with tags explicitly requested received `refs/template-tags/*`
-while its own `refs/tags/` stayed empty.
+and a consumer fetching with tags explicitly requested received `refs/template-tags/*` while its own `refs/tags/` stayed empty.
 It preserves the option of anchoring reconcile on a template release.
 
 It is not adopted. Nothing in ROADMAP §2.2 anchors on a template tag today,
@@ -213,7 +209,8 @@ is easier to state and to check. The refspec can be added later without disturbi
 - **The template's checkout and its bare mirror are still fetched from GitHub independently,**
   so they can sit at different commits mid-run, and a human reading the checkout may see commits
   the mirrors' `template/*` refs do not yet have.
-  → Accepted for this change; the alternative costs a two-hop push for template edits.
+  → Accepted for this change;
+  the alternative costs a two-hop push for template edits.
   Revisit if reconcile turns out to be sensitive to it.
 
 - **The bare mirror remains invisible to `s` and `h`.**
@@ -229,12 +226,10 @@ No operator action. The first `mise run clone` or `mise run sync` after this cha
 
 Steps 2 and 3 happen in the fan-out, after step 1's barrier, so the ordering the gate depends on holds.
 
-Rollback is `git revert` of the scripts.
-A `mirrors/` tree normalised by this change keeps working with the previous scripts:
+Rollback is `git revert` of the scripts. A `mirrors/` tree normalised by this change keeps working with the previous scripts:
 the old `sync` passes `--no-tags` explicitly and the old `clone` rewrites `tagOpt`,
 so a bare mirror holding no tags is simply a remote with nothing to suppress.
-The one asymmetry is that the reverted `clone` would not restore `remote.origin.mirror`,
-which is a setting worth not restoring.
+The one asymmetry is that the reverted `clone` would not restore `remote.origin.mirror`, which is a setting worth not restoring.
 
 ## Open Questions
 
