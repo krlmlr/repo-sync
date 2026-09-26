@@ -86,9 +86,9 @@ The system SHALL fetch the `template` remote in every non-template mirror that e
 so each mirror holds the template refs it will be reconciled against, and SHALL do so without importing tags.
 The template's own mirror SHALL be skipped, as it carries no `template` remote.
 
-The fetch SHALL suppress tags itself rather than relying on the remote's configuration: `clone` writes that configuration,
-`sync` is the command that runs every day,
-and a mirror wired up before the configuration existed must not keep importing tags until someone happens to run the other command.
+The fetch SHALL suppress tags itself rather than relying on the remote's configuration.
+`clone` writes that configuration, but `sync` is the command that runs every day.
+A mirror wired up before the configuration existed must not keep importing tags until someone happens to run the other command.
 
 #### Scenario: Template refs updated
 
@@ -216,9 +216,10 @@ that stopped on a conflict can be read without being reassembled from lines scat
 
 ### Requirement: GNU parallel is required and checked for
 
-The system SHALL verify before any mirror is touched that GNU parallel is available,
-and SHALL exit non-zero naming what to install if it is absent or if the `parallel` on `PATH` is a different program of the same name,
-matching the `clone` capability so both tools reject the same incomplete environment.
+The system SHALL verify before any mirror is touched that GNU parallel is available.
+If it is absent, or if the `parallel` on `PATH` is a different program of the same name,
+the system SHALL exit non-zero naming what to install.
+This matches the `clone` capability, so both tools reject the same incomplete environment.
 
 #### Scenario: GNU parallel absent
 

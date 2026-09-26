@@ -6,8 +6,8 @@ The system SHALL additionally mirror the entry flagged `template: true` as a bar
 holding the upstream's branches and nothing else.
 The bare mirror is what the `template` remotes point at; the checkout beside it remains the copy to read and reconcile against.
 
-The bare mirror SHALL carry no tags, and SHALL be configured so that fetching its upstream imports none:
-its fetch refspec SHALL map the upstream's branches into `refs/heads/*` and SHALL map nothing into `refs/tags/*`,
+The bare mirror SHALL carry no tags, and SHALL be configured so that fetching its upstream imports none.
+Its fetch refspec SHALL map the upstream's branches into `refs/heads/*` and SHALL map nothing into `refs/tags/*`,
 and tag auto-following SHALL be off.
 This is where the guarantee that the mirrors import no template tags is established, rather than in each mirror's configuration.
 
@@ -69,13 +69,14 @@ A later `git fetch --prune` SHALL bring its branches in line with the upstream's
 ### Requirement: Configure the `template` remote on every mirror during clone
 
 The system SHALL configure a git remote named `template` on every mirror after a successful clone or update,
-the template's own checkout included,
-pointing at the local relative path `../../<template-org>/<template-repo>.git` (resolving to the template's bare mirror under `mirrors/`).
+the template's own checkout included.
+That remote SHALL point at the local relative path `../../<template-org>/<template-repo>.git`,
+which resolves to the template's bare mirror under `mirrors/`.
 
 The system SHALL NOT write per-mirror tag configuration on that remote.
 Where an earlier version wrote `remote.template.tagOpt`, the system SHALL remove it,
-but only once the bare mirror on disk is verifiably free of tags:
-a mirror whose bare mirror has not yet been normalised SHALL keep the setting rather than lose its only protection.
+but only once the bare mirror on disk is verifiably free of tags.
+A mirror whose bare mirror has not yet been normalised SHALL keep the setting rather than lose its only protection.
 
 #### Scenario: Template URL added to a mirror
 
@@ -105,10 +106,11 @@ a mirror whose bare mirror has not yet been normalised SHALL keep the setting ra
 
 ### Requirement: Process the template's bare mirror first
 
-The system SHALL bring the entry flagged `template: true` into its bare form -- created if absent, normalised and fetched if present --
-before processing any mirror checkout, the template's own checkout included,
-so that the local path used by `template` remotes always resolves on disk after a successful run and so
-that no checkout is wired up against a bare mirror that still carries tags.
+The system SHALL bring the entry flagged `template: true` into its bare form before processing any mirror checkout,
+the template's own checkout included.
+Bringing it into that form means creating it if absent, and normalising and fetching it if present.
+Two guarantees follow: the local path used by `template` remotes always resolves on disk after a successful run,
+and no checkout is wired up against a bare mirror that still carries tags.
 
 This SHALL hold as a barrier rather than as an ordering within a single pass: no checkout SHALL be started
 while the bare mirror is still being made.
@@ -152,8 +154,8 @@ A current `clone` run adds the `template` remote to the template's own checkout 
 
 **Reason**: The requirement ordered both of the template's mirrors ahead of every other entry,
 and its "Both mirrors of the template at once" scenario made the checkout's place in that head start part of the contract.
-Under a tagless bare only the bare mirror has to go first, and the template's checkout is processed with the rest,
-so the ordering is replaced by "Process the template's bare mirror first" -- which keeps the barrier, now scoped to the bare mirror alone.
+Under a tagless bare, only the bare mirror has to go first, and the template's checkout is processed with the rest.
+The ordering is replaced by "Process the template's bare mirror first", which keeps the barrier, now scoped to the bare mirror alone.
 
 **Migration**: No action.
 The barrier still holds where it matters, and a run under the new ordering reaches the same tree: the template's checkout is cloned

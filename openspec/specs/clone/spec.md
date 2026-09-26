@@ -52,8 +52,9 @@ The report SHALL list them in a stable order, independent of the order the repos
 - **THEN** both runs print the same report, in the same order
 
 ### Requirement: Configure `template` remote during clone
-The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update,
-pointing at the local relative path `../../<template-org>/<template-repo>.git` (resolving to the template's bare mirror under `mirrors/`).
+The system SHALL configure a git remote named `template` on every non-template mirror after a successful clone or update.
+That remote SHALL point at the local relative path `../../<template-org>/<template-repo>.git`,
+which resolves to the template's bare mirror under `mirrors/`.
 
 #### Scenario: Template URL added to non-template mirror
 - **WHEN** a non-template mirror is cloned or updated successfully
@@ -71,8 +72,8 @@ pointing at the local relative path `../../<template-org>/<template-repo>.git` (
 ### Requirement: Process the template mirror first
 
 The system SHALL finish cloning or updating the entry flagged `template: true` — both its checkout and its bare mirror —
-before it begins processing any non-template entry,
-so the local path used by `template` remotes always resolves on disk after a successful run.
+before it begins processing any non-template entry.
+The local path used by `template` remotes then always resolves on disk after a successful run.
 This SHALL hold as a barrier rather than as an ordering within a single pass: no non-template entry SHALL be started
 while either of the template's mirrors is still being made.
 
@@ -232,8 +233,8 @@ and its mirrors.
 ### Requirement: Normalise `origin` to the SSH URL
 
 The system SHALL rewrite the `origin` remote of every existing mirror — checkout and bare mirror alike —
-to `git@github.com:<org>/<repo>.git` before fetching it, so the transport a mirror uses follows from the inventory rather than from
-when the mirror was created.
+to `git@github.com:<org>/<repo>.git` before fetching it.
+The transport a mirror uses then follows from the inventory, rather than from when the mirror was created.
 
 #### Scenario: Mirror cloned over HTTPS
 
