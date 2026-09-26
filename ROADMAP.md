@@ -17,6 +17,8 @@ Tasks:
 - [x] Parse each branch name into an `<org>/<repo>` tuple.
 - [x] Persist the resulting inventory as `repos.yml` (59 repos across 15 orgs).
       Refreshes are manual: run `scripts/fetch_inventory.py`, review the diff, commit.
+- [x] Flag the packages maintained here with `maintained: true`.
+      Like `template: true`, the flag is curated by hand and survives a refresh.
 
 ## 2. Tooling
 

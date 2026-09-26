@@ -10,6 +10,7 @@ import yaml
 REMOTE = "https://github.com/krlmlr/actions-sync"
 REPO_ROOT = Path(__file__).parent.parent
 REPOS_YML = REPO_ROOT / "repos.yml"
+ENTRY_KEYS = ("org", "repo", "maintained", "template")
 
 
 def fetch_branches(remote: str) -> list[str]:
@@ -41,13 +42,17 @@ def parse_repos(branches: list[str]) -> list[dict]:
     return sorted(repos, key=lambda e: (e["org"].lower(), e["repo"].lower()))
 
 
-def load_template_flags(path: Path) -> set[tuple[str, str]]:
+def load_existing(path: Path) -> list[dict]:
     if not path.exists():
-        return set()
+        return []
     data = yaml.safe_load(path.read_text()) or {}
+    return data.get("repos", [])
+
+
+def load_template_flags(existing: list[dict], path: Path) -> set[tuple[str, str]]:
     flagged = [
         (e["org"], e["repo"])
-        for e in data.get("repos", [])
+        for e in existing
         if e.get("template") is True
     ]
     if len(flagged) > 1:
@@ -74,12 +79,38 @@ def apply_template_flags(repos: list[dict], flagged: set[tuple[str, str]]) -> No
             entry["template"] = True
 
 
+def load_maintained_flags(existing: list[dict]) -> set[tuple[str, str]]:
+    return {(e["org"], e["repo"]) for e in existing if e.get("maintained") is True}
+
+
+def apply_maintained_flags(repos: list[dict], flagged: set[tuple[str, str]]) -> None:
+    # Unlike the template, nothing depends on any particular entry being maintained,
+    # so a flagged repo that has left the branch list is reported and dropped rather than fatal:
+    # the diff shows the entry going, and reviewing that diff is the gate.
+    inventory = {(e["org"], e["repo"]) for e in repos}
+    missing = flagged - inventory
+    if missing:
+        print(
+            f"note: dropping maintained entr{'y' if len(missing) == 1 else 'ies'} not in new branch list: {sorted(missing)}",
+            file=sys.stderr,
+        )
+    for entry in repos:
+        if (entry["org"], entry["repo"]) in flagged:
+            entry["maintained"] = True
+
+
 def main() -> None:
-    flagged = load_template_flags(REPOS_YML)
+    existing = load_existing(REPOS_YML)
+    flagged = load_template_flags(existing, REPOS_YML)
+    maintained = load_maintained_flags(existing)
     branches = fetch_branches(REMOTE)
     repos = parse_repos(branches)
     apply_template_flags(repos, flagged)
-    content = yaml.dump({"repos": repos}, default_flow_style=False, allow_unicode=True)
+    apply_maintained_flags(repos, maintained)
+    # `org` and `repo` first, then the flags, rather than yaml's alphabetical order,
+    # which would put `maintained` ahead of the name it qualifies.
+    repos = [{k: e[k] for k in ENTRY_KEYS if k in e} for e in repos]
+    content = yaml.dump({"repos": repos}, default_flow_style=False, allow_unicode=True, sort_keys=False)
     tmp = REPOS_YML.with_suffix(".yml.tmp")
     tmp.write_text(content)
     tmp.replace(REPOS_YML)
