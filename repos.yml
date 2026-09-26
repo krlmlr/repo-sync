@@ -3,39 +3,56 @@ repos:
     repo: constructive
   - org: cynkra
     repo: cynkratemplate
+    maintained: true
     template: true
   - org: cynkra
     repo: dd
+    maintained: true
   - org: cynkra
     repo: dm
+    maintained: true
   - org: cynkra
     repo: fledge
+    maintained: true
   - org: cynkra
     repo: indiedown
+    maintained: true
   - org: cynkra
     repo: lazytest
+    maintained: true
   - org: cynkra
     repo: munch
+    maintained: true
   - org: duckdb
     repo: duckdb-r
+    maintained: true
   - org: igraph
     repo: igraphdata
+    maintained: true
   - org: igraph
     repo: rigraph
+    maintained: true
   - org: krlmlr
     repo: bindr
+    maintained: true
   - org: krlmlr
     repo: bindrcpp
+    maintained: true
   - org: krlmlr
     repo: duckdbneo
+    maintained: true
   - org: krlmlr
     repo: kimisc
+    maintained: true
   - org: krlmlr
     repo: mockr
+    maintained: true
   - org: krlmlr
     repo: utf8
+    maintained: true
   - org: krlmlr
     repo: wrswoR
+    maintained: true
   - org: mlfit
     repo: mlfit
   - org: moodymudskipper
@@ -54,39 +71,57 @@ repos:
     repo: unglue
   - org: r-dbi
     repo: DBI
+    maintained: true
   - org: r-dbi
     repo: DBItest
+    maintained: true
   - org: r-dbi
     repo: dblog
+    maintained: true
   - org: r-dbi
     repo: RKazam
+    maintained: true
   - org: r-dbi
     repo: RMariaDB
+    maintained: true
   - org: r-dbi
     repo: RPostgres
+    maintained: true
   - org: r-dbi
     repo: RSQLite
+    maintained: true
   - org: r-lib
     repo: here
+    maintained: true
   - org: r-lib
     repo: pillar
+    maintained: true
   - org: r-lib
     repo: roxygen2md
+    maintained: true
   - org: r-lib
     repo: rprojroot
+    maintained: true
   - org: r-prof
     repo: procmaps
+    maintained: true
   - org: r-prof
     repo: profile
+    maintained: true
   - org: r-prof
     repo: winch
+    maintained: true
   - org: renkun-ken
     repo: formattable
   - org: tidyverse
     repo: blob
+    maintained: true
   - org: tidyverse
     repo: duckplyr
+    maintained: true
   - org: tidyverse
     repo: hms
+    maintained: true
   - org: tidyverse
     repo: tibble
+    maintained: true
