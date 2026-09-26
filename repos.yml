@@ -53,8 +53,6 @@ repos:
   - org: moodymudskipper
     repo: unglue
   - org: r-dbi
-    repo: adbi
-  - org: r-dbi
     repo: DBI
   - org: r-dbi
     repo: DBItest
